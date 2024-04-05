@@ -8,6 +8,10 @@ regexes = [
     ]
 paths = [
   '''pipeline-variables\/.*\.yml''',
+  '''packages\/connectors\/.*mock\.[a-zA-Z]{1,10}$''',
+  '''packages\/.*\.test\.[a-zA-Z]{1,10}$''',
+  '''packages\/.*\_\_mocks\_\_\/.*''',
+  '''packages\/.*\/constants?\.ts$''',
 ]
 
 [[rules]]
