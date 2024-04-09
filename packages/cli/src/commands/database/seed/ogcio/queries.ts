@@ -13,15 +13,19 @@ import {
 import { insertInto } from '../../../../database.js';
 import { consoleLog } from '../../../../utils.js';
 
+const snakeToCamel = (string_: string): string =>
+  string_.replaceAll(/(?!^)_(.)/g, (_, char: string) => char.toUpperCase());
+
 export const getColumnValueByQueryResult = <T extends Record<string, string>>(
   result: QueryResult<T>,
   columnToGet: string
 ): string | undefined => {
-  if (result.rows[0] === undefined || result.rows[0][columnToGet] === undefined) {
+  const camelColumn = snakeToCamel(columnToGet);
+  if (result.rows[0] === undefined || result.rows[0][camelColumn] === undefined) {
     return undefined;
   }
 
-  return result.rows[0][columnToGet];
+  return result.rows[0][camelColumn];
 };
 
 export const getIdByQueryResult = <T extends { id: string }>(
@@ -40,18 +44,12 @@ const getInsertedColumnValue = async (params: {
   if (tenantId !== undefined) {
     cloneWhere.push(sql`tenant_id = ${tenantId}`);
   }
-  consoleLog.error(sql`
-    select ${sql.identifier([columnToGet])} from ${sql.identifier([tableName])}
-      where ${sql.join(cloneWhere, sql` AND `)}
-      limit 1
-  `);
+
   const scope = await transaction.query<Record<string, string>>(sql`
     select ${sql.identifier([columnToGet])} from ${sql.identifier([tableName])}
       where ${sql.join(cloneWhere, sql` AND `)}
       limit 1
   `);
-  consoleLog.error('scope');
-  consoleLog.error(scope);
 
   return getColumnValueByQueryResult(scope, columnToGet);
 };
@@ -92,9 +90,9 @@ export const createItem = async <
   }
 
   const toInsertData = {
+    ...params.toInsert,
     id: generateStandardId(),
     tenant_id: params.tenantId,
-    ...params.toInsert,
   };
 
   await params.transaction.query(insertInto(toInsertData, params.tableName));
@@ -129,7 +127,6 @@ export const createItemWithoutId = async <
   }. Name: ${params.toInsert[params.toLogFieldName]!.toString()}`;
   consoleLog.info(prefixConsoleEntry);
   const scopeIdBefore = await getInsertedColumnValue(params);
-  consoleLog.info('value before ' + (scopeIdBefore ?? 'UNDEFINED'));
   if (scopeIdBefore !== undefined) {
     consoleLog.info(`${prefixConsoleEntry}. Already exists.`);
     return { ...params.toInsert, [params.columnToGet]: scopeIdBefore };
@@ -139,7 +136,6 @@ export const createItemWithoutId = async <
     tenant_id: params.tenantId,
     ...params.toInsert,
   };
-  consoleLog.error(insertInto(toInsertData, params.tableName));
   await params.transaction.query(insertInto(toInsertData, params.tableName));
   const outputValue = await getInsertedColumnValue(params);
   if (outputValue !== undefined) {

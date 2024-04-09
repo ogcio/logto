@@ -24,8 +24,6 @@ const createOrganizationScope = async (
 
 type SeedingScope = {
   name: string;
-  resource: string;
-  action: string;
   id: string | undefined;
   description: string;
 };
@@ -46,10 +44,8 @@ const fillScopes = () => {
   for (const resource of resources) {
     scopesByResource[resource] = [];
     for (const action of actions) {
-      const scope = {
+      const scope: SeedingScope = {
         name: `${resource}:${action}`,
-        resource,
-        action,
         description: `${action} ${resource}`,
         id: undefined,
       };
@@ -66,15 +62,13 @@ const fillScopes = () => {
   }
   const superScope: SeedingScope = {
     name: 'ogcio:admin',
-    resource: 'ogcio',
-    action: 'admin',
     description: 'OGCIO Admin',
     id: undefined,
   };
 
   scopesList.push(superScope);
-  scopesByResource[superScope.resource] = [superScope];
-  scopesByAction[superScope.action] = [superScope];
+  scopesByResource.ogcio = [superScope];
+  scopesByAction.admin = [superScope];
 
   return {
     scopesList,
@@ -145,16 +139,21 @@ const createRole = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   roleToSeed: SeedingRole
-) =>
-  createItem({
+) => {
+  const created = await createItem({
     transaction,
     tableName: OrganizationRoles.table,
     tenantId,
     toLogFieldName: 'name',
     whereClauses: [sql`name = ${roleToSeed.name}`],
-    toInsert: roleToSeed,
+    toInsert: { name: roleToSeed.name, description: roleToSeed.description },
     itemTypeName: 'Organization Role',
   });
+
+  roleToSeed.id = created.id;
+
+  return roleToSeed;
+};
 
 type SeedingRelation = { organization_role_id: string; organization_scope_id: string };
 

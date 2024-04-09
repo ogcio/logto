@@ -6,7 +6,7 @@ import { sql, type DatabaseTransactionConnection } from 'slonik';
 
 import { createItem } from './queries.js';
 
-const createOrganizationScope = async (
+const createResourceScope = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   scopeToSeed: SeedingScope
@@ -24,8 +24,6 @@ const createOrganizationScope = async (
 type SeedingScope = {
   name: string;
   resource_id: string;
-  resource: string;
-  action: string;
   id: string | undefined;
   description: string;
 };
@@ -46,10 +44,8 @@ const fillScopes = (resourceId: string) => {
   for (const resource of resources) {
     scopesByResource[resource] = [];
     for (const action of actions) {
-      const scope = {
+      const scope: SeedingScope = {
         name: `${resource}:${action}`,
-        resource,
-        action,
         description: `${action} ${resource}`,
         id: undefined,
         resource_id: resourceId,
@@ -67,16 +63,14 @@ const fillScopes = (resourceId: string) => {
   }
   const superScope: SeedingScope = {
     name: 'ogcio:admin',
-    resource: 'ogcio',
-    action: 'admin',
     description: 'OGCIO Admin',
     id: undefined,
     resource_id: resourceId,
   };
 
   scopesList.push(superScope);
-  scopesByResource[superScope.resource] = [superScope];
-  scopesByAction[superScope.action] = [superScope];
+  scopesByResource.ogcio = [superScope];
+  scopesByAction.admin = [superScope];
 
   return {
     scopesList,
@@ -90,14 +84,18 @@ const setScopeId = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string
 ) => {
-  element = await createOrganizationScope(transaction, tenantId, element);
+  element = await createResourceScope(transaction, tenantId, element);
 };
 
 const createScopesPerResource = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   resourceId: string
-): Promise<ScopesLists> => {
+): Promise<{
+  scopesList: SeedingScope[];
+  scopesByResource: Record<string, SeedingScope[]>;
+  scopesByAction: Record<string, SeedingScope[]>;
+}> => {
   const scopesToCreate = fillScopes(resourceId);
   const queries: Array<Promise<void>> = [];
   for (const element of scopesToCreate.scopesList) {
@@ -148,16 +146,21 @@ const createRole = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   roleToSeed: SeedingRole
-) =>
-  createItem({
+) => {
+  const created = await createItem({
     transaction,
     tableName: 'roles',
     tenantId,
     toLogFieldName: 'name',
     whereClauses: [sql`name = ${roleToSeed.name}`],
-    toInsert: roleToSeed,
+    toInsert: { name: roleToSeed.name, description: roleToSeed.description },
     itemTypeName: 'Resource Role',
   });
+
+  roleToSeed.id = created.id;
+
+  return roleToSeed;
+};
 
 type SeedingRelation = { role_id: string; scope_id: string; id?: string };
 
