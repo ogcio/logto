@@ -7,6 +7,7 @@ import { consoleLog, oraPromise } from '../../../utils.js';
 import { getLatestAlterationTimestamp } from '../alteration/index.js';
 import { getAlterationDirectory } from '../alteration/utils.js';
 
+import { seedOgcio } from './ogcio/ogcio.js';
 import { createTables, seedCloud, seedTables, seedTest } from './tables.js';
 
 export const seedByPool = async (
@@ -60,6 +61,7 @@ const seed: CommandModule<
     test?: boolean;
     'legacy-test-data'?: boolean;
     'encrypt-base-role'?: boolean;
+    'ogcio-only'?: boolean;
   }
 > = {
   command: 'seed [type]',
@@ -87,10 +89,19 @@ const seed: CommandModule<
       .option('encrypt-base-role', {
         describe: 'Seed base role with password',
         type: 'boolean',
+      })
+      .option('ogcio-only', {
+        describe: 'Seed OGCIO data only',
+        type: 'boolean',
+        default: false,
       }),
-  handler: async ({ swe, cloud, test, legacyTestData, encryptBaseRole }) => {
+  handler: async ({ swe, cloud, test, legacyTestData, encryptBaseRole, ogcioOnly }) => {
     const pool = await createPoolAndDatabaseIfNeeded();
-
+    if (ogcioOnly) {
+      await seedOgcio(pool);
+      await pool.end();
+      return;
+    }
     if (legacyTestData) {
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       if (swe || cloud || test) {
