@@ -17,7 +17,7 @@ const createOrganizationScope = async (
     tenantId,
     toInsert: scopeToSeed,
     toLogFieldName: 'name',
-    itemTypeName: 'Scope',
+    itemTypeName: 'Organization Scope',
     whereClauses: [sql`name = ${scopeToSeed.name}`],
     tableName: OrganizationScopes.table,
   });
@@ -153,8 +153,47 @@ const createRole = async (
     toLogFieldName: 'name',
     whereClauses: [sql`name = ${roleToSeed.name}`],
     toInsert: roleToSeed,
-    itemTypeName: 'Role',
+    itemTypeName: 'Organization Role',
   });
+
+type SeedingRelation = { organization_role_id: string; organization_scope_id: string; id?: string };
+
+const createRoleScopeRelation = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  relation: SeedingRelation
+) =>
+  createItem({
+    transaction,
+    tableName: 'organization_role_scope_relations',
+    tenantId,
+    toLogFieldName: 'organization_role_id',
+    whereClauses: [
+      sql`organization_role_id = ${relation.organization_role_id}`,
+      sql`organization_scope_id = ${relation.organization_scope_id}`,
+    ],
+    toInsert: relation,
+    itemTypeName: 'Organization Scope-Role relation',
+  });
+
+const createRelations = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  roles: Record<string, SeedingRole>
+) => {
+  const queries: Array<Promise<SeedingRelation>> = [];
+  for (const role of Object.values(roles)) {
+    for (const scope of role.scopes) {
+      queries.push(
+        createRoleScopeRelation(transaction, tenantId, {
+          organization_role_id: role.id!,
+          organization_scope_id: scope.id!,
+        })
+      );
+    }
+  }
+  return Promise.all(queries);
+};
 
 const addRole = async (
   transaction: DatabaseTransactionConnection,
@@ -185,9 +224,14 @@ const createRoles = async (
 export const seedOrganizationRbacData = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string
-): Promise<{ scopes: ScopesLists; roles: Record<string, SeedingRole> }> => {
+): Promise<{
+  scopes: ScopesLists;
+  roles: Record<string, SeedingRole>;
+  relations: SeedingRelation[];
+}> => {
   const createdScopes = await createScopes(transaction, tenantId);
   const createdRoles = await createRoles(transaction, tenantId, createdScopes);
+  const relations = await createRelations(transaction, tenantId, createdRoles);
 
-  return { scopes: createdScopes, roles: createdRoles };
+  return { scopes: createdScopes, roles: createdRoles, relations };
 };

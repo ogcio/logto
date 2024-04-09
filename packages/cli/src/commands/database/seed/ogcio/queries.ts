@@ -1,4 +1,5 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable @silverhand/fp/no-mutating-methods */
 /* eslint-disable @silverhand/fp/no-mutation */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { generateStandardId } from '@logto/shared';
@@ -24,14 +25,16 @@ export const getIdByQueryResult = <T extends { id: string }>(
 
 export const getInsertedId = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string,
+  tenantId: string | undefined,
   whereClauses: ValueExpression[],
   table: string
 ): Promise<string | undefined> => {
+  if (tenantId !== undefined) {
+    whereClauses.push(sql`tenant_id = ${tenantId}`);
+  }
   const scope = await transaction.query<{ id: string }>(sql`
     select id from ${sql.identifier([table])}
-      where tenant_id = ${tenantId}
-      and ${sql.join(whereClauses, sql` AND `)}
+      where ${sql.join(whereClauses, sql` AND `)}
       limit 1
   `);
 
@@ -42,15 +45,15 @@ export const createItem = async <
   T extends { id?: string } & Record<string, number | string | undefined | unknown[] | boolean>,
 >(params: {
   transaction: DatabaseTransactionConnection;
-  tenantId: string;
+  tenantId?: string;
   toInsert: T;
   toLogFieldName: string;
   itemTypeName: string;
   whereClauses: ValueExpression[];
   tableName: string;
-}) => {
+}): Promise<Omit<T, 'id'> & { id: string }> => {
   const prefixConsoleEntry = `Creating ${params.itemTypeName}. TenantId: ${
-    params.tenantId
+    params.tenantId ?? 'NOT SET'
   }. Name: ${params.toInsert[params.toLogFieldName]!.toString()}`;
   consoleLog.info(prefixConsoleEntry);
   const scopeIdBefore = await getInsertedId(
@@ -62,7 +65,7 @@ export const createItem = async <
   if (scopeIdBefore !== undefined) {
     consoleLog.info(`${prefixConsoleEntry}. Already exists.`);
     params.toInsert.id = scopeIdBefore;
-    return params.toInsert;
+    return { ...params.toInsert, id: scopeIdBefore };
   }
 
   const toInsertData = {
@@ -80,7 +83,7 @@ export const createItem = async <
   );
   if (params.toInsert.id !== undefined) {
     consoleLog.info(`${prefixConsoleEntry}. Created, Id ${params.toInsert.id}`);
-    return params.toInsert;
+    return { ...params.toInsert, id: params.toInsert.id };
   }
 
   throw new Error(`${prefixConsoleEntry}. Failure inserting it!`);

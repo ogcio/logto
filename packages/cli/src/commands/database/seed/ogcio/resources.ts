@@ -1,7 +1,5 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 
-/* eslint-disable @silverhand/fp/no-mutating-methods */
-/* eslint-disable @silverhand/fp/no-mutation */
 import { sql, type DatabaseTransactionConnection } from 'slonik';
 
 import { createItem } from './queries.js';
@@ -25,26 +23,30 @@ const setResourceId = async (
   element: SeedingResource,
   transaction: DatabaseTransactionConnection,
   tenantId: string
-) => {
-  element = await createResource(transaction, tenantId, element);
+): Promise<
+  Omit<SeedingResource, 'id'> & {
+    id: string;
+  }
+> => {
+  const outputValue = await createResource(transaction, tenantId, element);
+
+  return outputValue;
 };
 
 const createResources = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string
-): Promise<Record<string, SeedingResource>> => {
+): Promise<Record<string, SeedingResource & { id: string }>> => {
   const appsToCreate = { payments: fillPaymentsResource() };
-  const queries: Array<Promise<void>> = [];
-  for (const element of Object.values(appsToCreate)) {
-    queries.push(setResourceId(element, transaction, tenantId));
-  }
+  const outputValues = {
+    payments: await setResourceId(appsToCreate.payments, transaction, tenantId),
+  };
 
-  await Promise.all(queries);
-
-  return appsToCreate;
+  return outputValues;
 };
 
 type SeedingResource = {
+  id?: string;
   name: string;
   indicator: string;
   is_default?: boolean;
