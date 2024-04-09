@@ -7,7 +7,7 @@ import { sql, type DatabaseTransactionConnection } from 'slonik';
 
 import { createItem } from './queries.js';
 
-const createScope = async (
+const createOrganizationScope = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   scopeToSeed: SeedingScope
@@ -88,7 +88,7 @@ const setScopeId = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string
 ) => {
-  element = await createScope(transaction, tenantId, element);
+  element = await createOrganizationScope(transaction, tenantId, element);
 };
 
 const createScopes = async (
@@ -182,10 +182,10 @@ const createRoles = async (
   return outputList;
 };
 
-export const seedRbacData = async (
+export const seedOrganizationRbacData = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string
-) => {
+): Promise<{ scopes: ScopesLists; roles: Record<string, SeedingRole> }> => {
   const createdScopes = await createScopes(transaction, tenantId);
   const createdRoles = await createRoles(transaction, tenantId, createdScopes);
 

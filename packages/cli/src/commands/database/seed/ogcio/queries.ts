@@ -39,7 +39,7 @@ export const getInsertedId = async (
 };
 
 export const createItem = async <
-  T extends { id?: string } & Record<string, number | string | undefined | unknown[]>,
+  T extends { id?: string } & Record<string, number | string | undefined | unknown[] | boolean>,
 >(params: {
   transaction: DatabaseTransactionConnection;
   tenantId: string;
