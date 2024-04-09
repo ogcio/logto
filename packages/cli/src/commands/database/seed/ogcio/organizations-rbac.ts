@@ -5,7 +5,7 @@
 import { OrganizationScopes, OrganizationRoles } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from 'slonik';
 
-import { createItem } from './queries.js';
+import { createItem, createItemWithoutId } from './queries.js';
 
 const createOrganizationScope = async (
   transaction: DatabaseTransactionConnection,
@@ -156,14 +156,14 @@ const createRole = async (
     itemTypeName: 'Organization Role',
   });
 
-type SeedingRelation = { organization_role_id: string; organization_scope_id: string; id?: string };
+type SeedingRelation = { organization_role_id: string; organization_scope_id: string };
 
 const createRoleScopeRelation = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   relation: SeedingRelation
 ) =>
-  createItem({
+  createItemWithoutId({
     transaction,
     tableName: 'organization_role_scope_relations',
     tenantId,
@@ -174,6 +174,7 @@ const createRoleScopeRelation = async (
     ],
     toInsert: relation,
     itemTypeName: 'Organization Scope-Role relation',
+    columnToGet: 'organization_role_id',
   });
 
 const createRelations = async (
