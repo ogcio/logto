@@ -3,83 +3,24 @@
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 /* eslint-disable @silverhand/fp/no-mutation */
 import { OrganizationScopes, OrganizationRoles } from '@logto/schemas';
-import { generateStandardId } from '@logto/shared';
-import { type QueryResult, sql, type DatabaseTransactionConnection } from 'slonik';
+import { sql, type DatabaseTransactionConnection } from 'slonik';
 
-import { insertInto } from '../../../../database.js';
-import { consoleLog } from '../../../../utils.js';
-
-const getIdByQueryResult = <T extends { id: string }>(
-  result: QueryResult<T>
-): string | undefined => {
-  if (result.rows[0] === undefined) {
-    return undefined;
-  }
-
-  return result.rows[0].id;
-};
-
-const getInsertedId = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  name: string,
-  table: string
-): Promise<string | undefined> => {
-  const scope = await transaction.query<{ id: string }>(sql`
-    select id from ${sql.identifier([table])}
-      where tenant_id = ${tenantId}
-      and name = ${name}
-      limit 1
-  `);
-
-  return getIdByQueryResult(scope);
-};
+import { createItem } from './queries.js';
 
 const createScope = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   scopeToSeed: SeedingScope
-) => {
-  consoleLog.info(`Creating scope. TenantId: ${tenantId}. Name: ${scopeToSeed.name}`);
-  const scopeIdBefore = await getInsertedId(
+) =>
+  createItem({
     transaction,
     tenantId,
-    scopeToSeed.name,
-    OrganizationScopes.table
-  );
-  if (scopeIdBefore !== undefined) {
-    consoleLog.info(
-      `Creating scope. TenantId: ${tenantId}. Name: ${scopeToSeed.name}. Already exists.`
-    );
-    scopeToSeed.id = scopeIdBefore;
-    return scopeToSeed;
-  }
-
-  const scopeData = {
-    id: generateStandardId(),
-    tenant_id: tenantId,
-    name: scopeToSeed.name,
-    description: scopeToSeed.name,
-  };
-
-  await transaction.query(insertInto(scopeData, OrganizationScopes.table));
-  scopeToSeed.id = await getInsertedId(
-    transaction,
-    tenantId,
-    scopeToSeed.name,
-    OrganizationScopes.table
-  );
-  if (scopeToSeed.id !== undefined) {
-    consoleLog.info(
-      `Creating scope. TenantId: ${tenantId}. Name: ${scopeToSeed.name}. Created, Id ${scopeToSeed.id}`
-    );
-    return scopeToSeed;
-  }
-
-  throw new Error(
-    `OGCIO seeding. Failure inserting scope with tenant id ${tenantId} and name ${scopeToSeed.name}`
-  );
-};
+    toInsert: scopeToSeed,
+    toLogFieldName: 'name',
+    itemTypeName: 'Scope',
+    whereClauses: [sql`name = ${scopeToSeed.name}`],
+    tableName: OrganizationScopes.table,
+  });
 
 type SeedingScope = {
   name: string;
@@ -204,46 +145,16 @@ const createRole = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   roleToSeed: SeedingRole
-) => {
-  consoleLog.info(`Creating role. TenantId: ${tenantId}. Name: ${roleToSeed.name}`);
-  const roleIdBefore = await getInsertedId(
+) =>
+  createItem({
     transaction,
+    tableName: OrganizationRoles.table,
     tenantId,
-    roleToSeed.name,
-    OrganizationRoles.table
-  );
-  if (roleIdBefore !== undefined) {
-    consoleLog.info(
-      `Creating role. TenantId: ${tenantId}. Name: ${roleToSeed.name}. Already exists.`
-    );
-    roleToSeed.id = roleIdBefore;
-    return roleToSeed;
-  }
-  const roleData = {
-    id: generateStandardId(),
-    tenant_id: tenantId,
-    name: roleToSeed.name,
-    description: roleToSeed.description,
-  };
-  await transaction.query(insertInto(roleData, OrganizationRoles.table));
-  const roleIdAfter = await getInsertedId(
-    transaction,
-    tenantId,
-    roleToSeed.name,
-    OrganizationRoles.table
-  );
-  if (roleIdAfter !== undefined) {
-    roleToSeed.id = roleIdAfter;
-    consoleLog.info(
-      `Creating role. TenantId: ${tenantId}. Name: ${roleToSeed.name}. Created, Id ${roleIdAfter}`
-    );
-    return roleToSeed;
-  }
-
-  throw new Error(
-    `OGCIO seeding. Failure inserting role with tenant id ${tenantId} and name ${roleToSeed.name}`
-  );
-};
+    toLogFieldName: 'name',
+    whereClauses: [sql`name = ${roleToSeed.name}`],
+    toInsert: roleToSeed,
+    itemTypeName: 'Role',
+  });
 
 const addRole = async (
   transaction: DatabaseTransactionConnection,
