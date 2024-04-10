@@ -1,4 +1,5 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable unicorn/prefer-string-replace-all */
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 /* eslint-disable @silverhand/fp/no-mutation */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -10,11 +11,11 @@ import {
   type ValueExpression,
 } from 'slonik';
 
-import { insertInto } from '../../../../database.js';
-import { consoleLog } from '../../../../utils.js';
+import { insertInto } from '../../../database.js';
+import { consoleLog } from '../../../utils.js';
 
-const snakeToCamel = (string_: string): string =>
-  string_.replaceAll(/(?!^)_(.)/g, (_, char: string) => char.toUpperCase());
+const snakeToCamel = (input: string): string =>
+  input.replace(/(?!^)_(.)/g, (_, char: string) => char.toUpperCase());
 
 export const getColumnValueByQueryResult = <T extends Record<string, string>>(
   result: QueryResult<T>,

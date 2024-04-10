@@ -35,9 +35,10 @@ const setResourceId = async (
 
 const createResources = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string
+  tenantId: string,
+  apiIndicator: string
 ): Promise<Record<string, SeedingResource & { id: string }>> => {
-  const appsToCreate = { payments: fillPaymentsResource() };
+  const appsToCreate = { payments: fillPaymentsResource(apiIndicator) };
   const outputValues = {
     payments: await setResourceId(appsToCreate.payments, transaction, tenantId),
   };
@@ -53,12 +54,15 @@ type SeedingResource = {
   access_token_ttl?: number;
 };
 
-const fillPaymentsResource = (): SeedingResource => ({
+const fillPaymentsResource = (apiIndicator: string): SeedingResource => ({
   name: 'Life Events Payments API',
-  indicator: 'http://localhost:8001',
+  indicator: apiIndicator,
   is_default: false,
   access_token_ttl: 3600,
 });
 
-export const seedResources = async (transaction: DatabaseTransactionConnection, tenantId: string) =>
-  createResources(transaction, tenantId);
+export const seedResources = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  apiIndicator: string
+) => createResources(transaction, tenantId, apiIndicator);

@@ -6,7 +6,10 @@ import { ApplicationType } from '@logto/schemas';
 import { generateStandardSecret } from '@logto/shared';
 import { sql, type DatabaseTransactionConnection } from 'slonik';
 
+import { type OgcioParams } from './index.js';
 import { createItem } from './queries.js';
+
+type ApplicationParams = Omit<OgcioParams, 'apiIndicator'>;
 
 const createApplication = async (
   transaction: DatabaseTransactionConnection,
@@ -33,9 +36,10 @@ const setApplicationId = async (
 
 const createApplications = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string
+  tenantId: string,
+  cliParams: ApplicationParams
 ): Promise<Record<string, SeedingApplication>> => {
-  const appsToCreate = { payments: fillPaymentsApplication() };
+  const appsToCreate = { payments: fillPaymentsApplication(cliParams) };
   const queries: Array<Promise<void>> = [];
   for (const element of Object.values(appsToCreate)) {
     queries.push(setApplicationId(element, transaction, tenantId));
@@ -57,18 +61,18 @@ type SeedingApplication = {
   is_third_party?: boolean;
 };
 
-const fillPaymentsApplication = (): SeedingApplication => ({
+const fillPaymentsApplication = (cliParams: ApplicationParams): SeedingApplication => ({
   name: 'Life Events Payments App',
   secret: generateStandardSecret(),
   description: 'Payments App of Life Events',
   type: ApplicationType.Traditional,
-  oidc_client_metadata:
-    '{"redirectUris": ["http://localhost:3001/callback"], "postLogoutRedirectUris": ["http://localhost:3001/"]}',
+  oidc_client_metadata: `{"redirectUris": ["${cliParams.appRedirectUri}"], "postLogoutRedirectUris": ["${cliParams.appLogoutRedirectUri}"]}`,
   custom_client_metadata:
     '{"idTokenTtl": 3600, "corsAllowedOrigins": [], "rotateRefreshToken": true, "refreshTokenTtlInDays": 14, "alwaysIssueRefreshToken": false}',
 });
 
 export const seedApplications = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string
-) => createApplications(transaction, tenantId);
+  tenantId: string,
+  cliParams: ApplicationParams
+) => createApplications(transaction, tenantId, cliParams);
