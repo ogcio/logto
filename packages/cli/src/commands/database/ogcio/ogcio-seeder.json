@@ -1,0 +1,159 @@
+{
+    "default": {
+        "organizations": [
+            {
+                "name": "OGCIO Seeded Org",
+                "description": "Organization created through seeder"
+            }
+        ],
+        "organization_permissions": [
+            {
+                "actions": [
+                    "read",
+                    "create",
+                    "update",
+                    "delete"
+                ],
+                "entities": [
+                    "payments",
+                    "payment-requests",
+                    "events",
+                    "messages"
+                ]
+            },
+            {
+                "actions": [
+                    "admin"
+                ],
+                "entities": [
+                    "ogcio"
+                ]
+            }
+        ],
+        "organization_roles": [
+            {
+                "name": "OGCIO Employee",
+                "actions": [
+                    "read"
+                ]
+            },
+            {
+                "name": "OGCIO Manager",
+                "actions": [
+                    "read",
+                    "create",
+                    "update",
+                    "delete"
+                ]
+            },
+            {
+                "name": "OGCIO Admin",
+                "actions": [
+                    "read",
+                    "create",
+                    "update",
+                    "delete"
+                ],
+                "entities": [
+                    "payments",
+                    "payment-requests",
+                    "events",
+                    "messages"
+                ],
+                "specific_permissions": [
+                    "ogcio:admin"
+                ]
+            }
+        ],
+        "applications": [
+            {
+                "name": "Life Events Payments App",
+                "description": "Payments App of Life Events",
+                "type": "Traditional",
+                "redirect_uri": "http://localhost:3001/callback",
+                "app_logout_redirect_uri": "http://localhost:3001"
+            }
+        ],
+        "resources": [
+            {
+                "id": "payments-api",
+                "name": "Life Events Payments API",
+                "indicator": "http://localhost:8001"
+            }
+        ],
+        "resource_permissions": [
+            {
+                "for_resource_ids": [
+                    "payments-api"
+                ],
+                "actions": [
+                    "read",
+                    "create",
+                    "update",
+                    "delete",
+                    "admin"
+                ],
+                "entities": [
+                    "payments",
+                    "payment-requests"
+                ]
+            }
+        ],
+        "resource_roles": [
+            {
+                "name": "Payments Employee",
+                "permissions": [
+                    {
+                        "for_resource_ids": [
+                            "payments-api"
+                        ],
+                        "actions": [
+                            "read"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Payments Manager",
+                "permissions": [
+                    {
+                        "for_resource_ids": [
+                            "payments-api"
+                        ],
+                        "actions": [
+                            "read",
+                            "create",
+                            "update",
+                            "delete"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Payments Admin",
+                "permissions": [
+                    {
+                        "for_resource_ids": [
+                            "payments-api"
+                        ],
+                        "actions": [
+                            "read",
+                            "create",
+                            "update",
+                            "delete",
+                            "admin"
+                        ],
+                        "entities": [
+                            "payments",
+                            "payment-requests"
+                        ],
+                        "specific_permissions": [
+                            "payments:admin",
+                            "payment-requests:admin"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
