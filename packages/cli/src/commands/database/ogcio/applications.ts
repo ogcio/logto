@@ -6,10 +6,12 @@ import { ApplicationType } from '@logto/schemas';
 import { generateStandardSecret } from '@logto/shared';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
-import { type OgcioParams } from './index.js';
 import { createItem } from './queries.js';
 
-type ApplicationParams = Omit<OgcioParams, 'apiIndicator'>;
+type ApplicationParams = Omit<
+  { appRedirectUri: string; appLogoutRedirectUri: string },
+  'apiIndicator'
+>;
 
 const createApplication = async (
   transaction: DatabaseTransactionConnection,
