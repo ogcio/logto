@@ -82,6 +82,11 @@
                 "id": "payments-api",
                 "name": "Life Events Payments API",
                 "indicator": "http://localhost:8001"
+            },
+            {
+                "id": "user-profile-api",
+                "name": "User Profile API",
+                "indicator": "http://localhost:8003"
             }
         ],
         "resource_permissions": [

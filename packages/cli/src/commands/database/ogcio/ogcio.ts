@@ -8,6 +8,7 @@ import { seedApplications } from './applications.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
 import { seedOrganizationRbacData } from './organizations-rbac.js';
 import { createOrganizations } from './organizations.js';
+import { seedResources } from './resources.js';
 
 const createDataForTenant = async (
   transaction: DatabaseTransactionConnection,
@@ -17,6 +18,7 @@ const createDataForTenant = async (
   const organizations = await createOrganizations(transaction, tenantId, tenantData.organizations);
   const organizationsRbac = await seedOrganizationRbacData(transaction, tenantId, tenantData);
   const applications = await seedApplications(transaction, tenantId, tenantData.applications);
+  const resources = await seedResources(transaction, tenantId, tenantData.resources);
 };
 
 const transactionMethod = async (transaction: DatabaseTransactionConnection) => {
@@ -27,12 +29,8 @@ const transactionMethod = async (transaction: DatabaseTransactionConnection) => 
   }
 
   await Promise.all(items);
-  // Const resources = await seedResources(
-  //   transaction,
-  //   defaultTenantId,
-  //   inputOgcioParams.apiIndicator
-  // );
-  // const resourcesRbac = await seedResourceRbacData(transaction, defaultTenantId, resources);
+
+  // Const resourcesRbac = await seedResourceRbacData(transaction, defaultTenantId, resources);
 };
 
 export const seedOgcio = async (connection: CommonQueryMethods) => {

@@ -1,7 +1,10 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable @silverhand/fp/no-mutation */
 
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
+import { type ResourceSeeder } from './ogcio-seeder.js';
 import { createItem } from './queries.js';
 
 const createResource = async (
@@ -33,19 +36,6 @@ const setResourceId = async (
   return outputValue;
 };
 
-const createResources = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  apiIndicator: string
-): Promise<Record<string, SeedingResource & { id: string }>> => {
-  const appsToCreate = { payments: fillPaymentsResource(apiIndicator) };
-  const outputValues = {
-    payments: await setResourceId(appsToCreate.payments, transaction, tenantId),
-  };
-
-  return outputValues;
-};
-
 type SeedingResource = {
   id?: string;
   name: string;
@@ -54,9 +44,9 @@ type SeedingResource = {
   access_token_ttl?: number;
 };
 
-const fillPaymentsResource = (apiIndicator: string): SeedingResource => ({
-  name: 'Life Events Payments API',
-  indicator: apiIndicator,
+const fillResource = (resourceSeeder: ResourceSeeder): SeedingResource => ({
+  name: resourceSeeder.name,
+  indicator: resourceSeeder.indicator,
   is_default: false,
   access_token_ttl: 3600,
 });
@@ -64,5 +54,14 @@ const fillPaymentsResource = (apiIndicator: string): SeedingResource => ({
 export const seedResources = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
-  apiIndicator: string
-) => createResources(transaction, tenantId, apiIndicator);
+  inputResources: ResourceSeeder[]
+) => {
+  const outputItems: Record<string, SeedingResource> = {};
+
+  for (const inputItem of inputResources) {
+    const resourceToStore = fillResource(inputItem);
+    outputItems[inputItem.id] = await setResourceId(resourceToStore, transaction, tenantId);
+  }
+
+  return outputItems;
+};
