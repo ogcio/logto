@@ -25,7 +25,7 @@ const createOrganizationScope = async (
 
 type SeedingScope = {
   name: string;
-  id: string | undefined;
+  id?: string | undefined;
   description: string;
 };
 
@@ -46,7 +46,6 @@ const fillScopesGroup = (seeder: OrganizationPermissionSeeder, fullLists: Scopes
       const scope: SeedingScope = {
         name: buildScopeFullName(resource, action),
         description: `${action} ${resource}`,
-        id: undefined,
       };
       scopesList.push(scope);
       if (scopesByEntity[resource] === undefined) {
@@ -287,13 +286,22 @@ export const seedOrganizationRbacData = async (
   relations: SeedingRelation[];
 }> => {
   const createdScopes = await createScopes(transaction, tenantId, toSeed.organization_permissions);
-  const createdRoles = await createRoles(
-    transaction,
-    tenantId,
-    createdScopes,
-    toSeed.organization_roles
-  );
-  const relations = await createRelations(transaction, tenantId, createdRoles);
-
-  return { scopes: createdScopes, roles: createdRoles, relations };
+  // Const createdRoles = await createRoles(
+  //   transaction,
+  //   tenantId,
+  //   createdScopes,
+  //   toSeed.organization_roles
+  // );
+  // const relations = await createRelations(transaction, tenantId, createdRoles);
+  return {
+    scopes: {
+      scopesList: [],
+      scopesByEntity: {},
+      scopesByAction: {},
+      scopesByFullName: {},
+    },
+    roles: {},
+    relations: [],
+  };
+  // Return { scopes: createdScopes, roles: createdRoles, relations };
 };

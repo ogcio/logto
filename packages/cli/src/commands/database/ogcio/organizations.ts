@@ -1,3 +1,4 @@
+/* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 import { type DatabaseTransactionConnection, sql } from '@silverhand/slonik';
 
