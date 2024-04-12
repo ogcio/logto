@@ -45,7 +45,11 @@ const getInsertedColumnValue = async (params: {
   if (tenantId !== undefined) {
     cloneWhere.push(sql`tenant_id = ${tenantId}`);
   }
-
+  consoleLog.error(sql`
+    select ${sql.identifier([columnToGet])} from ${sql.identifier([tableName])}
+      where ${sql.join(cloneWhere, sql` AND `)}
+      limit 1
+  `);
   const scope = await transaction.query<Record<string, string>>(sql`
     select ${sql.identifier([columnToGet])} from ${sql.identifier([tableName])}
       where ${sql.join(cloneWhere, sql` AND `)}

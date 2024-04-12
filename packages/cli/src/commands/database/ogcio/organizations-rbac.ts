@@ -5,6 +5,7 @@
 import { OrganizationScopes, OrganizationRoles } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
+import { type OrganizationPermissionSeeder, type OrganizationRoleSeeder } from './ogcio-seeder.js';
 import { createItem, createItemWithoutId } from './queries.js';
 
 const createOrganizationScope = async (
@@ -30,51 +31,51 @@ type SeedingScope = {
 
 type ScopesLists = {
   scopesList: SeedingScope[];
-  scopesByResource: Record<string, SeedingScope[]>;
+  scopesByEntity: Record<string, SeedingScope[]>;
   scopesByAction: Record<string, SeedingScope[]>;
+  scopesByFullName: Record<string, SeedingScope>;
 };
 
-const fillScopes = () => {
-  const resources = ['payments', 'messages', 'events'];
-  const actions = ['read', 'update', 'create', 'delete'];
-  const scopesList: SeedingScope[] = [];
-  const scopesByResource: Record<string, SeedingScope[]> = {};
-  const scopesByAction: Record<string, SeedingScope[]> = {};
+const buildScopeFullName = (entity: string, action: string): string => `${entity}:${action}`;
 
-  for (const resource of resources) {
-    scopesByResource[resource] = [];
-    for (const action of actions) {
+const fillScopesGroup = (seeder: OrganizationPermissionSeeder, fullLists: ScopesLists) => {
+  const { scopesByEntity, scopesList, scopesByAction, scopesByFullName } = fullLists;
+  for (const resource of seeder.entities) {
+    scopesByEntity[resource] = [];
+    for (const action of seeder.actions) {
       const scope: SeedingScope = {
-        name: `${resource}:${action}`,
+        name: buildScopeFullName(resource, action),
         description: `${action} ${resource}`,
         id: undefined,
       };
       scopesList.push(scope);
-      if (scopesByResource[resource] === undefined) {
-        scopesByResource[resource] = [scope];
+      if (scopesByEntity[resource] === undefined) {
+        scopesByEntity[resource] = [];
       }
-      scopesByResource[resource]!.push(scope);
+      scopesByEntity[resource]!.push(scope);
       if (scopesByAction[action] === undefined) {
         scopesByAction[action] = [];
       }
       scopesByAction[action]!.push(scope);
+
+      scopesByFullName[scope.name] = scope;
     }
   }
-  const superScope: SeedingScope = {
-    name: 'ogcio:admin',
-    description: 'OGCIO Admin',
-    id: undefined,
+};
+
+const fillScopes = (scopesToSeed: OrganizationPermissionSeeder[]): ScopesLists => {
+  const fullLists: ScopesLists = {
+    scopesList: [],
+    scopesByEntity: {},
+    scopesByAction: {},
+    scopesByFullName: {},
   };
 
-  scopesList.push(superScope);
-  scopesByResource.ogcio = [superScope];
-  scopesByAction.admin = [superScope];
+  for (const singleSeeder of scopesToSeed) {
+    fillScopesGroup(singleSeeder, fullLists);
+  }
 
-  return {
-    scopesList,
-    scopesByResource,
-    scopesByAction,
-  };
+  return fullLists;
 };
 
 const setScopeId = async (
@@ -87,9 +88,10 @@ const setScopeId = async (
 
 const createScopes = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string
+  tenantId: string,
+  scopesToSeed: OrganizationPermissionSeeder[]
 ): Promise<ScopesLists> => {
-  const scopesToCreate = fillScopes();
+  const scopesToCreate = fillScopes(scopesToSeed);
   const queries: Array<Promise<void>> = [];
   for (const element of scopesToCreate.scopesList) {
     queries.push(setScopeId(element, transaction, tenantId));
@@ -104,38 +106,86 @@ type SeedingRole = {
   name: string;
   scopes: SeedingScope[];
   description: string;
-  id: string | undefined;
+  id?: string | undefined;
 };
-const fillRoles = (scopesLists: ScopesLists) => {
-  const employee: SeedingRole = {
-    name: 'OGCIO Employee',
-    scopes: scopesLists.scopesByAction.read!,
-    description: 'Only read permissions',
-    id: undefined,
-  };
-  const manager: SeedingRole = {
-    name: 'OGCIO Manager',
-    scopes: scopesLists.scopesByAction.read!,
-    description: 'Read write delete permissions',
-    id: undefined,
-  };
-  // Don't ask me why, linter don't like spread operator, so I add to write multiple lines
-  manager.scopes = manager.scopes.concat(scopesLists.scopesByAction.update!);
-  manager.scopes = manager.scopes.concat(scopesLists.scopesByAction.create!);
-  manager.scopes = manager.scopes.concat(scopesLists.scopesByAction.delete!);
-  const admin: SeedingRole = {
-    name: 'OGCIO Admin',
-    scopes: scopesLists.scopesByAction.admin!,
-    description: 'Read write delete and admin permissions',
-    id: undefined,
-  };
-  admin.scopes = admin.scopes.concat(scopesLists.scopesByAction.update!);
-  admin.scopes = admin.scopes.concat(scopesLists.scopesByAction.create!);
-  admin.scopes = admin.scopes.concat(scopesLists.scopesByAction.delete!);
-  admin.scopes = admin.scopes.concat(scopesLists.scopesByAction.read!);
 
-  return [admin, manager, employee];
+const getScopesBySpecificPermissions = (
+  specificPerms: string[] | undefined,
+  scopesLists: ScopesLists
+): SeedingScope[] => {
+  if (!specificPerms || specificPerms.length === 0) {
+    return [];
+  }
+  const outputPerms = [];
+  for (const scopeName of specificPerms) {
+    if (!scopesLists.scopesByFullName[scopeName]) {
+      throw new Error(`Specific permissions. The requested ${scopeName} scope does not exist!`);
+    }
+    outputPerms.push(scopesLists.scopesByFullName[scopeName]!);
+  }
+
+  return outputPerms;
 };
+
+const ensureRoleHasAtLeastOneScope = <T>(roleName: string, scopes: T[]): void => {
+  if (scopes.length === 0) {
+    throw new Error(`Organization Role ${roleName}. You must assign at least one scope`);
+  }
+};
+
+const buildCrossScopes = (
+  actions: string[],
+  entities: string[],
+  specificPermissions: string[],
+  scopesLists: ScopesLists
+): SeedingScope[] => {
+  if (actions.length === 0 && entities.length === 0) {
+    return [];
+  }
+  const scopesByAction = actions.length > 0 ? actions : Object.keys(scopesLists.scopesByAction);
+  const scopesByEntity = entities.length > 0 ? entities : Object.keys(scopesLists.scopesByEntity);
+  const byFullname: SeedingScope[] = [];
+  for (const action of scopesByAction) {
+    for (const entity of scopesByEntity) {
+      const fullName = buildScopeFullName(entity, action);
+      if (
+        scopesLists.scopesByFullName[fullName] !== undefined &&
+        !specificPermissions.includes(fullName)
+      ) {
+        byFullname.push(scopesLists.scopesByFullName[fullName]!);
+      }
+    }
+  }
+
+  return byFullname;
+};
+const getScopesPerRole = (
+  roleToSeed: OrganizationRoleSeeder,
+  scopesLists: ScopesLists
+): SeedingScope[] => {
+  const inputSpecific = roleToSeed.specific_permissions ?? [];
+  const specificScopes = getScopesBySpecificPermissions(inputSpecific, scopesLists);
+  const byAction = roleToSeed.actions ?? [];
+  const byEntity = roleToSeed.entities ?? [];
+  ensureRoleHasAtLeastOneScope(roleToSeed.name, [...specificScopes, ...byAction, ...byEntity]);
+
+  const fullList = [
+    ...buildCrossScopes(byAction, byEntity, inputSpecific, scopesLists),
+    ...specificScopes,
+  ];
+
+  ensureRoleHasAtLeastOneScope(roleToSeed.name, fullList);
+
+  return fullList;
+};
+const fillRole = (roleToSeed: OrganizationRoleSeeder, scopesLists: ScopesLists): SeedingRole => ({
+  name: roleToSeed.name,
+  description: roleToSeed.description,
+  scopes: getScopesPerRole(roleToSeed, scopesLists),
+});
+
+const fillRoles = (rolesToSeed: OrganizationRoleSeeder[], scopesLists: ScopesLists) =>
+  rolesToSeed.map((role) => fillRole(role, scopesLists));
 
 const createRole = async (
   transaction: DatabaseTransactionConnection,
@@ -209,9 +259,10 @@ const addRole = async (
 const createRoles = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
-  scopesLists: ScopesLists
+  scopesLists: ScopesLists,
+  rolesToSeed: OrganizationRoleSeeder[]
 ): Promise<Record<string, SeedingRole>> => {
-  const rolesToCreate = fillRoles(scopesLists);
+  const rolesToCreate = fillRoles(rolesToSeed, scopesLists);
   const queries: Array<Promise<void>> = [];
   const outputList: Record<string, SeedingRole> = {};
   for (const role of rolesToCreate) {
@@ -225,14 +276,23 @@ const createRoles = async (
 
 export const seedOrganizationRbacData = async (
   transaction: DatabaseTransactionConnection,
-  tenantId: string
+  tenantId: string,
+  toSeed: {
+    organization_permissions: OrganizationPermissionSeeder[];
+    organization_roles: OrganizationRoleSeeder[];
+  }
 ): Promise<{
   scopes: ScopesLists;
   roles: Record<string, SeedingRole>;
   relations: SeedingRelation[];
 }> => {
-  const createdScopes = await createScopes(transaction, tenantId);
-  const createdRoles = await createRoles(transaction, tenantId, createdScopes);
+  const createdScopes = await createScopes(transaction, tenantId, toSeed.organization_permissions);
+  const createdRoles = await createRoles(
+    transaction,
+    tenantId,
+    createdScopes,
+    toSeed.organization_roles
+  );
   const relations = await createRelations(transaction, tenantId, createdRoles);
 
   return { scopes: createdScopes, roles: createdRoles, relations };

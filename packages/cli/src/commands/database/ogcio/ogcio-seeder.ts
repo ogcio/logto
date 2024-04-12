@@ -25,9 +25,10 @@ export type OrganizationPermissionSeeder = {
 
 export type OrganizationRoleSeeder = {
   name: string;
-  actions: string[];
+  actions?: string[];
   entities?: string[];
   specific_permissions?: string[];
+  description: string;
 };
 
 export type ApplicationSeeder = {
@@ -57,9 +58,10 @@ export type ResourceRoleSeeder = {
 
 export type ScopePerResourceRoleSeeder = {
   for_resource_ids: string[];
-  actions: string[];
+  actions?: string[];
   entities?: string[];
   specific_permissions?: string[];
+  description: string;
 };
 
 let inputSeeder: OgcioTenantSeeder | undefined;

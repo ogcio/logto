@@ -33,12 +33,14 @@
         "organization_roles": [
             {
                 "name": "OGCIO Employee",
+                "description": "Employee with only read permissions",
                 "actions": [
                     "read"
                 ]
             },
             {
                 "name": "OGCIO Manager",
+                "description": "Employee that can also write",
                 "actions": [
                     "read",
                     "create",
@@ -48,6 +50,7 @@
             },
             {
                 "name": "OGCIO Admin",
+                "description": "Admin power",
                 "actions": [
                     "read",
                     "create",
@@ -102,6 +105,7 @@
         "resource_roles": [
             {
                 "name": "Payments Employee",
+                "description": "Read only stuffs",
                 "permissions": [
                     {
                         "for_resource_ids": [
@@ -115,6 +119,7 @@
             },
             {
                 "name": "Payments Manager",
+                "description": "Employee that can also write",
                 "permissions": [
                     {
                         "for_resource_ids": [
@@ -131,6 +136,7 @@
             },
             {
                 "name": "Payments Admin",
+                "description": "Admin power",
                 "permissions": [
                     {
                         "for_resource_ids": [
