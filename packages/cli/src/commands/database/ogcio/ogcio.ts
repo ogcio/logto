@@ -24,6 +24,8 @@ const transactionMethod = async (transaction: DatabaseTransactionConnection) => 
     items.push(createDataForTenant(transaction, tenantId, seedData[tenantId]!));
   }
 
+  await Promise.all(items);
+
   // Const applications = await seedApplications(transaction, defaultTenantId, {
   //   appRedirectUri: inputOgcioParams.appRedirectUri,
   //   appLogoutRedirectUri: inputOgcioParams.appLogoutRedirectUri,

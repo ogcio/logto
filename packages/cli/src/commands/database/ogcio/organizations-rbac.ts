@@ -286,22 +286,13 @@ export const seedOrganizationRbacData = async (
   relations: SeedingRelation[];
 }> => {
   const createdScopes = await createScopes(transaction, tenantId, toSeed.organization_permissions);
-  // Const createdRoles = await createRoles(
-  //   transaction,
-  //   tenantId,
-  //   createdScopes,
-  //   toSeed.organization_roles
-  // );
-  // const relations = await createRelations(transaction, tenantId, createdRoles);
-  return {
-    scopes: {
-      scopesList: [],
-      scopesByEntity: {},
-      scopesByAction: {},
-      scopesByFullName: {},
-    },
-    roles: {},
-    relations: [],
-  };
-  // Return { scopes: createdScopes, roles: createdRoles, relations };
+  const createdRoles = await createRoles(
+    transaction,
+    tenantId,
+    createdScopes,
+    toSeed.organization_roles
+  );
+  const relations = await createRelations(transaction, tenantId, createdRoles);
+
+  return { scopes: createdScopes, roles: createdRoles, relations };
 };
