@@ -36,7 +36,7 @@ export type ApplicationSeeder = {
   description: string;
   type: string;
   redirect_uri: string;
-  app_logout_redirect_uri: string;
+  logout_redirect_uri: string;
 };
 
 export type ResourceSeeder = {

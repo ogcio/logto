@@ -74,7 +74,7 @@
                 "description": "Payments App of Life Events",
                 "type": "Traditional",
                 "redirect_uri": "http://localhost:3001/callback",
-                "app_logout_redirect_uri": "http://localhost:3001"
+                "logout_redirect_uri": "http://localhost:3001"
             }
         ],
         "resources": [

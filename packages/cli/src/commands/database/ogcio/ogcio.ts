@@ -4,6 +4,7 @@
 
 import type { CommonQueryMethods, DatabaseTransactionConnection } from '@silverhand/slonik';
 
+import { seedApplications } from './applications.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
 import { seedOrganizationRbacData } from './organizations-rbac.js';
 import { createOrganizations } from './organizations.js';
@@ -15,6 +16,7 @@ const createDataForTenant = async (
 ) => {
   const organizations = await createOrganizations(transaction, tenantId, tenantData.organizations);
   const organizationsRbac = await seedOrganizationRbacData(transaction, tenantId, tenantData);
+  const applications = await seedApplications(transaction, tenantId, tenantData.applications);
 };
 
 const transactionMethod = async (transaction: DatabaseTransactionConnection) => {
@@ -25,12 +27,7 @@ const transactionMethod = async (transaction: DatabaseTransactionConnection) => 
   }
 
   await Promise.all(items);
-
-  // Const applications = await seedApplications(transaction, defaultTenantId, {
-  //   appRedirectUri: inputOgcioParams.appRedirectUri,
-  //   appLogoutRedirectUri: inputOgcioParams.appLogoutRedirectUri,
-  // });
-  // const resources = await seedResources(
+  // Const resources = await seedResources(
   //   transaction,
   //   defaultTenantId,
   //   inputOgcioParams.apiIndicator
