@@ -36,7 +36,7 @@ const setResourceId = async (
   return outputValue;
 };
 
-type SeedingResource = {
+export type SeedingResource = {
   id?: string;
   name: string;
   indicator: string;
@@ -51,16 +51,20 @@ const fillResource = (resourceSeeder: ResourceSeeder): SeedingResource => ({
   access_token_ttl: 3600,
 });
 
-export const seedResources = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  inputResources: ResourceSeeder[]
-) => {
+export const seedResources = async (params: {
+  transaction: DatabaseTransactionConnection;
+  tenantId: string;
+  inputResources: ResourceSeeder[];
+}) => {
   const outputItems: Record<string, SeedingResource> = {};
 
-  for (const inputItem of inputResources) {
+  for (const inputItem of params.inputResources) {
     const resourceToStore = fillResource(inputItem);
-    outputItems[inputItem.id] = await setResourceId(resourceToStore, transaction, tenantId);
+    outputItems[inputItem.id] = await setResourceId(
+      resourceToStore,
+      params.transaction,
+      params.tenantId
+    );
   }
 
   return outputItems;

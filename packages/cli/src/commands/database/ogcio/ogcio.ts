@@ -8,6 +8,7 @@ import { seedApplications } from './applications.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
 import { seedOrganizationRbacData } from './organizations-rbac.js';
 import { createOrganizations } from './organizations.js';
+import { seedResourceRbacData } from './resources-rbac.js';
 import { seedResources } from './resources.js';
 
 const createDataForTenant = async (
@@ -15,10 +16,32 @@ const createDataForTenant = async (
   tenantId: string,
   tenantData: OgcioSeeder
 ) => {
-  const organizations = await createOrganizations(transaction, tenantId, tenantData.organizations);
-  const organizationsRbac = await seedOrganizationRbacData(transaction, tenantId, tenantData);
-  const applications = await seedApplications(transaction, tenantId, tenantData.applications);
-  const resources = await seedResources(transaction, tenantId, tenantData.resources);
+  const organizations = await createOrganizations({
+    transaction,
+    tenantId,
+    organizations: tenantData.organizations,
+  });
+  const organizationsRbac = await seedOrganizationRbacData({
+    transaction,
+    tenantId,
+    toSeed: tenantData,
+  });
+  const applications = await seedApplications({
+    transaction,
+    tenantId,
+    applications: tenantData.applications,
+  });
+  const resources = await seedResources({
+    transaction,
+    tenantId,
+    inputResources: tenantData.resources,
+  });
+  const resourcesRbac = await seedResourceRbacData({
+    tenantId,
+    transaction,
+    toSeed: tenantData,
+    seededResources: resources,
+  });
 };
 
 const transactionMethod = async (transaction: DatabaseTransactionConnection) => {

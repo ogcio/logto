@@ -53,6 +53,7 @@ export type ResourcePermissionSeeder = {
 
 export type ResourceRoleSeeder = {
   name: string;
+  description: string;
   permissions: ScopePerResourceRoleSeeder[];
 };
 

@@ -23,17 +23,17 @@ export const createOrganization = async (
 
 type OrganizationSeederWithId = { id: string } & OrganizationSeeder;
 
-export const createOrganizations = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  organizations: OrganizationSeeder[]
-): Promise<OrganizationSeederWithId[]> => {
+export const createOrganizations = async (params: {
+  transaction: DatabaseTransactionConnection;
+  tenantId: string;
+  organizations: OrganizationSeeder[];
+}): Promise<OrganizationSeederWithId[]> => {
   const promises: Array<Promise<OrganizationSeederWithId>> = [];
-  for (const organization of organizations) {
+  for (const organization of params.organizations) {
     promises.push(
       createItem({
-        transaction,
-        tenantId,
+        transaction: params.transaction,
+        tenantId: params.tenantId,
         toInsert: organization,
         whereClauses: [sql`name = ${organization.name}`],
         toLogFieldName: 'name',

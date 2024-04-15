@@ -60,15 +60,15 @@ const fillApplications = (
   return outputValues;
 };
 
-export const seedApplications = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  applications: ApplicationSeeder[]
-) => {
-  const appsToCreate = fillApplications(applications);
+export const seedApplications = async (params: {
+  transaction: DatabaseTransactionConnection;
+  tenantId: string;
+  applications: ApplicationSeeder[];
+}) => {
+  const appsToCreate = fillApplications(params.applications);
   const queries: Array<Promise<void>> = [];
   for (const element of Object.values(appsToCreate)) {
-    queries.push(setApplicationId(element, transaction, tenantId));
+    queries.push(setApplicationId(element, params.transaction, params.tenantId));
   }
 
   await Promise.all(queries);
