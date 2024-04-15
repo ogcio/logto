@@ -7,6 +7,17 @@ import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 import { type ApplicationSeeder } from './ogcio-seeder.js';
 import { createItem } from './queries.js';
 
+type SeedingApplication = {
+  name: string;
+  secret: string;
+  description: string;
+  type: string;
+  oidc_client_metadata: string;
+  custom_client_metadata: string;
+  protected_app_metadata?: string;
+  is_third_party?: boolean;
+};
+
 const createApplication = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
@@ -28,33 +39,6 @@ const setApplicationId = async (
   tenantId: string
 ) => {
   element = await createApplication(transaction, tenantId, element);
-};
-
-const createApplications = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  inputApplications: ApplicationSeeder[]
-): Promise<Record<string, SeedingApplication>> => {
-  const appsToCreate = fillApplications(inputApplications);
-  const queries: Array<Promise<void>> = [];
-  for (const element of Object.values(appsToCreate)) {
-    queries.push(setApplicationId(element, transaction, tenantId));
-  }
-
-  await Promise.all(queries);
-
-  return appsToCreate;
-};
-
-type SeedingApplication = {
-  name: string;
-  secret: string;
-  description: string;
-  type: string;
-  oidc_client_metadata: string;
-  custom_client_metadata: string;
-  protected_app_metadata?: string;
-  is_third_party?: boolean;
 };
 
 const fillApplications = (
@@ -80,4 +64,14 @@ export const seedApplications = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
   applications: ApplicationSeeder[]
-) => createApplications(transaction, tenantId, applications);
+) => {
+  const appsToCreate = fillApplications(applications);
+  const queries: Array<Promise<void>> = [];
+  for (const element of Object.values(appsToCreate)) {
+    queries.push(setApplicationId(element, transaction, tenantId));
+  }
+
+  await Promise.all(queries);
+
+  return appsToCreate;
+};
