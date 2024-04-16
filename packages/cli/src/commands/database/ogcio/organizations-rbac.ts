@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 
+import { OrganizationRoleScopeRelations } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import {
@@ -51,7 +52,7 @@ const createRoleScopeRelation = async (
 ) =>
   createItemWithoutId({
     transaction,
-    tableName: 'organization_role_scope_relations',
+    tableName: OrganizationRoleScopeRelations.table,
     tenantId,
     toLogFieldName: 'organization_role_id',
     whereClauses: [
@@ -59,7 +60,6 @@ const createRoleScopeRelation = async (
       sql`organization_scope_id = ${relation.organization_scope_id}`,
     ],
     toInsert: relation,
-    itemTypeName: 'Organization Scope-Role relation',
     columnToGet: 'organization_role_id',
   });
 

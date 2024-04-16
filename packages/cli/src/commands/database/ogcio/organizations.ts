@@ -9,6 +9,7 @@ import {
   type CreateLogtoConfig,
   defaultTenantId,
   LogtoConfigs,
+  Organizations,
 } from '@logto/schemas';
 import { type DatabaseTransactionConnection, sql } from '@silverhand/slonik';
 
@@ -83,8 +84,7 @@ const createOrganization = async (params: {
     },
     whereClauses: [sql`name = ${params.organizationSeeder.name}`],
     toLogFieldName: 'name',
-    tableName: 'organizations',
-    itemTypeName: 'Organization',
+    tableName: Organizations.table,
   });
 
   return organization;

@@ -70,13 +70,12 @@ export const createItem = async <
   tenantId?: string;
   toInsert: T;
   toLogFieldName: string;
-  itemTypeName: string;
   whereClauses: ValueExpression[];
   tableName: string;
 }): Promise<Omit<T, 'id'> & { id: string }> => {
-  const prefixConsoleEntry = `Creating ${params.itemTypeName}. TenantId: ${
+  const prefixConsoleEntry = `Table ${params.tableName}. TenantId: ${
     params.tenantId ?? 'NOT SET'
-  }. Name: ${params.toInsert[params.toLogFieldName]!.toString()}`;
+  }. ${params.toLogFieldName}: ${params.toInsert[params.toLogFieldName]!.toString()}`;
   consoleLog.info(prefixConsoleEntry);
   const scopeIdBefore = await getInsertedId(
     params.transaction,
@@ -118,14 +117,13 @@ export const createItemWithoutId = async <
   tenantId: string | undefined;
   toInsert: T;
   toLogFieldName: string;
-  itemTypeName: string;
   whereClauses: ValueExpression[];
   tableName: string;
   columnToGet: string;
 }): Promise<T> => {
-  const prefixConsoleEntry = `Creating ${params.itemTypeName}. TenantId: ${
-    params.tenantId ?? 'NOT SET'
-  }. Name: ${params.toInsert[params.toLogFieldName]!.toString()}`;
+  const prefixConsoleEntry = `${params.tableName}. TenantId: ${params.tenantId ?? 'NOT SET'}. ${
+    params.toLogFieldName
+  }: ${params.toInsert[params.toLogFieldName]!.toString()}`;
   consoleLog.info(prefixConsoleEntry);
   const scopeIdBefore = await getInsertedColumnValue(params);
   if (scopeIdBefore !== undefined) {

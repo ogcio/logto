@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 /* eslint-disable @silverhand/fp/no-mutation */
+import { RolesScopes } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import {
@@ -59,12 +60,11 @@ const createRoleScopeRelation = async (
 ) =>
   createItem({
     transaction,
-    tableName: 'roles_scopes',
+    tableName: RolesScopes.table,
     tenantId,
     toLogFieldName: 'role_id',
     whereClauses: [sql`role_id = ${relation.role_id}`, sql`scope_id = ${relation.scope_id}`],
     toInsert: relation,
-    itemTypeName: 'Scope-Role relation',
   });
 
 const createRelations = async (params: {

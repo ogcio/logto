@@ -146,16 +146,14 @@ const isResourceScope = (
 
 const getScopeConfigByType = <T extends ResourceSeedingScope | OrganizationSeedingScope>(
   scopeToSeed: T
-): { itemTypeName: string; tableName: string } => {
+): { tableName: string } => {
   if (isResourceScope(scopeToSeed)) {
     return {
-      itemTypeName: 'Resource Scope',
       tableName: Scopes.table,
     };
   }
 
   return {
-    itemTypeName: 'Organization Scope',
     tableName: OrganizationScopes.table,
   };
 };
@@ -272,16 +270,14 @@ export const createScopes = async <
 
 const getRoleConfigByType = <T extends ResourceSeedingRole | OrganizationSeedingRole>(
   roleToSeed: T
-): { itemTypeName: string; tableName: string } => {
+): { tableName: string } => {
   if (isResourceRole(roleToSeed)) {
     return {
-      itemTypeName: 'Resource Role',
       tableName: Roles.table,
     };
   }
 
   return {
-    itemTypeName: 'Organization Role',
     tableName: OrganizationRoles.table,
   };
 };

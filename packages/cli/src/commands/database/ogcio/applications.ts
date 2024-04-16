@@ -1,6 +1,7 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable @silverhand/fp/no-mutating-methods */
 /* eslint-disable @silverhand/fp/no-mutation */
+import { Applications } from '@logto/schemas';
 import { generateStandardSecret } from '@logto/shared';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
@@ -28,9 +29,8 @@ const createApplication = async (
     tenantId,
     toInsert: appToSeed,
     toLogFieldName: 'name',
-    itemTypeName: 'Application',
     whereClauses: [sql`name = ${appToSeed.name}`],
-    tableName: 'applications',
+    tableName: Applications.table,
   });
 
 const setApplicationId = async (

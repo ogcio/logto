@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @silverhand/fp/no-mutation */
 
+import { Resources } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import { type ResourceSeeder } from './ogcio-seeder.js';
@@ -17,9 +18,8 @@ const createResource = async (
     tenantId,
     toInsert: appToSeed,
     toLogFieldName: 'name',
-    itemTypeName: 'Resource',
     whereClauses: [sql`indicator = ${appToSeed.indicator}`],
-    tableName: 'resources',
+    tableName: Resources.table,
   });
 
 const setResourceId = async (
