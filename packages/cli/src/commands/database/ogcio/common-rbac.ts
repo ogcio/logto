@@ -5,7 +5,7 @@
 /* eslint-disable @silverhand/fp/no-mutation */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OrganizationRoles, OrganizationScopes, Roles, Scopes } from '@logto/schemas';
-import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
+import { sql, type ValueExpression, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import {
   type ResourcePermissionSeeder,
@@ -146,15 +146,20 @@ const isResourceScope = (
 
 const getScopeConfigByType = <T extends ResourceSeedingScope | OrganizationSeedingScope>(
   scopeToSeed: T
-): { tableName: string } => {
+): { tableName: string; whereClauses: ValueExpression[] } => {
   if (isResourceScope(scopeToSeed)) {
     return {
       tableName: Scopes.table,
+      whereClauses: [
+        sql`name = ${scopeToSeed.name}`,
+        sql`resource_id = ${scopeToSeed.resource_id}`,
+      ],
     };
   }
 
   return {
     tableName: OrganizationScopes.table,
+    whereClauses: [sql`name = ${scopeToSeed.name}`],
   };
 };
 
@@ -168,7 +173,6 @@ const createScope = async <T extends ResourceSeedingScope | OrganizationSeedingS
     tenantId: params.tenantId,
     toInsert: params.scopeToSeed,
     toLogFieldName: 'name',
-    whereClauses: [sql`name = ${params.scopeToSeed.name}`],
     ...getScopeConfigByType(params.scopeToSeed),
   });
 

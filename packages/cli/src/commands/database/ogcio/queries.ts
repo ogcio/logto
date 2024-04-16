@@ -76,38 +76,42 @@ export const createItem = async <
   const prefixConsoleEntry = `Table ${params.tableName}. TenantId: ${
     params.tenantId ?? 'NOT SET'
   }. ${params.toLogFieldName}: ${params.toInsert[params.toLogFieldName]!.toString()}`;
-  consoleLog.info(prefixConsoleEntry);
-  const scopeIdBefore = await getInsertedId(
-    params.transaction,
-    params.tenantId,
-    params.whereClauses,
-    params.tableName
-  );
-  if (scopeIdBefore !== undefined) {
-    consoleLog.info(`${prefixConsoleEntry}. Already exists.`);
-    params.toInsert.id = scopeIdBefore;
-    return { ...params.toInsert, id: scopeIdBefore };
+  try {
+    const scopeIdBefore = await getInsertedId(
+      params.transaction,
+      params.tenantId,
+      params.whereClauses,
+      params.tableName
+    );
+    if (scopeIdBefore !== undefined) {
+      consoleLog.info(`${prefixConsoleEntry}. Already exists.`);
+      params.toInsert.id = scopeIdBefore;
+      return { ...params.toInsert, id: scopeIdBefore };
+    }
+
+    const toInsertData = {
+      ...params.toInsert,
+      id: generateStandardId(),
+      tenant_id: params.tenantId,
+    };
+
+    await params.transaction.query(insertInto(toInsertData, params.tableName));
+    params.toInsert.id = await getInsertedId(
+      params.transaction,
+      params.tenantId,
+      params.whereClauses,
+      params.tableName
+    );
+    if (params.toInsert.id !== undefined) {
+      consoleLog.info(`${prefixConsoleEntry}. Created, Id ${params.toInsert.id}`);
+      return { ...params.toInsert, id: params.toInsert.id };
+    }
+
+    throw new Error(`${prefixConsoleEntry}. Failure inserting it!`);
+  } catch (error) {
+    consoleLog.error(prefixConsoleEntry);
+    throw error;
   }
-
-  const toInsertData = {
-    ...params.toInsert,
-    id: generateStandardId(),
-    tenant_id: params.tenantId,
-  };
-
-  await params.transaction.query(insertInto(toInsertData, params.tableName));
-  params.toInsert.id = await getInsertedId(
-    params.transaction,
-    params.tenantId,
-    params.whereClauses,
-    params.tableName
-  );
-  if (params.toInsert.id !== undefined) {
-    consoleLog.info(`${prefixConsoleEntry}. Created, Id ${params.toInsert.id}`);
-    return { ...params.toInsert, id: params.toInsert.id };
-  }
-
-  throw new Error(`${prefixConsoleEntry}. Failure inserting it!`);
 };
 
 export const createItemWithoutId = async <

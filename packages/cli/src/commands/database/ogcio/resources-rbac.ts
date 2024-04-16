@@ -15,6 +15,7 @@ import {
   fillScopesGroup,
   getScopesPerRole,
   ensureRoleHasAtLeastOneScope,
+  type ScopesLists,
 } from './common-rbac.js';
 import { type ResourceRoleSeeder, type ResourcePermissionSeeder } from './ogcio-seeder.js';
 import { createItem } from './queries.js';
@@ -86,7 +87,7 @@ const createRelations = async (params: {
   return Promise.all(queries);
 };
 
-const replaceWithScopeIdByDatabase = (
+const replaceWithResourceIdFromDatabase = (
   seededResources: Record<string, SeedingResource>,
   toSeed: {
     resource_permissions: ResourcePermissionSeeder[];
@@ -136,7 +137,7 @@ export const seedResourceRbacData = async (params: {
   roles: Record<string, ResourceSeedingRole>;
   relations: SeedingRelation[];
 }> => {
-  params.toSeed = replaceWithScopeIdByDatabase(params.seededResources, params.toSeed);
+  params.toSeed = replaceWithResourceIdFromDatabase(params.seededResources, params.toSeed);
   const createdScopes = await createScopes({
     transaction: params.transaction,
     tenantId: params.tenantId,
@@ -159,17 +160,18 @@ export const seedResourceRbacData = async (params: {
   return { scopes: createdScopes, roles: createdRoles, relations: createdRelations };
 };
 
+const getEmptyList = (): ScopesLists<ResourceSeedingScope> => ({
+  scopesList: [],
+  scopesByEntity: {},
+  scopesByAction: {},
+  scopesByFullName: {},
+});
+
 const fillScopes = (scopesToSeed: ResourcePermissionSeeder[]): ResourceScopesLists => {
   const fullLists: ResourceScopesLists = {};
-  const emptyList = {
-    scopesList: [],
-    scopesByEntity: {},
-    scopesByAction: {},
-    scopesByFullName: {},
-  };
   for (const singleSeeder of scopesToSeed) {
     for (const resource of singleSeeder.for_resource_ids) {
-      fullLists[resource] = emptyList;
+      fullLists[resource] = getEmptyList();
       fillScopesGroup(singleSeeder, fullLists[resource]!, resource);
     }
   }
