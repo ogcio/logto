@@ -47,4 +47,4 @@ COPY --from=builder /etc/logto .
 EXPOSE 3301
 EXPOSE 3302
 
-ENTRYPOINT ["sh", "-c", "npm run cli db seed -- --swe && npm run ogcio:start"]
+ENTRYPOINT ["sh", "-c", "npm run cli db seed -- --swe && npm run cli db alteration deploy latest && npm run cli db ogcio -- --seeder-filepath=\"/etc/logto/packages/cli/src/commands/database/ogcio/ogcio-seeder.json\" && npm run ogcio:start"]
