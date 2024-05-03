@@ -12,7 +12,7 @@
     "dev:cloud": "IS_CLOUD=1 CONSOLE_PUBLIC_URL=/ pnpm dev",
     "start:dev": "pnpm -r --parallel --filter=!@logto/integration-tests --filter \"!./packages/connectors/connector-*\" dev",
     "start": "cd packages/core && NODE_ENV=production node .",
-    "ogcio:start": "cd packages/core && DB_URL=${DB_URL:-postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB_NAME} REDIS_URL=${REDIS_URL:-redis://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT} NODE_ENV=production node .",
+    "ogcio:start": "cd packages/core && DB_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB_NAME REDIS_URL=redis://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT NODE_ENV=production node .",
     "cli": "logto",
     "changeset": "changeset",
     "alteration": "logto db alt",
