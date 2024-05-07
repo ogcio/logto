@@ -10,6 +10,8 @@ const role = {
     'Некоторые имена ролей по умолчанию отсутствуют в базе данных, пожалуйста, убедитесь в том, что сначала создали роли',
   internal_role_violation:
     'Возможно, вы пытаетесь обновить или удалить внутреннюю роль, что запрещено Logto. Если вы создаете новую роль, попробуйте другое имя, которое не начинается с "#internal:".',
+  default_organization_missing:
+    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

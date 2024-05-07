@@ -10,6 +10,8 @@ const role = {
     'Alguns dos nomes de função padrão não existem no banco de dados, certifique-se de criar funções primeiro',
   internal_role_violation:
     'Você pode estar tentando atualizar ou excluir uma função interna que é proibida pelo Logto. Se você estiver criando uma nova função, tente outro nome que não comece com "#internal:".',
+  default_organization_missing:
+    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

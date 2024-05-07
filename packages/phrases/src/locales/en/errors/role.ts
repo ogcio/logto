@@ -9,6 +9,8 @@ const role = {
     'Some of the default roleNames does not exist in database, please ensure to create roles first',
   internal_role_violation:
     'You may be trying to update or delete an internal role which is forbidden by Logto. If you are creating a new role, try another name that does not start with "#internal:".',
+  default_organization_missing:
+    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

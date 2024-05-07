@@ -1,14 +1,24 @@
-import type { User, CreateUser, Scope, BindMfa, MfaVerification } from '@logto/schemas';
+import type {
+  User,
+  CreateUser,
+  Scope,
+  BindMfa,
+  MfaVerification,
+  Organization,
+  OrganizationRole,
+} from '@logto/schemas';
 import { MfaFactor, Users, UsersPasswordEncryptionMethod } from '@logto/schemas';
 import { generateStandardShortId, generateStandardId } from '@logto/shared';
 import type { Nullable } from '@silverhand/essentials';
 import { deduplicate } from '@silverhand/essentials';
+import { type DatabaseTransactionConnection } from '@silverhand/slonik';
 import { argon2Verify, bcryptVerify, md5, sha1, sha256 } from 'hash-wasm';
 import pRetry from 'p-retry';
 
 import { buildInsertIntoWithPool } from '#src/database/insert-into.js';
 import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
+import OrganizationQueries from '#src/queries/organization/index.js';
 import { createUsersRolesQueries } from '#src/queries/users-roles.js';
 import type Queries from '#src/tenants/Queries.js';
 import assertThat from '#src/utils/assert-that.js';
@@ -110,6 +120,8 @@ export const createUserLibrary = (queries: Queries) => {
 
     assertThat(roles.length === roleNames.length, 'role.default_role_missing');
 
+    const orgRelations = await getOrganizationRelationsForUser();
+
     return pool.transaction(async (connection) => {
       const insertUserQuery = buildInsertIntoWithPool(connection)(Users, {
         returning: true,
@@ -123,6 +135,8 @@ export const createUserLibrary = (queries: Queries) => {
           roles.map(({ id }) => ({ id: generateStandardId(), userId: user.id, roleId: id }))
         );
       }
+
+      await insertOrganizationRelationsForUser({ userId: user.id, connection, ...orgRelations });
 
       return user;
     });
@@ -259,14 +273,95 @@ export const createUserLibrary = (queries: Queries) => {
     return user;
   };
 
-  return {
-    generateUserId,
-    insertUser,
-    checkIdentifierCollision,
-    findUsersByRoleName,
-    findUserScopesForResourceIndicator,
-    findUserRoles,
-    addUserMfaVerification,
-    verifyUserPassword,
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const getDefaultOrganizationsForUser = async (orgQueries: OrganizationQueries) => {
+    const organizationNames = deduplicate(EnvSet.values.userDefaultOrganizationNames);
+    if (organizationNames.length === 0) {
+      return [];
+    }
+    const lowerOrganizationNames = new Set(organizationNames.map((name) => name.toLowerCase()));
+    const allOrganizations = await orgQueries.findAll();
+
+    const outputOrgs = allOrganizations[1].filter((fromDatabaseOrg: Organization) =>
+      lowerOrganizationNames.has(fromDatabaseOrg.name.toLowerCase())
+    );
+
+    assertThat(outputOrgs.length === organizationNames.length, 'role.default_organization_missing');
+
+    return outputOrgs;
+  };
+
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const getDefaultOrganizationRolesForUser = async (orgQueries: OrganizationQueries) => {
+    const roleNames = deduplicate(EnvSet.values.userDefaultOrganizationRoleNames);
+    if (roleNames.length === 0) {
+      return [];
+    }
+    const lowerRoleNames = new Set(roleNames.map((name) => name.toLowerCase()));
+    const limit = 200;
+    const offset = 0;
+    // eslint-disable-next-line @silverhand/fp/no-let
+    let outputRoleNames: OrganizationRole[] = [];
+    // eslint-disable-next-line @silverhand/fp/no-let
+    let foundCount = 1;
+    while (outputRoleNames.length < lowerRoleNames.size && foundCount > 0) {
+      // eslint-disable-next-line no-await-in-loop
+      const allOrganizations = await orgQueries.roles.findAll(limit, offset);
+      // eslint-disable-next-line @silverhand/fp/no-mutation
+      foundCount = allOrganizations[0];
+      // eslint-disable-next-line @silverhand/fp/no-mutation
+      outputRoleNames = [
+        ...outputRoleNames,
+        ...allOrganizations[1].filter((fromDatabaseOrg: OrganizationRole) =>
+          lowerRoleNames.has(fromDatabaseOrg.name.toLowerCase())
+        ),
+      ];
+    }
+
+    assertThat(outputRoleNames.length === lowerRoleNames.size, 'role.default_organization_missing');
+
+    return outputRoleNames;
+  };
+
+  const getOrganizationRelationsForUser = async () => {
+    const orgQueries = new OrganizationQueries(pool);
+    return {
+      organizations: await getDefaultOrganizationsForUser(orgQueries),
+      roles: await getDefaultOrganizationRolesForUser(orgQueries),
+    };
+  };
+
+  const insertOrganizationRelationsForUser = async (params: {
+    userId: string;
+    connection: DatabaseTransactionConnection;
+    organizations: Organization[];
+    roles: OrganizationRole[];
+  }) => {
+    const orgQueries = new OrganizationQueries(pool);
+    if (params.organizations.length === 0) {
+      return;
+    }
+
+    const orgMappings = params.organizations.map((organization: Organization): [string, string] => [
+      organization.id,
+      params.userId,
+    ]);
+
+    await Promise.all(orgMappings.map(async (org) => orgQueries.relations.users.insert(org)));
+
+    if (params.roles.length > 0) {
+      // Org id, role id, user id
+      const rolesMappings: Array<[string, string, string]> = [];
+      for (const role of params.roles) {
+        for (const orgMap of orgMappings) {
+          // eslint-disable-next-line @silverhand/fp/no-mutating-methods
+          rolesMappings.push([orgMap[0], role.id, orgMap[1]]);
+        }
+      }
+
+      await Promise.all(
+        rolesMappings.map(async (roleMap) => orgQueries.relations.rolesUsers.insert(roleMap))
+      );
+    }
   };
 };
