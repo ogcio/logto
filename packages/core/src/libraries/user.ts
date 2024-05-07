@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type {
   User,
   CreateUser,
@@ -18,7 +19,6 @@ import pRetry from 'p-retry';
 import { buildInsertIntoWithPool } from '#src/database/insert-into.js';
 import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
-import OrganizationQueries from '#src/queries/organization/index.js';
 import { createUsersRolesQueries } from '#src/queries/users-roles.js';
 import type Queries from '#src/tenants/Queries.js';
 import assertThat from '#src/utils/assert-that.js';
@@ -98,6 +98,11 @@ export const createUserLibrary = (queries: Queries) => {
     usersRoles: { findUsersRolesByRoleId, findUsersRolesByUserId },
     rolesScopes: { findRolesScopesByRoleIds },
     scopes: { findScopesByIdsAndResourceIndicator },
+    organizations: {
+      findAll,
+      relations: { users, rolesUsers },
+      roles,
+    },
   } = queries;
 
   const generateUserId = async (retries = 500) =>
@@ -273,14 +278,13 @@ export const createUserLibrary = (queries: Queries) => {
     return user;
   };
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const getDefaultOrganizationsForUser = async (orgQueries: OrganizationQueries) => {
-    const organizationNames = deduplicate(EnvSet.values.userDefaultOrganizationNames);
+  const getDefaultOrganizationsForUser = async () => {
+    const organizationNames: string[] = deduplicate(EnvSet.values.userDefaultOrganizationNames);
     if (organizationNames.length === 0) {
       return [];
     }
     const lowerOrganizationNames = new Set(organizationNames.map((name) => name.toLowerCase()));
-    const allOrganizations = await orgQueries.findAll();
+    const allOrganizations = await findAll();
 
     const outputOrgs = allOrganizations[1].filter((fromDatabaseOrg: Organization) =>
       lowerOrganizationNames.has(fromDatabaseOrg.name.toLowerCase())
@@ -291,9 +295,8 @@ export const createUserLibrary = (queries: Queries) => {
     return outputOrgs;
   };
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const getDefaultOrganizationRolesForUser = async (orgQueries: OrganizationQueries) => {
-    const roleNames = deduplicate(EnvSet.values.userDefaultOrganizationRoleNames);
+  const getDefaultOrganizationRolesForUser = async () => {
+    const roleNames: string[] = deduplicate(EnvSet.values.userDefaultOrganizationRoleNames);
     if (roleNames.length === 0) {
       return [];
     }
@@ -306,7 +309,7 @@ export const createUserLibrary = (queries: Queries) => {
     let foundCount = 1;
     while (outputRoleNames.length < lowerRoleNames.size && foundCount > 0) {
       // eslint-disable-next-line no-await-in-loop
-      const allOrganizations = await orgQueries.roles.findAll(limit, offset);
+      const allOrganizations = await roles.findAll(limit, offset);
       // eslint-disable-next-line @silverhand/fp/no-mutation
       foundCount = allOrganizations[0];
       // eslint-disable-next-line @silverhand/fp/no-mutation
@@ -324,10 +327,9 @@ export const createUserLibrary = (queries: Queries) => {
   };
 
   const getOrganizationRelationsForUser = async () => {
-    const orgQueries = new OrganizationQueries(pool);
     return {
-      organizations: await getDefaultOrganizationsForUser(orgQueries),
-      roles: await getDefaultOrganizationRolesForUser(orgQueries),
+      organizations: await getDefaultOrganizationsForUser(),
+      roles: await getDefaultOrganizationRolesForUser(),
     };
   };
 
@@ -337,7 +339,6 @@ export const createUserLibrary = (queries: Queries) => {
     organizations: Organization[];
     roles: OrganizationRole[];
   }) => {
-    const orgQueries = new OrganizationQueries(pool);
     if (params.organizations.length === 0) {
       return;
     }
@@ -347,7 +348,7 @@ export const createUserLibrary = (queries: Queries) => {
       params.userId,
     ]);
 
-    await Promise.all(orgMappings.map(async (org) => orgQueries.relations.users.insert(org)));
+    await Promise.all(orgMappings.map(async (org) => users.insert(org)));
 
     if (params.roles.length > 0) {
       // Org id, role id, user id
@@ -359,9 +360,18 @@ export const createUserLibrary = (queries: Queries) => {
         }
       }
 
-      await Promise.all(
-        rolesMappings.map(async (roleMap) => orgQueries.relations.rolesUsers.insert(roleMap))
-      );
+      await Promise.all(rolesMappings.map(async (roleMap) => rolesUsers.insert(roleMap)));
     }
+  };
+
+  return {
+    generateUserId,
+    insertUser,
+    checkIdentifierCollision,
+    findUsersByRoleName,
+    findUserScopesForResourceIndicator,
+    findUserRoles,
+    addUserMfaVerification,
+    verifyUserPassword,
   };
 };
