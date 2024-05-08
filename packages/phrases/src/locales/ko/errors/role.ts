@@ -10,8 +10,6 @@ const role = {
     '기본 역할 이름의 일부가 데이터베이스에 존재하지 않아요. 먼저 역할을 생성해 주세요.',
   internal_role_violation:
     '내부 역할 위반: Logto에서 금지되는 내부 역할을 업데이트하거나 삭제하려고 할 수 있습니다. 새 역할을 만드는 경우 "#internal:"으로 시작하지 않는 다른 이름을 시도해보세요.',
-  default_organization_missing:
-    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

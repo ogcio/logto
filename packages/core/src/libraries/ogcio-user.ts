@@ -19,7 +19,10 @@ const getDefaultOrganizationsForUser = async (organizationQueries: OrganizationQ
     lowerOrganizationNames.has(fromDatabaseOrg.name.toLowerCase())
   );
 
-  assertThat(outputOrgs.length === organizationNames.length, 'role.default_organization_missing');
+  assertThat(
+    outputOrgs.length === organizationNames.length,
+    'organization.default_organization_missing'
+  );
 
   return outputOrgs;
 };
@@ -51,7 +54,10 @@ const getDefaultOrganizationRolesForUser = async (organizationQueries: Organizat
     ];
   }
 
-  assertThat(outputRoleNames.length === lowerRoleNames.size, 'role.default_organization_missing');
+  assertThat(
+    outputRoleNames.length === lowerRoleNames.size,
+    'organization.default_organization_role_missing'
+  );
 
   return outputRoleNames;
 };

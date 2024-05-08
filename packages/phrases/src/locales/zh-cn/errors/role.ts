@@ -9,8 +9,6 @@ const role = {
   default_role_missing: '某些默认角色名称在数据库中不存在，请确保先创建角色',
   internal_role_violation:
     '你可能正在尝试更新或删除 Logto 禁止的内部角色。如果你要创建新角色，请尝试使用不以“#internal:”开头的名称。',
-  default_organization_missing:
-    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

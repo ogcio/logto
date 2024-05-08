@@ -10,8 +10,6 @@ const role = {
     'Varsayılan rol adlarından bazıları veritabanında mevcut değil, lütfen önce rolleri oluşturduğunuzdan emin olun',
   internal_role_violation:
     'Logto tarafından yasaklanan dahili bir rolü güncelleme veya silmeye çalışıyor olabilirsiniz. Yeni bir rol oluşturuyorsanız, "#internal:" ile başlamayan başka bir isim deneyin.',
-  default_organization_missing:
-    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);

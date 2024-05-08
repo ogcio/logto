@@ -10,8 +10,6 @@ const role = {
     'Niektóre z domyślnych nazw ról nie istnieją w bazie danych, upewnij się, że najpierw utworzysz role',
   internal_role_violation:
     'Możesz próbować zaktualizować lub usunąć rolę wewnętrzną, co jest zabronione przez Logto. Jeśli tworzysz nową rolę, spróbuj innej nazwy, która nie zaczyna się od "#internal:".﻿',
-  default_organization_missing:
-    'Some of the default organizations does not exist in database, please ensure to create organizations first',
 };
 
 export default Object.freeze(role);
