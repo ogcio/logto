@@ -1,18 +1,8 @@
-/* eslint-disable max-lines */
-import type {
-  User,
-  CreateUser,
-  Scope,
-  BindMfa,
-  MfaVerification,
-  Organization,
-  OrganizationRole,
-} from '@logto/schemas';
+import type { User, CreateUser, Scope, BindMfa, MfaVerification } from '@logto/schemas';
 import { MfaFactor, Users, UsersPasswordEncryptionMethod } from '@logto/schemas';
 import { generateStandardShortId, generateStandardId } from '@logto/shared';
 import type { Nullable } from '@silverhand/essentials';
 import { deduplicate } from '@silverhand/essentials';
-import { type DatabaseTransactionConnection } from '@silverhand/slonik';
 import { argon2Verify, bcryptVerify, md5, sha1, sha256 } from 'hash-wasm';
 import pRetry from 'p-retry';
 
@@ -98,11 +88,6 @@ export const createUserLibrary = (queries: Queries) => {
     usersRoles: { findUsersRolesByRoleId, findUsersRolesByUserId },
     rolesScopes: { findRolesScopesByRoleIds },
     scopes: { findScopesByIdsAndResourceIndicator },
-    organizations: {
-      findAll,
-      relations: { users, rolesUsers },
-      roles,
-    },
   } = queries;
 
   const generateUserId = async (retries = 500) =>
@@ -125,8 +110,6 @@ export const createUserLibrary = (queries: Queries) => {
 
     assertThat(roles.length === roleNames.length, 'role.default_role_missing');
 
-    const orgRelations = await getOrganizationRelationsForUser();
-
     return pool.transaction(async (connection) => {
       const insertUserQuery = buildInsertIntoWithPool(connection)(Users, {
         returning: true,
@@ -140,8 +123,6 @@ export const createUserLibrary = (queries: Queries) => {
           roles.map(({ id }) => ({ id: generateStandardId(), userId: user.id, roleId: id }))
         );
       }
-
-      await insertOrganizationRelationsForUser({ userId: user.id, connection, ...orgRelations });
 
       return user;
     });
@@ -276,92 +257,6 @@ export const createUserLibrary = (queries: Queries) => {
     }
 
     return user;
-  };
-
-  const getDefaultOrganizationsForUser = async () => {
-    const organizationNames: string[] = deduplicate(EnvSet.values.userDefaultOrganizationNames);
-    if (organizationNames.length === 0) {
-      return [];
-    }
-    const lowerOrganizationNames = new Set(organizationNames.map((name) => name.toLowerCase()));
-    const allOrganizations = await findAll();
-
-    const outputOrgs = allOrganizations[1].filter((fromDatabaseOrg: Organization) =>
-      lowerOrganizationNames.has(fromDatabaseOrg.name.toLowerCase())
-    );
-
-    assertThat(outputOrgs.length === organizationNames.length, 'role.default_organization_missing');
-
-    return outputOrgs;
-  };
-
-  const getDefaultOrganizationRolesForUser = async () => {
-    const roleNames: string[] = deduplicate(EnvSet.values.userDefaultOrganizationRoleNames);
-    if (roleNames.length === 0) {
-      return [];
-    }
-    const lowerRoleNames = new Set(roleNames.map((name) => name.toLowerCase()));
-    const limit = 200;
-    const offset = 0;
-    // eslint-disable-next-line @silverhand/fp/no-let
-    let outputRoleNames: OrganizationRole[] = [];
-    // eslint-disable-next-line @silverhand/fp/no-let
-    let foundCount = 1;
-    while (outputRoleNames.length < lowerRoleNames.size && foundCount > 0) {
-      // eslint-disable-next-line no-await-in-loop
-      const allOrganizations = await roles.findAll(limit, offset);
-      // eslint-disable-next-line @silverhand/fp/no-mutation
-      foundCount = allOrganizations[0];
-      // eslint-disable-next-line @silverhand/fp/no-mutation
-      outputRoleNames = [
-        ...outputRoleNames,
-        ...allOrganizations[1].filter((fromDatabaseOrg: OrganizationRole) =>
-          lowerRoleNames.has(fromDatabaseOrg.name.toLowerCase())
-        ),
-      ];
-    }
-
-    assertThat(outputRoleNames.length === lowerRoleNames.size, 'role.default_organization_missing');
-
-    return outputRoleNames;
-  };
-
-  const getOrganizationRelationsForUser = async () => {
-    return {
-      organizations: await getDefaultOrganizationsForUser(),
-      roles: await getDefaultOrganizationRolesForUser(),
-    };
-  };
-
-  const insertOrganizationRelationsForUser = async (params: {
-    userId: string;
-    connection: DatabaseTransactionConnection;
-    organizations: Organization[];
-    roles: OrganizationRole[];
-  }) => {
-    if (params.organizations.length === 0) {
-      return;
-    }
-
-    const orgMappings = params.organizations.map((organization: Organization): [string, string] => [
-      organization.id,
-      params.userId,
-    ]);
-
-    await Promise.all(orgMappings.map(async (org) => users.insert(org)));
-
-    if (params.roles.length > 0) {
-      // Org id, role id, user id
-      const rolesMappings: Array<[string, string, string]> = [];
-      for (const role of params.roles) {
-        for (const orgMap of orgMappings) {
-          // eslint-disable-next-line @silverhand/fp/no-mutating-methods
-          rolesMappings.push([orgMap[0], role.id, orgMap[1]]);
-        }
-      }
-
-      await Promise.all(rolesMappings.map(async (roleMap) => rolesUsers.insert(roleMap)));
-    }
   };
 
   return {
