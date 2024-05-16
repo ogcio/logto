@@ -163,7 +163,8 @@ async function handleSubmitRegister(
         }
       ),
     },
-    getInitialUserRoles(isInAdminTenant, isCreatingFirstAdminUser, isCloud)
+    getInitialUserRoles(isInAdminTenant, isCreatingFirstAdminUser, isCloud),
+    tenantId
   );
 
   if (isCreatingFirstAdminUser) {
@@ -182,10 +183,9 @@ async function handleSubmitRegister(
       getTenantRole(TenantRole.Admin).id,
       id,
     ]);
+  } else {
+    await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
   }
-
-  await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
-
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
   ctx.assignInteractionHookResult({ userId: id });
 

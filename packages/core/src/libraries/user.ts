@@ -1,3 +1,4 @@
+import { consoleLog } from '@logto/cli/lib/utils.js';
 import type { User, CreateUser, Scope, BindMfa, MfaVerification } from '@logto/schemas';
 import { MfaFactor, Users, UsersPasswordEncryptionMethod } from '@logto/schemas';
 import { generateStandardShortId, generateStandardId } from '@logto/shared';
@@ -106,10 +107,15 @@ export const createUserLibrary = (queries: Queries) => {
       { retries, factor: 0 } // No need for exponential backoff
     );
 
-  const insertUser = async (data: OmitAutoSetFields<CreateUser>, additionalRoleNames: string[]) => {
-    const roleNames = deduplicate([...EnvSet.values.userDefaultRoleNames, ...additionalRoleNames]);
+  const insertUser = async (
+    data: OmitAutoSetFields<CreateUser>,
+    additionalRoleNames: string[],
+    tenantId?: string
+  ) => {
+    const defaultRoleNames = tenantId === 'admin' ? [] : EnvSet.values.userDefaultRoleNames;
+    const roleNames = deduplicate([...defaultRoleNames, ...additionalRoleNames]);
     const roles = await findRolesByRoleNames(roleNames);
-
+    consoleLog.info({ roleNames, roles });
     assertThat(roles.length === roleNames.length, 'role.default_role_missing');
 
     return pool.transaction(async (connection) => {
