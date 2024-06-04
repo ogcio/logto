@@ -350,9 +350,9 @@
                     "avatar": "avatar_url"
                 },
                 "clientSecret": "client_secret_123",
-                "tokenEndpoint": "http://localhost/token",
-                "userInfoEndpoint": "http://localhost/user",
-                "authorizationEndpoint": "http://localhost/auth",
+                "tokenEndpoint": "http://localhost:3005/token",
+                "userInfoEndpoint": "http://localhost:3005/user",
+                "authorizationEndpoint": "http://localhost:3005/auth",
                 "tokenEndpointAuthMethod": "client_secret_post",
                 "tokenEndpointResponseType": "json",
                 "clientSecretJwtSigningAlgorithm": "HS256"
