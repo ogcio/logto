@@ -35,34 +35,14 @@ const fillConnectors = (
   inputConnectors: ConnectorSeeder[],
   tenantId: string
 ): SeedingConnector[] => {
-  return inputConnectors.map((connector) => {
-    const connectorConfig = {
-      clientId: connector.config.clientId,
-      profileMap: connector.config.profileMap,
-      clientSecret: connector.config.clientSecret,
-      tokenEndpoint: connector.config.tokenEndpoint,
-      userInfoEndpoint: connector.config.userInfoEndpoint,
-      authorizationEndpoint: connector.config.authorizationEndpoint,
-      tokenEndpointAuthMethod: connector.config.tokenEndpointAuthMethod,
-      tokenEndpointResponseType: connector.config.tokenEndpointResponseType,
-      clientSecretJwtSigningAlgorithm: connector.config.clientSecretJwtSigningAlgorithm,
-    };
-
-    const connectorMetadata = {
-      logo: connector.metadata.logo,
-      name: connector.metadata.name,
-      target: connector.metadata.target,
-    };
-
-    return {
-      tenant_id: tenantId,
-      id: connector.id,
-      sync_profile: connector.sync_profile,
-      connector_id: connector.connector_id,
-      config: JSON.stringify(connectorConfig),
-      metadata: JSON.stringify(connectorMetadata),
-    };
-  });
+  return inputConnectors.map((connector) => ({
+    tenant_id: tenantId,
+    id: connector.id,
+    sync_profile: connector.sync_profile,
+    connector_id: connector.connector_id,
+    config: JSON.stringify(connector.config),
+    metadata: JSON.stringify(connector.metadata),
+  }));
 };
 
 export const seedConnectors = async (params: {
