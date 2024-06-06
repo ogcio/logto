@@ -1,7 +1,6 @@
 import { parseJson } from '@logto/connector-kit';
 import { type CloudflareData, DomainStatus } from '@logto/schemas';
 import { ConsoleLog } from '@logto/shared';
-import chalk from 'chalk';
 import { type Response } from 'got';
 import { type ZodType } from 'zod';
 
@@ -9,7 +8,7 @@ import assertThat from '../assert-that.js';
 
 import { type HandleResponse, cloudflareResponseGuard } from './types.js';
 
-const consoleLog = new ConsoleLog(chalk.magenta('cf'));
+const consoleLog = new ConsoleLog();
 
 const parseCloudflareResponse = (body: string) => {
   const result = cloudflareResponseGuard.safeParse(parseJson(body));

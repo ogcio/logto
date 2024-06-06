@@ -13,7 +13,7 @@ describe('console', () => {
   describe('getConsoleLogFromContext', () => {
     it('should return the console log from the context', () => {
       const context = {
-        console: new ConsoleLog('test'),
+        console: new ConsoleLog(),
       };
       const result = getConsoleLogFromContext(context);
 

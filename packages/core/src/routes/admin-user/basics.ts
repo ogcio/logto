@@ -16,6 +16,7 @@ import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
 
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
+import { manageDefaultOrganizations } from '#src/libraries/ogcio-user.js';
 
 export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
   ...args: RouterInitArgs<T>
@@ -30,6 +31,7 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       hasUserWithEmail,
       hasUserWithPhone,
     },
+    organizations
   } = queries;
   const {
     users: {

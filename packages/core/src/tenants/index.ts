@@ -1,5 +1,4 @@
 import { ConsoleLog } from '@logto/shared';
-import chalk from 'chalk';
 import { LRUCache } from 'lru-cache';
 
 import { redisCache } from '#src/caches/index.js';
@@ -7,7 +6,7 @@ import { EnvSet } from '#src/env-set/index.js';
 
 import Tenant from './Tenant.js';
 
-const consoleLog = new ConsoleLog(chalk.magenta('tenant'));
+const consoleLog = new ConsoleLog();
 
 class TenantPool {
   protected cache = new LRUCache<string, Promise<Tenant>>({

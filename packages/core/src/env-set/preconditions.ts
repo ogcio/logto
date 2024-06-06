@@ -7,7 +7,7 @@ import chalk from 'chalk';
 
 import { EnvSet } from './index.js';
 
-const consoleLog = new ConsoleLog(chalk.magenta('pre'));
+const consoleLog = new ConsoleLog();
 
 export const checkPreconditions = async (pool: DatabasePool) => {
   checkDeprecations();

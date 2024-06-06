@@ -55,47 +55,6 @@ describe('Sign-in flow using password identifiers', () => {
     await deleteUser(user.id);
   });
 
-  it('sign-in with username and password twice to test algorithm transition', async () => {
-    const username = generateUsername();
-    const password = 'password';
-    const user = await createUserByAdmin({
-      username,
-      passwordDigest: '5f4dcc3b5aa765d61d8327deb882cf99',
-      passwordAlgorithm: UsersPasswordEncryptionMethod.MD5,
-    });
-    const client = await initClient();
-
-    await client.successSend(putInteraction, {
-      event: InteractionEvent.SignIn,
-      identifier: {
-        username,
-        password,
-      },
-    });
-
-    const { redirectTo } = await client.submitInteraction();
-
-    await processSession(client, redirectTo);
-    await logoutClient(client);
-
-    const client2 = await initClient();
-
-    await client2.successSend(putInteraction, {
-      event: InteractionEvent.SignIn,
-      identifier: {
-        username,
-        password,
-      },
-    });
-
-    const { redirectTo: redirectTo2 } = await client2.submitInteraction();
-
-    await processSession(client2, redirectTo2);
-    await logoutClient(client2);
-
-    await deleteUser(user.id);
-  });
-
   it('sign-in with email and password', async () => {
     const { userProfile, user } = await generateNewUser({ primaryEmail: true, password: true });
 

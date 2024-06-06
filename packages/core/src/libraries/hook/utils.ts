@@ -127,12 +127,3 @@ export const buildManagementApiContext = (
     matchedRoute: matchedRoute && String(matchedRoute),
   };
 };
-
-export const buildManagementApiDataHookRegistrationKey = (
-  method: string,
-  route: IRouterParamContext['_matchedRoute']
-) => `${method} ${route}`;
-
-export const hasRegisteredDataHookEvent = (
-  key: string
-): key is keyof typeof managementApiHooksRegistration => key in managementApiHooksRegistration;

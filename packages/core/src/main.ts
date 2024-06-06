@@ -1,7 +1,6 @@
 import { appInsights } from '@logto/app-insights/node';
 import { ConsoleLog } from '@logto/shared';
 import { trySafe } from '@silverhand/essentials';
-import chalk from 'chalk';
 import Koa from 'koa';
 
 import initApp from './app/init.js';
@@ -13,7 +12,7 @@ import SystemContext from './tenants/SystemContext.js';
 import { tenantPool } from './tenants/index.js';
 import { loadConnectorFactories } from './utils/connectors/index.js';
 
-const consoleLog = new ConsoleLog(chalk.magenta('index'));
+const consoleLog = new ConsoleLog();
 
 if (await appInsights.setup('core')) {
   consoleLog.info('Initialized ApplicationInsights');

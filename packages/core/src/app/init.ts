@@ -16,7 +16,7 @@ import { getTenantId } from '#src/utils/tenant.js';
 
 const logListening = (type: 'core' | 'admin' = 'core') => {
   const urlSet = type === 'core' ? EnvSet.values.urlSet : EnvSet.values.adminUrlSet;
-  const consoleLog = new ConsoleLog(chalk.magenta(type));
+  const consoleLog = new ConsoleLog();
 
   for (const url of urlSet.deduplicated()) {
     consoleLog.info(chalk.bold(`${toTitle(type)} app is running at ${url.toString()}`));
@@ -28,7 +28,7 @@ const serverTimeout = 120_000;
 export default async function initApp(app: Koa): Promise<void> {
   app.use(async (ctx, next) => {
     const requestId = nanoid(16);
-    const consoleLog = new ConsoleLog(chalk.blue(requestId));
+    const consoleLog = new ConsoleLog();
     ctx.requestId = requestId;
     ctx.console = consoleLog;
 

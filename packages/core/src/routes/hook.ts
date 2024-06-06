@@ -6,6 +6,7 @@ import {
   hookEventGuard,
   hookEventsGuard,
   hookResponseGuard,
+  interactionHookEventGuard,
   type Hook,
   type HookResponse,
 } from '@logto/schemas';

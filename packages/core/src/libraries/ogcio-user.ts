@@ -21,7 +21,7 @@ const getDefaultOrganizationsForUser = async (organizationQueries: OrganizationQ
 
   assertThat(
     outputOrgs.length === organizationNames.length,
-    'organization.default_organization_missing'
+    new Error('organization.default_organization_missing')
   );
 
   return outputOrgs;
@@ -56,7 +56,7 @@ const getDefaultOrganizationRolesForUser = async (organizationQueries: Organizat
 
   assertThat(
     outputRoleNames.length === lowerRoleNames.size,
-    'organization.default_organization_role_missing'
+    new Error('organization.default_organization_role_missing')
   );
 
   return outputRoleNames;

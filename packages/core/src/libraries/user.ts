@@ -106,8 +106,14 @@ export const createUserLibrary = (queries: Queries) => {
       { retries, factor: 0 } // No need for exponential backoff
     );
 
-  const insertUser = async (data: OmitAutoSetFields<CreateUser>, additionalRoleNames: string[]) => {
-    const roleNames = [...EnvSet.values.userDefaultRoleNames, ...additionalRoleNames];
+  const insertUser = async (
+    data: OmitAutoSetFields<CreateUser>,
+    additionalRoleNames: string[],
+    tenantId?: string
+  ) => {
+    const defaultRoleNames = tenantId === 'admin' ? [] : EnvSet.values.userDefaultRoleNames;
+    const roleNames = ([...defaultRoleNames, ...additionalRoleNames]);
+
     const [parameterRoles, defaultRoles] = await Promise.all([
       findRolesByRoleNames(roleNames),
       findDefaultRoles(RoleType.User),

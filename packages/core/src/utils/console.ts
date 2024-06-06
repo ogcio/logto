@@ -1,6 +1,5 @@
 import { ConsoleLog } from '@logto/shared';
 import { noop } from '@silverhand/essentials';
-import chalk from 'chalk';
 
 import { EnvSet } from '#src/env-set/index.js';
 
@@ -17,13 +16,13 @@ export class SilentConsoleLog extends ConsoleLog {
 }
 
 /** The fallback console log with `unknown` prefix. */
-export const unknownConsole: ConsoleLog = new ConsoleLog(chalk.yellow('unknown'));
+export const unknownConsole: ConsoleLog = new ConsoleLog();
 
 /**
  * The development console log with `dev` prefix. Usually you should use context-aware console log
  * instead of this.
  */
-export const devConsole: ConsoleLog = new ConsoleLog(chalk.magenta('dev'));
+export const devConsole: ConsoleLog = new ConsoleLog();
 
 /**
  * Try to get the `ConsoleLog` instance from the context by checking if the `console` property is
