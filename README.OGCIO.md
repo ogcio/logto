@@ -12,6 +12,7 @@ And, once the process ended, you're ready to open `http://localhost:3302` on you
 ## Sync with main repository
 
 To sync with the main repository, once a new version is released, follow the following steps:
+- add the main repository remote, if it is not set in your git configuration, `git remote add upstream git@github.com:logto-io/logto.git`
 - run `git fetch --tags upstream` to fetch all the tags from the main repository
 - check if the tag you want to sync with exists `git tags -v YOUR_TAG`, e.g. `git tags -v v1.17.0`
 - checkout a new branch, starting by `dev`, locally, naming it `feature/YOUR_TAG`, 
