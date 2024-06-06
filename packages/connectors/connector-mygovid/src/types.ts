@@ -17,16 +17,13 @@ export const scopePostProcessor = (scope: string) => {
 };
 
 // See https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims.
-// We only concern a subset of them, and social identity provider usually does not provide a complete set of them.
-export const idTokenProfileStandardClaimsGuard = z.object({
+// MyGovId is not compliant with the standard claims, we also don't care about all of them
+export const myGovIdTokenProfileStandardClaimsGuard = z.object({
   sub: z.string(),
-  name: z.string().nullish(),
+  firstName: z.string().nullish(),
+  lastName: z.string().nullish(),
   email: z.string().nullish(),
-  email_verified: z.boolean().nullish(),
-  phone: z.string().nullish(),
-  phone_verified: z.boolean().nullish(),
-  picture: z.string().nullish(),
-  profile: z.string().nullish(),
+  mobile: z.string().nullish(),
   nonce: z.string().nullish(),
 });
 

@@ -20,7 +20,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { HTTPError } from 'ky';
 
 import { defaultMetadata } from './constant.js';
-import { idTokenProfileStandardClaimsGuard, oidcConnectorConfigGuard } from './types.js';
+import { myGovIdTokenProfileStandardClaimsGuard, oidcConnectorConfigGuard } from './types.js';
 import { getIdToken } from './utils.js';
 
 const generateNonce = () => generateStandardId();
@@ -103,20 +103,13 @@ const getUserInfo =
         }
       );
 
-      const result = idTokenProfileStandardClaimsGuard.safeParse(payload);
+      const result = myGovIdTokenProfileStandardClaimsGuard.safeParse(payload);
 
       if (!result.success) {
         throw new ConnectorError(ConnectorErrorCodes.SocialIdTokenInvalid, result.error);
       }
 
-      const {
-        sub: id,
-        firstName,
-        lastName,
-        email,
-        mobile,
-        nonce,
-      } = result.data;
+      const { sub: id, firstName, lastName, email, mobile, nonce } = result.data;
 
       if (nonce) {
         // TODO @darcy: need to specify error code
@@ -135,15 +128,15 @@ const getUserInfo =
         );
       }
 
-      //TODO: Understand how to fill customData here
+      // TODO: Understand how to fill customData here
       // await setCustomData({ ...customDataNeededFromResult })
 
       return {
         id,
-        name: firstName + " " + lastName,
+        name: firstName + ' ' + lastName,
         avatar: undefined,
         email: conditional(email),
-        phone: mobile,
+        phone: mobile ?? undefined, // Convert null to undefined
         rawData: jsonGuard.parse(payload),
       };
     } catch (error: unknown) {
