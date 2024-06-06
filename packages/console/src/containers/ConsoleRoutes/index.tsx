@@ -43,10 +43,7 @@ export function ConsoleRoutes() {
         <Route path="callback" element={<Callback />} />
         <Route path="welcome" element={<Welcome />} />
         <Route element={<ProtectedRoutes />}>
-          <Route
-            path={dropLeadingSlash(GlobalAnonymousRoute.Profile) + '/*'}
-            element={<Profile />}
-          />
+          <Route path={dropLeadingSlash(GlobalRoute.Profile) + '/*'} element={<Profile />} />
           <Route element={<TenantAccess />}>
             {isCloud && (
               <Route

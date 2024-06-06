@@ -6,7 +6,6 @@ import {
   hookEventGuard,
   hookEventsGuard,
   hookResponseGuard,
-  interactionHookEventGuard,
   type Hook,
   type HookResponse,
 } from '@logto/schemas';
@@ -167,8 +166,7 @@ export default function hookRoutes<T extends ManagementApiRouter>(
     koaQuotaGuard({ key: 'hooksLimit', quota }),
     koaGuard({
       body: Hooks.createGuard.omit({ id: true, signingKey: true }).extend({
-        // TODO: remove dev features guard
-        event: (isDevFeaturesEnabled ? hookEventGuard : interactionHookEventGuard).optional(),
+        event: hookEventGuard.optional(),
         events: nonemptyUniqueHookEventsGuard.optional(),
       }),
       response: Hooks.guard,

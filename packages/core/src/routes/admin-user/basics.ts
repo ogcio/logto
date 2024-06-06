@@ -1,4 +1,3 @@
-/* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable max-lines */
 import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
 import {
@@ -12,7 +11,6 @@ import { conditional, pick, yes } from '@silverhand/essentials';
 import { boolean, literal, nativeEnum, object, string } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
-import { manageDefaultOrganizations } from '#src/libraries/ogcio-user.js';
 import { encryptUserPassword } from '#src/libraries/user.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
@@ -32,8 +30,6 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       hasUserWithEmail,
       hasUserWithPhone,
     },
-    userSsoIdentities,
-    organizations,
   } = queries;
   const {
     users: {
@@ -42,6 +38,7 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       insertUser,
       verifyUserPassword,
       signOutUser,
+      findUserSsoIdentities,
     },
   } = libraries;
 
@@ -66,7 +63,7 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
         ...conditional(
           includeSsoIdentities &&
             yes(includeSsoIdentities) && {
-              ssoIdentities: await userSsoIdentities.findUserSsoIdentitiesByUserId(userId),
+              ssoIdentities: await findUserSsoIdentities(userId),
             }
         ),
       };
