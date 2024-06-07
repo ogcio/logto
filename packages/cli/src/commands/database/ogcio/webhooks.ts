@@ -52,12 +52,12 @@ export const seedWebhooks = async (params: {
   tenantId: string;
   hooks: WebhookSeeder[];
 }) => {
-  const hookssToCreate = fillWebhooks(params.hooks, params.tenantId);
+  const hooksToCreate = fillWebhooks(params.hooks, params.tenantId);
   const queries: Array<Promise<SeedingWebhook>> = [];
-  for (const element of hookssToCreate) {
+  for (const element of hooksToCreate) {
     queries.push(createWebhook(params.transaction, params.tenantId, element));
   }
 
   await Promise.all(queries);
-  return hookssToCreate;
+  return hooksToCreate;
 };
