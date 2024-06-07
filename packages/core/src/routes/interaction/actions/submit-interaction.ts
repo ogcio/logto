@@ -20,6 +20,7 @@ import { generateStandardId } from '@logto/shared';
 import { conditional, conditionalArray, trySafe } from '@silverhand/essentials';
 
 import { EnvSet } from '#src/env-set/index.js';
+// OGCIO
 import { manageDefaultOrganizations } from '#src/libraries/ogcio-user.js';
 import { assignInteractionResults } from '#src/libraries/session.js';
 import { encryptUserPassword } from '#src/libraries/user.js';
@@ -185,6 +186,7 @@ async function handleSubmitRegister(
       id,
     ]);
   } else {
+    // OGCIO
     await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
   }
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });

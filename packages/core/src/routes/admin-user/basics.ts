@@ -31,6 +31,7 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       hasUserWithEmail,
       hasUserWithPhone,
     },
+    // OGCIO
     organizations,
   } = queries;
   const {
@@ -222,6 +223,7 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
         []
       );
 
+      // OGCIO
       await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
 
       ctx.body = pick(user, ...userInfoSelectFields);
