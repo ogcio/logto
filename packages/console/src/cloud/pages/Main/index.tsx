@@ -38,11 +38,6 @@ export default function Main() {
     return <InvitationList invitations={data} />;
   }
 
-  // If user has pending invitations (onboarding will be skipped), show the invitation list and allow them to quick join.
-  if (isCloud && data?.length) {
-    return <InvitationList invitations={data} />;
-  }
-
   // If user has completed onboarding and still has no tenant, redirect to a special landing page.
   return <TenantLandingPage />;
 }

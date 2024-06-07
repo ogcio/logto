@@ -15,9 +15,6 @@ export enum GlobalAnonymousRoute {
   /** The global callback route for OpenID Connect. */
   Callback = '/callback',
   SocialDemoCallback = '/social-demo-callback',
-  AcceptInvitation = '/accept',
-  Profile = '/profile',
-  HandleSocial = '/handle-social',
 }
 
 /**
