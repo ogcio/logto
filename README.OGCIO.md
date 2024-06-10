@@ -25,3 +25,26 @@ e.g. `git merge v1.17.0 --strategy-option theirs`
 - run `pnpm run dev` from the root directory and check for errors. What I suggest to do is to open a GitHub page with the tag from the main repository you are syncing with, then one with the latest OGCIO `dev` branch and check for differences between them
 - commit the changes with `git commit -a` to end the merge and let git write the correct message
 - push and open your PR!
+
+## Release a new version on AWS
+
+At the moment, we need to manually execute some steps to release a new version of LogTo.
+- ensure Docker is running on your machine
+- ensure the AWS keys are correctly set in your `~/.aws/credentials`
+- login to AWS ECR
+```bash
+aws ecr get-login-password --region {YOUR_REGION} | docker login --username AWS --password-stdin {YOUR_ACCOUNT_ID}.dkr.ecr.{YOUR_REGION}.amazonaws.com
+```
+- build your image for the `amd64` platform
+```bash
+docker build --platform=linux/amd64 -t life-events-logto:latest
+```
+- tag your image for the ECR
+```bash
+docker tag life-events-logto:latest {YOUR_ACCOUNT_ID}.dkr.ecr.{YOUR_REGION}.amazonaws.com/life-events-logto:latest
+```
+- push your image to the ECR
+```bash
+docker push {YOUR_ACCOUNT_ID}.dkr.ecr.{YOUR_REGION}.amazonaws.com/life-events-logto:latest
+```
+- asks to the DevOps person to deploy your new version
