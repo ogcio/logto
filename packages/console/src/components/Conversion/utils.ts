@@ -1,11 +1,14 @@
 import { cond } from '@silverhand/essentials';
+import debug from 'debug';
 
-import { isProduction } from '@/consts/env';
+const log = debug('conversion');
 
 export const gtagAwTrackingId = 'AW-11124811245';
 export enum GtagConversionId {
   /** This ID indicates a user has truly signed up for Logto Cloud. */
   SignUp = 'AW-11192640559/ZuqUCLvNpasYEK_IiNkp',
+  /** This ID indicates a user has created their first app. */
+  CreateFirstApp = 'AW-11192640559/jbsaCPS67q8ZEK_IiNkp',
   /** This ID indicates a user has created a production tenant. */
   CreateProductionTenant = 'AW-11192640559/m04fCMDrxI0ZEK_IiNkp',
   /** This ID indicates a user has purchased a Pro plan. */
@@ -13,6 +16,7 @@ export enum GtagConversionId {
 }
 
 export const redditPixelId = 't2_ggt11omdo';
+export const plausibleDataDomain = 'logto.io';
 
 const logtoProductionHostname = 'logto.io';
 
@@ -53,30 +57,18 @@ export const hashEmail = async (email?: string) => {
   return sha256(canonicalizedEmail);
 };
 
-/** Print debug message if not in production. */
-const debug = (...args: Parameters<(typeof console)['debug']>) => {
-  if (!isProduction) {
-    console.debug(...args);
-  }
-};
-
 /**
  * Add more if needed: https://reddit.my.site.com/helpcenter/s/article/Install-the-Reddit-Pixel-on-your-website
  */
-export type RedditReportType =
-  | 'PageVisit'
-  | 'ViewContent'
-  | 'Search'
-  | 'Purchase'
-  | 'Lead'
-  | 'SignUp';
+type RedditReportType = 'PageVisit' | 'ViewContent' | 'Search' | 'Purchase' | 'Lead' | 'SignUp';
 
-export const reportToReddit = (redditType: RedditReportType) => {
+const reportToReddit = (redditType: RedditReportType) => {
   if (!window.rdt) {
+    log('report:', 'window.rdt is not available');
     return false;
   }
 
-  debug('report:', 'redditType =', redditType);
+  log('report:', 'redditType =', redditType);
   window.rdt('track', redditType);
 
   return true;
@@ -87,13 +79,14 @@ export const reportToGoogle = (
   { transactionId }: { transactionId?: string } = {}
 ) => {
   if (!window.gtag) {
+    log('report:', 'window.gtag is not available');
     return false;
   }
 
   const run = async () => {
     const transaction = cond(transactionId && { transaction_id: await sha256(transactionId) });
 
-    debug('report:', 'gtagId =', gtagId, 'transaction =', transaction);
+    log('report:', 'gtagId =', gtagId, 'transaction =', transaction);
     window.gtag?.('event', 'conversion', {
       send_to: gtagId,
       ...transaction,
@@ -103,4 +96,29 @@ export const reportToGoogle = (
   void run();
 
   return true;
+};
+
+type ReportConversionOptions = {
+  transactionId?: string;
+  gtagId?: GtagConversionId;
+  redditType?: RedditReportType;
+};
+
+export const reportConversion = ({
+  gtagId,
+  redditType,
+  transactionId,
+}: ReportConversionOptions) => {
+  if (!shouldReport) {
+    log('skip reporting conversion:', { gtagId, redditType, transactionId });
+    return;
+  }
+
+  if (gtagId) {
+    reportToGoogle(gtagId, { transactionId });
+  }
+
+  if (redditType) {
+    reportToReddit(redditType);
+  }
 };

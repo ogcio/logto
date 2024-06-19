@@ -1,4 +1,3 @@
-import { withAppInsights } from '@logto/app-insights/react';
 import { Theme, type Application, type Resource } from '@logto/schemas';
 import classNames from 'classnames';
 import { useCallback, useContext, useMemo, useRef, useState } from 'react';
@@ -10,6 +9,7 @@ import CreateRoleDark from '@/assets/icons/create-role-dark.svg';
 import CreateRole from '@/assets/icons/create-role.svg';
 import SocialDark from '@/assets/icons/social-dark.svg';
 import Social from '@/assets/icons/social.svg';
+import ApplicationCreation from '@/components/ApplicationCreation';
 import { type SelectedGuide } from '@/components/Guide/GuideCard';
 import GuideCardGroup from '@/components/Guide/GuideCardGroup';
 import { useApiGuideMetadata, useAppGuideMetadata } from '@/components/Guide/hooks';
@@ -26,7 +26,6 @@ import useTheme from '@/hooks/use-theme';
 import useWindowResize from '@/hooks/use-window-resize';
 
 import CreateApiForm from '../ApiResources/components/CreateForm';
-import CreateAppForm from '../Applications/components/CreateForm';
 
 import ProtectedAppCreationForm from './ProtectedAppCreationForm';
 import * as styles from './index.module.scss';
@@ -72,7 +71,7 @@ function GetStarted() {
     setSelectedGuide(data);
   }, []);
 
-  const onCloseCreateAppForm = useCallback(
+  const onAppCreationCompleted = useCallback(
     (newApp?: Application) => {
       if (newApp && selectedGuide) {
         navigate(`/applications/${newApp.id}/guide/${selectedGuide.id}`, { replace: true });
@@ -126,10 +125,10 @@ function GetStarted() {
           onClickGuide={onClickAppGuide}
         />
         {selectedGuide?.target !== 'API' && showCreateAppForm && (
-          <CreateAppForm
+          <ApplicationCreation
             defaultCreateType={selectedGuide?.target}
             defaultCreateFrameworkName={selectedGuide?.name}
-            onClose={onCloseCreateAppForm}
+            onCompleted={onAppCreationCompleted}
           />
         )}
         <TextLink to="/applications/create">{t('get_started.view_all')}</TextLink>
@@ -208,4 +207,4 @@ function GetStarted() {
   );
 }
 
-export default withAppInsights(GetStarted);
+export default GetStarted;

@@ -1,10 +1,9 @@
-import { withAppInsights } from '@logto/app-insights/react';
 import type { Role } from '@logto/schemas';
 import { Theme, RoleType } from '@logto/schemas';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import useSWR, { useSWRConfig } from 'swr';
 
@@ -15,13 +14,17 @@ import UserRoleIconDark from '@/assets/icons/user-role-dark.svg';
 import UserRoleIcon from '@/assets/icons/user-role.svg';
 import DetailsPage from '@/components/DetailsPage';
 import DetailsPageHeader from '@/components/DetailsPage/DetailsPageHeader';
+import { isDevFeaturesEnabled } from '@/consts/env';
 import { RoleDetailsTabs } from '@/consts/page-tabs';
 import ConfirmModal from '@/ds-components/ConfirmModal';
+import InlineNotification from '@/ds-components/InlineNotification';
 import TabNav, { TabNavItem } from '@/ds-components/TabNav';
+import TextLink from '@/ds-components/TextLink';
 import type { RequestError } from '@/hooks/use-api';
 import useApi from '@/hooks/use-api';
 import useTenantPathname from '@/hooks/use-tenant-pathname';
 import useTheme from '@/hooks/use-theme';
+import useUserPreferences from '@/hooks/use-user-preferences';
 
 import * as styles from './index.module.scss';
 import { type RoleDetailsOutletContext } from './types';
@@ -47,6 +50,16 @@ function RoleDetails() {
   const { data, error, mutate } = useSWR<Role, RequestError>(id && `api/roles/${id}`);
   const { mutate: mutateGlobal } = useSWRConfig();
   const isLoading = !data && !error;
+
+  const {
+    data: { m2mRoleNotificationAcknowledged },
+    update: updateUserPreferences,
+    isLoaded: isUserPreferencesLoaded,
+  } = useUserPreferences();
+  // Default to true to avoid page flickering
+  const isM2mRoleNotificationAcknowledged = isUserPreferencesLoaded
+    ? Boolean(m2mRoleNotificationAcknowledged)
+    : true;
 
   const [isDeletionAlertOpen, setIsDeletionAlertOpen] = useState(false);
 
@@ -84,6 +97,25 @@ function RoleDetails() {
       className={classNames(isPageHasTable && styles.withTable)}
       onRetry={mutate}
     >
+      {/* Todo @xiaoyijun remove dev feature flag */}
+      {isDevFeaturesEnabled && !isM2mRoleNotificationAcknowledged && (
+        <InlineNotification
+          action="general.got_it"
+          onClick={() => {
+            void updateUserPreferences({
+              m2mRoleNotificationAcknowledged: true,
+            });
+          }}
+        >
+          <Trans
+            components={{
+              a: <TextLink to="/applications" />,
+            }}
+          >
+            {t('role_details.m2m_role_notification')}
+          </Trans>
+        </InlineNotification>
+      )}
       {data && (
         <>
           <DetailsPageHeader
@@ -118,9 +150,6 @@ function RoleDetails() {
             {t('role_details.delete_description')}
           </ConfirmModal>
           <TabNav>
-            <TabNavItem href={`/roles/${data.id}/${RoleDetailsTabs.Settings}`}>
-              {t('role_details.settings_tab')}
-            </TabNavItem>
             <TabNavItem href={`/roles/${data.id}/${RoleDetailsTabs.Permissions}`}>
               {t('role_details.permissions_tab')}
             </TabNavItem>
@@ -132,6 +161,9 @@ function RoleDetails() {
               {t(
                 data.type === RoleType.User ? 'role_details.users_tab' : 'role_details.m2m_apps_tab'
               )}
+            </TabNavItem>
+            <TabNavItem href={`/roles/${data.id}/${RoleDetailsTabs.General}`}>
+              {t('role_details.general_tab')}
             </TabNavItem>
           </TabNav>
           <Outlet
@@ -151,4 +183,4 @@ function RoleDetails() {
   );
 }
 
-export default withAppInsights(RoleDetails);
+export default RoleDetails;

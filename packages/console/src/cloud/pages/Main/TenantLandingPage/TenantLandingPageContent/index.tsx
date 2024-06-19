@@ -15,7 +15,7 @@ import useTheme from '@/hooks/use-theme';
 import * as styles from './index.module.scss';
 
 type Props = {
-  className?: string;
+  readonly className?: string;
 };
 
 function TenantLandingPageContent({ className }: Props) {
@@ -54,11 +54,11 @@ function TenantLandingPageContent({ className }: Props) {
       <CreateTenantModal
         isOpen={isCreateModalOpen}
         onClose={async (tenant?: TenantResponse) => {
+          setIsCreateModalOpen(false);
           if (tenant) {
             prependTenant(tenant);
             navigateTenant(tenant.id);
           }
-          setIsCreateModalOpen(false);
         }}
       />
     </>

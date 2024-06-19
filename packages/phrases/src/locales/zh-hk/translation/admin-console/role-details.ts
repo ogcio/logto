@@ -4,7 +4,7 @@ const role_details = {
   delete_description:
     '這樣做將從受影響的用戶中刪除與該角色關聯的權限，並刪除角色、用戶和權限之間的映射關聯。',
   role_deleted: '{{name}} 已成功刪除。',
-  settings_tab: '設置',
+  general_tab: '常規',
   users_tab: '用戶',
   m2m_apps_tab: '機器對機器應用',
   permissions_tab: '權限',
@@ -13,8 +13,13 @@ const role_details = {
     '角色是一組權限，可以分配給用戶。它們還提供了一種聚合不同 API 定義的權限的方法，使得添加、刪除或調整權限比將其單獨分配給用戶更有效率。',
   field_name: '名稱',
   field_description: '描述',
+  field_is_default: '默认角色',
+  field_is_default_description:
+    '將此角色設置為新用戶的默认角色。可以設置多個默認角色。這也會影響通過管理 API 創建的用戶的默认角色。',
   type_m2m_role_tag: '機器對機器應用角色',
   type_user_role_tag: '用戶角色',
+  m2m_role_notification:
+    '將此機器對機器角色分配給機器對機器應用程式，以授予相關API資源的存取權限。如果尚未建立，請<a>先建立機器對機器應用程式</a>。',
   permission: {
     assign_button: '分配權限',
     assign_title: '分配權限',

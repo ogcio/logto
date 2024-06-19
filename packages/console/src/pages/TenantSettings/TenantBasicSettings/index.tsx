@@ -1,4 +1,4 @@
-import { ReservedPlanId, TenantTag } from '@logto/schemas';
+import { ReservedPlanId, type TenantTag } from '@logto/schemas';
 import classNames from 'classnames';
 import { useContext, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -6,7 +6,6 @@ import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import { useCloudApi } from '@/cloud/hooks/use-cloud-api';
-import { type TenantResponse } from '@/cloud/types/router';
 import PageMeta from '@/components/PageMeta';
 import SubmitFormChangesActionBar from '@/components/SubmitFormChangesActionBar';
 import UnsavedChangesAlertModal from '@/components/UnsavedChangesAlertModal';
@@ -22,15 +21,11 @@ import ProfileForm from './ProfileForm';
 import * as styles from './index.module.scss';
 import { type TenantSettingsForm } from './types.js';
 
-const tenantProfileToForm = (tenant?: TenantResponse): TenantSettingsForm => {
-  return {
-    profile: { name: tenant?.name ?? 'My project', tag: tenant?.tag ?? TenantTag.Development },
-  };
-};
-
 function TenantBasicSettings() {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
-  const { canManageTenant } = useCurrentTenantScopes();
+  const {
+    access: { canManageTenant },
+  } = useCurrentTenantScopes();
   const api = useCloudApi();
   const {
     currentTenant,
@@ -45,7 +40,7 @@ function TenantBasicSettings() {
   const { show: showModal } = useConfirmModal();
 
   const methods = useForm<TenantSettingsForm>({
-    defaultValues: tenantProfileToForm(currentTenant),
+    defaultValues: { profile: currentTenant },
   });
   const {
     watch,
@@ -55,7 +50,7 @@ function TenantBasicSettings() {
   } = methods;
 
   useEffect(() => {
-    reset(tenantProfileToForm(currentTenant));
+    reset({ profile: currentTenant });
   }, [currentTenant, reset]);
 
   const saveData = async (data: { name?: string; tag?: TenantTag }) => {

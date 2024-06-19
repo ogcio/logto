@@ -1,5 +1,35 @@
 # Change Log
 
+## 1.11.0
+
+### Minor Changes
+
+- 76fd33b7e: support default roles for users
+
+### Patch Changes
+
+- e04d9523a: replace the i18n translated hook event label with the hook event value directly in the console
+
+  - remove all the legacy interaction hook events i18n phrases
+  - replace the translated label with the hook event value directly in the console
+    - `Create new account` -> `PostRegister`
+    - `Sign in` -> `PostSignIn`
+    - `Reset password` -> `PostResetPassword`
+
+## 1.10.1
+
+### Patch Changes
+
+- 5b03030de: Not allow to modify management API resource through API.
+
+  Previously, management API resource and its scopes are readonly in Console. But it was possible to modify through the API. This is not allowed anymore.
+
+- 3486b12e8: Fix file upload API.
+
+  The `koa-body` has been upgraded to the latest version, which caused the file upload API to break. This change fixes the issue.
+
+  The `ctx.request.files.file` in the new version is an array, so the code has been updated to pick the first one.
+
 ## 1.10.0
 
 ### Minor Changes

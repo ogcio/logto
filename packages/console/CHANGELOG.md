@@ -1,5 +1,128 @@
 # Change Log
 
+## 1.15.0
+
+### Minor Changes
+
+- b5104d8c1: add new webhook events
+
+  We introduce a new event type `DataHook` to unlock a series of events that can be triggered by data updates (mostly Management API):
+
+  - User.Created
+  - User.Deleted
+  - User.Data.Updated
+  - User.SuspensionStatus.Updated
+  - Role.Created
+  - Role.Deleted
+  - Role.Data.Updated
+  - Role.Scopes.Updated
+  - Scope.Created
+  - Scope.Deleted
+  - Scope.Data.Updated
+  - Organization.Created
+  - Organization.Deleted
+  - Organization.Data.Updated
+  - Organization.Membership.Updated
+  - OrganizationRole.Created
+  - OrganizationRole.Deleted
+  - OrganizationRole.Data.Updated
+  - OrganizationRole.Scopes.Updated
+  - OrganizationScope.Created
+  - OrganizationScope.Deleted
+  - OrganizationScope.Data.Updated
+
+  DataHook events are triggered when the data associated with the event is updated via management API request or user interaction actions.
+
+  ### Management API triggered events
+
+  | API endpoint                                               | Event                                                       |
+  | ---------------------------------------------------------- | ----------------------------------------------------------- |
+  | POST /users                                                | User.Created                                                |
+  | DELETE /users/:userId                                      | User.Deleted                                                |
+  | PATCH /users/:userId                                       | User.Data.Updated                                           |
+  | PATCH /users/:userId/custom-data                           | User.Data.Updated                                           |
+  | PATCH /users/:userId/profile                               | User.Data.Updated                                           |
+  | PATCH /users/:userId/password                              | User.Data.Updated                                           |
+  | PATCH /users/:userId/is-suspended                          | User.SuspensionStatus.Updated                               |
+  | POST /roles                                                | Role.Created, (Role.Scopes.Update)                          |
+  | DELETE /roles/:id                                          | Role.Deleted                                                |
+  | PATCH /roles/:id                                           | Role.Data.Updated                                           |
+  | POST /roles/:id/scopes                                     | Role.Scopes.Updated                                         |
+  | DELETE /roles/:id/scopes/:scopeId                          | Role.Scopes.Updated                                         |
+  | POST /resources/:resourceId/scopes                         | Scope.Created                                               |
+  | DELETE /resources/:resourceId/scopes/:scopeId              | Scope.Deleted                                               |
+  | PATCH /resources/:resourceId/scopes/:scopeId               | Scope.Data.Updated                                          |
+  | POST /organizations                                        | Organization.Created                                        |
+  | DELETE /organizations/:id                                  | Organization.Deleted                                        |
+  | PATCH /organizations/:id                                   | Organization.Data.Updated                                   |
+  | PUT /organizations/:id/users                               | Organization.Membership.Updated                             |
+  | POST /organizations/:id/users                              | Organization.Membership.Updated                             |
+  | DELETE /organizations/:id/users/:userId                    | Organization.Membership.Updated                             |
+  | POST /organization-roles                                   | OrganizationRole.Created, (OrganizationRole.Scopes.Updated) |
+  | DELETE /organization-roles/:id                             | OrganizationRole.Deleted                                    |
+  | PATCH /organization-roles/:id                              | OrganizationRole.Data.Updated                               |
+  | POST /organization-scopes                                  | OrganizationScope.Created                                   |
+  | DELETE /organization-scopes/:id                            | OrganizationScope.Deleted                                   |
+  | PATCH /organization-scopes/:id                             | OrganizationScope.Data.Updated                              |
+  | PUT /organization-roles/:id/scopes                         | OrganizationRole.Scopes.Updated                             |
+  | POST /organization-roles/:id/scopes                        | OrganizationRole.Scopes.Updated                             |
+  | DELETE /organization-roles/:id/scopes/:organizationScopeId | OrganizationRole.Scopes.Updated                             |
+
+  ### User interaction triggered events
+
+  | User interaction action  | Event             |
+  | ------------------------ | ----------------- |
+  | User email/phone linking | User.Data.Updated |
+  | User MFAs linking        | User.Data.Updated |
+  | User social/SSO linking  | User.Data.Updated |
+  | User password reset      | User.Data.Updated |
+  | User registration        | User.Created      |
+
+- a0b19513b: show version number in the topbar
+- 76fd33b7e: support default roles for users
+
+### Patch Changes
+
+- e04d9523a: replace the i18n translated hook event label with the hook event value directly in the console
+
+  - remove all the legacy interaction hook events i18n phrases
+  - replace the translated label with the hook event value directly in the console
+    - `Create new account` -> `PostRegister`
+    - `Sign in` -> `PostSignIn`
+    - `Reset password` -> `PostResetPassword`
+
+- 558986d28: update documentation reference links
+- c558affac: improve error handling on audit logs
+
+  - No longer toasts error messages if the audit log related user entity has been removed.
+  - Display a fallback `user-id (deleted)` information instead.
+
+## 1.14.0
+
+### Minor Changes
+
+- 21bb35b12: refactor the definition of hook event types
+
+  - Add `DataHook` event types. `DataHook` are triggered by data changes.
+  - Add "interaction" prefix to existing hook event types. Interaction hook events are triggered by end user interactions, e.g. completing sign-in.
+
+- 5872172cb: enable custom JWT feature for OSS version
+
+  OSS version users can now use custom JWT feature to add custom claims to JWT access tokens payload (previously, this feature was only available to Logto Cloud).
+
+- 6fe6f87bc: support adding API resource permissions to organization roles and organization permissions in 3rd-party applications
+
+  ## Updates
+
+  - Separated the "Organization template" from the "Organization" page, establishing it as a standalone page for clearer navigation and functionality.
+  - Enhanced the "Organization template" page by adding functionality that allows users to click on an organization role, which then navigates to the organization role details page where users can view its corresponding permissions and general settings.
+  - Enabled the assignment of API resource permissions directly from the organization role details page, improving role management and access control.
+  - Split the permission list for third-party apps into two separate lists: user permissions and organization permissions. Users can now add user profile permissions and API resource permissions for users under user permissions, and add organization permissions and API resource permissions for organizations under organization permissions.
+
+### Patch Changes
+
+- 9cf03c8ed: Add Java Spring Boot web integration guide to the application creation page
+
 ## 1.13.0
 
 ### Minor Changes

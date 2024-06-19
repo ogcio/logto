@@ -18,8 +18,8 @@ import { getInteractionStorage, storeInteractionResult } from './utils/interacti
 import { getSingleSignOnAuthenticationResult } from './utils/single-sign-on-session.js';
 import {
   authorizationUrlPayloadGuard,
-  getSsoAuthorizationUrl,
   getSsoAuthentication,
+  getSsoAuthorizationUrl,
   handleSsoAuthentication,
   registerWithSsoAuthentication,
 } from './utils/single-sign-on.js';
@@ -79,7 +79,7 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
         connectorId: z.string(),
       }),
       body: z.record(z.unknown()),
-      status: [200, 404, 422],
+      status: [200, 404, 422, 500],
       response: z.object({
         redirectTo: z.string(),
       }),
@@ -125,7 +125,7 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
       params: z.object({
         connectorId: z.string(),
       }),
-      status: [200, 404, 403],
+      status: [200, 404, 403, 500],
       response: z.object({
         redirectTo: z.string(),
       }),
@@ -134,8 +134,8 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
     koaInteractionHooks(libraries),
     async (ctx, next) => {
       const {
-        createLog,
         assignInteractionHookResult,
+        assignDataHookContext,
         guard: { params },
       } = ctx;
       const {
@@ -147,13 +147,6 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
         new RequestError({ code: 'auth.forbidden', status: 403 })
       );
 
-      const registerEventUpdateLog = createLog(`Interaction.Register.Update`);
-      registerEventUpdateLog.append({ event: 'register' });
-
-      // Update the interaction session event to register if no related user account found.
-      // Set the merge flag to true to merge the register event with the existing sso interaction session
-      await storeInteractionResult({ event: InteractionEvent.Register }, ctx, provider, true);
-
       // Throw 404 if no related session found
       const authenticationResult = await getSingleSignOnAuthenticationResult(
         ctx,
@@ -161,10 +154,14 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
         params.connectorId
       );
 
-      const accountId = await registerWithSsoAuthentication(ctx, tenant, authenticationResult);
+      const user = await registerWithSsoAuthentication(ctx, tenant, authenticationResult);
+      const { id: accountId } = user;
 
       await assignInteractionResults(ctx, provider, { login: { accountId } });
+
+      // Trigger webhooks
       assignInteractionHookResult({ userId: accountId });
+      assignDataHookContext({ event: 'User.Created', user });
 
       return next();
     }

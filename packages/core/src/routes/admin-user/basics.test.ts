@@ -14,7 +14,6 @@ const { jest } = import.meta;
 const { mockEsmWithActual } = createMockUtils(jest);
 
 const mockedQueries = {
-  oidcModelInstances: { revokeInstanceByUserId: jest.fn() },
   signInExperiences: {
     findDefaultSignInExperience: jest.fn(
       async () =>
@@ -52,6 +51,7 @@ const mockedQueries = {
           name: 'admin',
           description: 'none',
           type: RoleType.User,
+          isDefault: false,
         },
       ]
     ),
@@ -65,7 +65,6 @@ const mockHasUser = jest.fn(async () => false);
 const mockHasUserWithEmail = jest.fn(async () => false);
 const mockHasUserWithPhone = jest.fn(async () => false);
 
-const { revokeInstanceByUserId } = mockedQueries.oidcModelInstances;
 const { hasUser, findUserById, updateUserById, deleteUserIdentity, deleteUserById } =
   mockedQueries.users;
 
@@ -77,6 +76,7 @@ const { encryptUserPassword } = await mockEsmWithActual('#src/libraries/user.js'
 }));
 
 const verifyUserPassword = jest.fn();
+const signOutUser = jest.fn();
 const usersLibraries = {
   generateUserId: jest.fn(async () => 'fooId'),
   insertUser: jest.fn(
@@ -86,6 +86,7 @@ const usersLibraries = {
     })
   ),
   verifyUserPassword,
+  signOutUser,
 } satisfies Partial<Libraries['users']>;
 
 const adminUserRoutes = await pickDefault(import('./basics.js'));
@@ -377,7 +378,7 @@ describe('adminUserRoutes', () => {
       .patch(`/users/${mockedUserId}/is-suspended`)
       .send({ isSuspended: true });
     expect(updateUserById).toHaveBeenCalledWith(mockedUserId, { isSuspended: true });
-    expect(revokeInstanceByUserId).toHaveBeenCalledWith('refreshToken', mockedUserId);
+    expect(signOutUser).toHaveBeenCalledWith(mockedUserId);
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
       ...mockUserResponse,
@@ -389,6 +390,7 @@ describe('adminUserRoutes', () => {
     const userId = 'fooUser';
     const response = await userRequest.delete(`/users/${userId}`);
     expect(response.status).toEqual(204);
+    expect(signOutUser).toHaveBeenCalledWith(userId);
   });
 
   it('DELETE /users/:userId should throw if user is deleting self', async () => {

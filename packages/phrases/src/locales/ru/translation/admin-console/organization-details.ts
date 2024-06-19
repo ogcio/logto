@@ -23,6 +23,10 @@ const organization_details = {
   search_user_placeholder:
     'Поиск по имени, электронной почте, телефону или идентификатору пользователя',
   at_least_one_user: 'Необходимо указать хотя бы одного пользователя.',
+  custom_data: 'Кастомные данные',
+  custom_data_tip:
+    'Кастомные данные представляют собой JSON-объект, который может использоваться для хранения дополнительных данных, связанных с организацией.',
+  invalid_json_object: 'Некорректный JSON-объект.',
 };
 
 export default Object.freeze(organization_details);

@@ -17,7 +17,7 @@ import { buildOidcClientMetadata } from '#src/oidc/utils.js';
 import assertThat from '#src/utils/assert-that.js';
 import { parseSearchParamsForSearch } from '#src/utils/search.js';
 
-import type { AuthedRouter, RouterInitArgs } from '../types.js';
+import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
 import { applicationCreateGuard, applicationPatchGuard } from './types.js';
 
@@ -34,7 +34,7 @@ const parseIsThirdPartQueryParam = (isThirdPartyQuery: 'true' | 'false' | undefi
 
 const applicationTypeGuard = z.nativeEnum(ApplicationType);
 
-export default function applicationRoutes<T extends AuthedRouter>(
+export default function applicationRoutes<T extends ManagementApiRouter>(
   ...[
     router,
     {
@@ -238,6 +238,7 @@ export default function applicationRoutes<T extends AuthedRouter>(
 
       const { isAdmin, protectedAppMetadata, ...rest } = body;
 
+      // @deprecated
       // User can enable the admin access of Machine-to-Machine apps by switching on a toggle on Admin Console.
       // Since those apps sit in the user tenant, we provide an internal role to apply the necessary scopes.
       // This role is NOT intended for user assignment.

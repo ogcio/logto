@@ -22,6 +22,10 @@ const organization_details = {
     'Uma vez removido, o utilizador perderá a sua adesão e funções nesta organização. Esta ação não pode ser desfeita.',
   search_user_placeholder: 'Pesquisar por nome, email, telefone ou ID de utilizador',
   at_least_one_user: 'Pelo menos um utilizador é necessário.',
+  custom_data: 'Dados personalizados',
+  custom_data_tip:
+    'Dados personalizados é um objeto JSON que pode ser usado para armazenar dados adicionais associados à organização.',
+  invalid_json_object: 'Objeto JSON inválido.',
 };
 
 export default Object.freeze(organization_details);

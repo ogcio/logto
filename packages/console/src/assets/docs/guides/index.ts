@@ -15,6 +15,7 @@ import spaAngular from './spa-angular/index';
 import spaReact from './spa-react/index';
 import spaVanilla from './spa-vanilla/index';
 import spaVue from './spa-vue/index';
+import spaWebflow from './spa-webflow/index';
 import thirdPartyOidc from './third-party-oidc/index';
 import { type Guide } from './types';
 import webDotnetCore from './web-dotnet-core/index';
@@ -24,15 +25,17 @@ import webDotnetCoreMvc from './web-dotnet-core-mvc/index';
 import webExpress from './web-express/index';
 import webGo from './web-go/index';
 import webGptPlugin from './web-gpt-plugin/index';
+import webJavaSpringBoot from './web-java-spring-boot/index';
 import webNext from './web-next/index';
 import webNextAppRouter from './web-next-app-router/index';
-import webNextServerActions from './web-next-server-actions/index';
+import webNextAuth from './web-next-auth/index';
 import webNuxt from './web-nuxt/index';
 import webOutline from './web-outline/index';
 import webPhp from './web-php/index';
 import webPython from './web-python/index';
 import webRemix from './web-remix/index';
 import webSveltekit from './web-sveltekit/index';
+import webWordpress from './web-wordpress/index';
 
 const guides: Readonly<Guide[]> = Object.freeze([
   {
@@ -62,13 +65,6 @@ const guides: Readonly<Guide[]> = Object.freeze([
     Logo: lazy(async () => import('./web-next-app-router/logo.svg')),
     Component: lazy(async () => import('./web-next-app-router/README.mdx')),
     metadata: webNextAppRouter,
-  },
-  {
-    order: 1.1,
-    id: 'web-next-server-actions',
-    Logo: lazy(async () => import('./web-next-server-actions/logo.svg')),
-    Component: lazy(async () => import('./web-next-server-actions/README.mdx')),
-    metadata: webNextServerActions,
   },
   {
     order: 1.2,
@@ -104,6 +100,20 @@ const guides: Readonly<Guide[]> = Object.freeze([
     Logo: lazy(async () => import('./web-go/logo.svg')),
     Component: lazy(async () => import('./web-go/README.mdx')),
     metadata: webGo,
+  },
+  {
+    order: 1.3,
+    id: 'web-next-auth',
+    Logo: lazy(async () => import('./web-next-auth/logo.svg')),
+    Component: lazy(async () => import('./web-next-auth/README.mdx')),
+    metadata: webNextAuth,
+  },
+  {
+    order: 1.4,
+    id: 'web-java-spring-boot',
+    Logo: lazy(async () => import('./web-java-spring-boot/logo.svg')),
+    Component: lazy(async () => import('./web-java-spring-boot/README.mdx')),
+    metadata: webJavaSpringBoot,
   },
   {
     order: 1.5,
@@ -153,6 +163,20 @@ const guides: Readonly<Guide[]> = Object.freeze([
     Logo: lazy(async () => import('./web-php/logo.svg')),
     Component: lazy(async () => import('./web-php/README.mdx')),
     metadata: webPhp,
+  },
+  {
+    order: 2.1,
+    id: 'spa-webflow',
+    Logo: lazy(async () => import('./spa-webflow/logo.svg')),
+    Component: lazy(async () => import('./spa-webflow/README.mdx')),
+    metadata: spaWebflow,
+  },
+  {
+    order: 2.2,
+    id: 'web-wordpress',
+    Logo: lazy(async () => import('./web-wordpress/logo.svg')),
+    Component: lazy(async () => import('./web-wordpress/README.mdx')),
+    metadata: webWordpress,
   },
   {
     order: 3,

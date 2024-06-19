@@ -4,7 +4,7 @@ const role_details = {
   delete_description:
     'Doing so will remove the permissions associated with this role from the affected users and delete the mapping between roles, users, and permissions.',
   role_deleted: '{{name}} was successfully deleted.',
-  settings_tab: 'Settings',
+  general_tab: 'General',
   users_tab: 'Users',
   m2m_apps_tab: 'Machine-to-machine apps',
   permissions_tab: 'Permissions',
@@ -13,8 +13,13 @@ const role_details = {
     'Roles are a grouping of permissions that can be assigned to users. They also provide a way to aggregate permissions defined for different APIs, making it more efficient to add, remove, or adjust permissions compared to assigning them individually to users.',
   field_name: 'Name',
   field_description: 'Description',
+  field_is_default: 'Default role',
+  field_is_default_description:
+    'Set this role as a default role for new users. Multiple default roles can be set. This will also affect the default roles for users created via Management API.',
   type_m2m_role_tag: 'Machine-to-machine app role',
   type_user_role_tag: 'User role',
+  m2m_role_notification:
+    'Assign this machine-to-machine role to a machine-to-machine app to grant access to the relative API resources. <a>Create a machine-to-machine app</a> first if you haven’t already.',
   permission: {
     assign_button: 'Assign permissions',
     assign_title: 'Assign permissions',

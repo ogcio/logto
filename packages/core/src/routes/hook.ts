@@ -1,12 +1,13 @@
 import {
   Hooks,
   Logs,
+  hook,
   hookConfigGuard,
+  hookEventGuard,
   hookEventsGuard,
   hookResponseGuard,
-  hook,
-  type HookResponse,
   type Hook,
+  type HookResponse,
 } from '@logto/schemas';
 import { generateStandardId, generateStandardSecret } from '@logto/shared';
 import { conditional, deduplicate, yes } from '@silverhand/essentials';
@@ -20,13 +21,13 @@ import koaQuotaGuard from '#src/middleware/koa-quota-guard.js';
 import { type AllowedKeyPrefix } from '#src/queries/log.js';
 import assertThat from '#src/utils/assert-that.js';
 
-import type { AuthedRouter, RouterInitArgs } from './types.js';
+import type { ManagementApiRouter, RouterInitArgs } from './types.js';
 
 const nonemptyUniqueHookEventsGuard = hookEventsGuard
   .nonempty()
   .transform((events) => deduplicate(events));
 
-export default function hookRoutes<T extends AuthedRouter>(
+export default function hookRoutes<T extends ManagementApiRouter>(
   ...[router, { queries, libraries }]: RouterInitArgs<T>
 ) {
   const {
@@ -42,7 +43,7 @@ export default function hookRoutes<T extends AuthedRouter>(
   } = queries;
 
   const {
-    hooks: { testHook },
+    hooks: { triggerTestHook },
     quota,
   } = libraries;
 
@@ -159,6 +160,7 @@ export default function hookRoutes<T extends AuthedRouter>(
     koaQuotaGuard({ key: 'hooksLimit', quota }),
     koaGuard({
       body: Hooks.createGuard.omit({ id: true, signingKey: true }).extend({
+        event: hookEventGuard.optional(),
         events: nonemptyUniqueHookEventsGuard.optional(),
       }),
       response: Hooks.guard,
@@ -196,7 +198,7 @@ export default function hookRoutes<T extends AuthedRouter>(
         body: { events, config },
       } = ctx.guard;
 
-      await testHook(id, events, config);
+      await triggerTestHook(id, events, config);
 
       ctx.status = 204;
 

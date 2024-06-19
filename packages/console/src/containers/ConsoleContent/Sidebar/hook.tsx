@@ -11,6 +11,7 @@ import Hook from '@/assets/icons/hook.svg';
 import JwtClaims from '@/assets/icons/jwt-claims.svg';
 import Key from '@/assets/icons/key.svg';
 import List from '@/assets/icons/list.svg';
+import OrganizationTemplate from '@/assets/icons/organization-template-feature.svg';
 import Organization from '@/assets/icons/organization.svg';
 import UserProfile from '@/assets/icons/profile.svg';
 import ResourceIcon from '@/assets/icons/resource.svg';
@@ -18,7 +19,7 @@ import Role from '@/assets/icons/role.svg';
 import SecurityLock from '@/assets/icons/security-lock.svg';
 import EnterpriseSso from '@/assets/icons/single-sign-on.svg';
 import Web from '@/assets/icons/web.svg';
-import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
+import { isCloud } from '@/consts/env';
 
 type SidebarItem = {
   Icon: FC;
@@ -100,9 +101,8 @@ export const useSidebarMenuItems = (): {
           title: 'roles',
         },
         {
-          Icon: Role,
+          Icon: OrganizationTemplate,
           title: 'organization_template',
-          isHidden: !isDevFeaturesEnabled,
         },
       ],
     },
@@ -129,7 +129,6 @@ export const useSidebarMenuItems = (): {
         {
           Icon: JwtClaims,
           title: 'customize_jwt',
-          isHidden: !(isCloud && isDevFeaturesEnabled),
         },
         {
           Icon: Hook,

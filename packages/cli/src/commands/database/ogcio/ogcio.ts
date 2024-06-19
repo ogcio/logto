@@ -5,11 +5,14 @@
 import type { CommonQueryMethods, DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import { seedApplications } from './applications.js';
+import { seedConnectors } from './connectors.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
 import { seedOrganizationRbacData } from './organizations-rbac.js';
 import { createOrganizations } from './organizations.js';
 import { seedResourceRbacData } from './resources-rbac.js';
 import { seedResources } from './resources.js';
+import { seedSignInExperiences } from './sign-in-experiences.js';
+import { seedWebhooks } from './webhooks.js';
 
 const createDataForTenant = async (
   transaction: DatabaseTransactionConnection,
@@ -41,6 +44,21 @@ const createDataForTenant = async (
     transaction,
     toSeed: tenantData,
     seededResources: resources,
+  });
+  const connectors = await seedConnectors({
+    transaction,
+    tenantId,
+    connectors: tenantData.connectors,
+  });
+  const signInExperiences = await seedSignInExperiences({
+    transaction,
+    tenantId,
+    experiences: tenantData.sign_in_experiences,
+  });
+  const webhooks = await seedWebhooks({
+    transaction,
+    tenantId,
+    hooks: tenantData.webhooks
   });
 };
 

@@ -22,6 +22,10 @@ const organization_details = {
     '削除すると、ユーザーは組織内のメンバーシップとロールを失います。この操作は元に戻せません。',
   search_user_placeholder: '名前、メール、電話番号、またはユーザーIDで検索',
   at_least_one_user: '少なくとも1人のユーザーが必要です。',
+  custom_data: 'カスタムデータ',
+  custom_data_tip:
+    'カスタムデータは、組織に関連付けられた追加データを格納するために使用できるJSONオブジェクトです。',
+  invalid_json_object: '無効なJSONオブジェクト。',
 };
 
 export default Object.freeze(organization_details);

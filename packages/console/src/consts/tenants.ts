@@ -1,7 +1,8 @@
-import { TenantTag, ReservedPlanId, defaultManagementApi } from '@logto/schemas';
+import { ReservedPlanId, TenantTag, defaultManagementApi } from '@logto/schemas';
 import dayjs from 'dayjs';
 
 import { type TenantResponse } from '@/cloud/types/router';
+import { RegionName } from '@/components/Region';
 import { type SubscriptionPlan } from '@/types/subscriptions';
 
 import { adminEndpoint, isCloud } from './env';
@@ -33,6 +34,8 @@ export const defaultTenantResponse: TenantResponse = {
   openInvoices: [],
   isSuspended: false,
   planId: defaultSubscriptionPlanId, // Reserved for compatibility with cloud
+  regionName: RegionName.EU, // Reserved for compatibility with cloud
+  createdAt: new Date(),
 };
 
 /**
@@ -67,6 +70,7 @@ export const defaultSubscriptionPlan: SubscriptionPlan = {
     ticketSupportResponseTime: 48,
     thirdPartyApplicationsLimit: null,
     tenantMembersLimit: null,
+    customJwtEnabled: true,
   },
 };
 

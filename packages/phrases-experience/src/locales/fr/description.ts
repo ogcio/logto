@@ -33,7 +33,7 @@ const description = {
   social_link_email_or_phone:
     'Vous pouvez lier une autre adresse e-mail ou un autre numéro de téléphone',
   social_bind_with_existing:
-    'Nous avons trouvé une {{method}} connexe qui a été enregistrée, et vous pouvez la lier directement.',
+    'Nous avons trouvé un compte associé, vous pouvez le lier directement.',
   reset_password: 'Mot de passe oublié',
   reset_password_description:
     'Entrez le {{types, list(type: disjunction;)}} associé à votre compte et nous vous enverrons le code de vérification pour réinitialiser votre mot de passe.',
@@ -83,11 +83,17 @@ const description = {
   /** UNTRANSLATED */
   grant_organization_access: 'Grant the organization access:',
   /** UNTRANSLATED */
+  authorize_personal_data_usage: 'Authorize the use of your personal data:',
+  /** UNTRANSLATED */
+  authorize_organization_access: 'Authorize access to the specific organization:',
+  /** UNTRANSLATED */
   user_scopes: 'Personal user data',
   /** UNTRANSLATED */
   organization_scopes: 'Organization access',
   /** UNTRANSLATED */
-  authorize_agreement: `By authorize the access, you agree to the {{name}}'s <link></link>.`,
+  authorize_agreement: `By authorizing the access, you agree to the {{name}}'s <link></link>.`,
+  /** UNTRANSLATED */
+  authorize_agreement_with_redirect: `By authorizing the access, you agree to the {{name}}'s <link></link>, and will be redirected to {{uri}}.`,
   /** UNTRANSLATED */
   not_you: 'Not you?',
   /** UNTRANSLATED */

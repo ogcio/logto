@@ -9,8 +9,7 @@ const quota_table = {
     title: 'Aplikacje',
     total: 'Liczba aplikacji',
     m2m: 'Aplikacja typu maszyna-maszyna',
-    /** UNTRANSLATED */
-    third_party: 'Third-party apps',
+    third_party: 'Aplikacje firm trzecich',
   },
   resource: {
     title: 'Zasoby API',
@@ -49,11 +48,12 @@ const quota_table = {
   organizations: {
     title: 'Organizacja',
     organizations: 'Organizacje',
-    monthly_active_organization: 'Miesięczna liczba aktywnych organizacji',
-    allowed_users_per_org: 'Dozwolona liczba użytkowników na organizację',
-    invitation: 'Zaproszenie',
+    organization: 'Organizacja',
+    organization_count: 'Liczba organizacji',
+    allowed_users_per_org: 'Użytkownicy na organizację',
+    invitation: 'Zaproszenia (API zarządzania)',
     org_roles: 'Role organizacji',
-    org_permissions: 'Uprawnienia organizacji',
+    org_permissions: 'Uprawnienia organizacyjne',
     just_in_time_provisioning: 'Provisioning w trybie just-in-time',
   },
   support: {
@@ -66,16 +66,11 @@ const quota_table = {
     hipaa_or_baa_report: 'Raport HIPAA/BAA',
   },
   developers_and_platform: {
-    /** UNTRANSLATED */
-    title: 'Developers and platform',
-    /** UNTRANSLATED */
+    title: 'Deweloperzy i platforma',
     hooks: 'Webhooks',
-    /** UNTRANSLATED */
-    audit_logs_retention: 'Audit logs retention',
-    /** UNTRANSLATED */
-    jwt_claims: 'JWT claims',
-    /** UNTRANSLATED */
-    tenant_members: 'Tenant members',
+    audit_logs_retention: 'Retention logów audit',
+    jwt_claims: 'Pretensje JWT',
+    tenant_members: 'Członkowie najemcy',
   },
   unlimited: 'Nieograniczone',
   contact: 'Kontakt',
@@ -97,17 +92,15 @@ const quota_table = {
     'Wszystkie rodzaje tokenów wydanych przez Logto, w tym tokeny dostępu, tokeny odświeżania, itp.',
   mao_tip:
     'MAO (aktywna organizacja miesięczna) oznacza liczbę unikalnych organizacji, które mają co najmniej jednego aktywnego użytkownika miesięcznie w cyklu rozliczeniowym.',
-  /** UNTRANSLATED */
   third_party_tip:
-    'Use Logto as your OIDC identity provider for third-party app sign-ins and permission grants.',
+    'Używaj Logto jako dostawcy tożsamości OIDC do logowania firm trzecich i udzielania zgód.',
   included: '{{value, number}} zawarte',
   included_mao: '{{value, number}} MAO wliczone',
   extra_quota_price: 'Następnie ${{value, number}} za miesiąc / każdy po',
   per_month_each: '${{value, number}} za miesiąc / każdy',
   extra_mao_price: 'Następnie ${{value, number}} za MAO',
   per_month: '${{value, number}} za miesiąc',
-  /** UNTRANSLATED */
-  per_member: 'Then ${{value, number}} per member',
+  per_member: 'Następnie ${{value, number}} za członka',
 };
 
 export default Object.freeze(quota_table);

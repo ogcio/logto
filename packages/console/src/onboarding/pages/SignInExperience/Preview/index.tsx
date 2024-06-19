@@ -10,11 +10,16 @@ import PlatformTabs from './PlatformTabs';
 import * as styles from './index.module.scss';
 
 type Props = {
-  signInExperience?: SignInExperience;
-  className?: string;
+  readonly signInExperience?: SignInExperience;
+  readonly className?: string;
+  /**
+   * The Logto endpoint to use for the preview. If not provided, the current tenant endpoint from
+   * the `AppDataContext` will be used.
+   */
+  readonly endpoint?: URL;
 };
 
-function Preview({ signInExperience, className }: Props) {
+function Preview({ signInExperience, className, endpoint }: Props) {
   const [currentTab, setCurrentTab] = useState(PreviewPlatform.DesktopWeb);
 
   return (
@@ -24,6 +29,7 @@ function Preview({ signInExperience, className }: Props) {
         platform={currentTab}
         mode={Theme.Light}
         signInExperience={signInExperience}
+        endpoint={endpoint}
       />
     </div>
   );

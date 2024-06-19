@@ -1,5 +1,4 @@
-import { withAppInsights } from '@logto/app-insights/react';
-import { type HookEvent, type Hook, Theme, type HookResponse } from '@logto/schemas';
+import { Theme, type Hook, type HookResponse } from '@logto/schemas';
 import { conditional } from '@silverhand/essentials';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +14,6 @@ import ItemPreview from '@/components/ItemPreview';
 import ListPage from '@/components/ListPage';
 import SuccessRate from '@/components/SuccessRate';
 import { defaultPageSize } from '@/consts';
-import { hookEventLabel } from '@/consts/webhooks';
 import Button from '@/ds-components/Button';
 import DynamicT from '@/ds-components/DynamicT';
 import TablePlaceholder from '@/ds-components/Table/TablePlaceholder';
@@ -75,7 +73,7 @@ function Webhooks() {
           {
             title: <DynamicT forKey="webhooks.table.name" />,
             dataIndex: 'name',
-            colSpan: 5,
+            colSpan: 4,
             render: ({ id, name }) => {
               return (
                 <ItemPreview
@@ -89,16 +87,10 @@ function Webhooks() {
           {
             title: <DynamicT forKey="webhooks.table.events" />,
             dataIndex: 'events',
-            colSpan: 6,
+            colSpan: 7,
             render: ({ event, events }) => {
               const eventArray = conditional(events.length > 0 && events) ?? [event];
-              return (
-                eventArray
-                  // eslint-disable-next-line unicorn/prefer-native-coercion-functions
-                  .filter((_event): _event is HookEvent => Boolean(_event))
-                  .map((_event) => t(hookEventLabel[_event]))
-                  .join(', ')
-              );
+              return eventArray.join(' / ');
             },
           },
           {
@@ -181,4 +173,4 @@ function Webhooks() {
   );
 }
 
-export default withAppInsights(Webhooks);
+export default Webhooks;

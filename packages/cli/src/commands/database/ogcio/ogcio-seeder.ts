@@ -9,6 +9,9 @@ export type OgcioSeeder = {
   organization_roles: OrganizationRoleSeeder[];
   applications: ApplicationSeeder[];
   resources: ResourceSeeder[];
+  connectors: ConnectorSeeder[];
+  webhooks: WebhookSeeder[];
+  sign_in_experiences: SignInExperienceSeeder[];
   resource_permissions: ResourcePermissionSeeder[];
   resource_roles: ResourceRoleSeeder[];
 };
@@ -16,11 +19,13 @@ export type OgcioSeeder = {
 export type OrganizationSeeder = {
   name: string;
   description: string;
+  id?: string;
 };
 
 export type OrganizationPermissionSeeder = {
-  actions: string[];
-  entities: string[];
+  specific_permissions?: string[];
+  actions?: string[];
+  entities?: string[];
 };
 
 export type OrganizationRoleSeeder = {
@@ -37,6 +42,8 @@ export type ApplicationSeeder = {
   type: string;
   redirect_uri: string;
   logout_redirect_uri: string;
+  id: string;
+  secret: string;
 };
 
 export type ResourceSeeder = {
@@ -45,10 +52,61 @@ export type ResourceSeeder = {
   indicator: string;
 };
 
+export type ConnectorSeeder = {
+  id: string;
+  sync_profile: boolean;
+  connector_id: string;
+  config: {
+    scope: string;
+    clientId: string;
+    clientSecret: string;
+    tokenEndpoint: string;
+    authorizationEndpoint: string;
+    tokenEndpointAuthMethod: string;
+    idTokenVerificationConfig: {
+      jwksUri: string;
+    };
+    clientSecretJwtSigningAlgorithm: string;
+  };
+  metadata: {
+    logo: string;
+    name: Record<string, string>;
+    target: string;
+  };
+};
+
+export type SignInExperienceSeeder = {
+  id: string;
+  color: {
+    primaryColor: string;
+    darkPrimaryColor: string;
+    isDarkModeEnabled: boolean;
+  };
+  branding: {
+    logoUrl: string;
+    darkLogoUrl: string;
+  };
+  language_info: {
+    autoDetect: boolean;
+    fallbackLanguage: string;
+  };
+  sign_in: {
+    methods: string[];
+  };
+  sign_up: {
+    verify: boolean;
+    password: boolean;
+    identifiers: string[];
+  };
+  social_sign_in_connector_targets: string[];
+  sign_in_mode: string;
+};
+
 export type ResourcePermissionSeeder = {
   for_resource_ids: string[];
-  actions: string[];
-  entities: string[];
+  specific_permissions?: string[];
+  actions?: string[];
+  entities?: string[];
 };
 
 export type ResourceRoleSeeder = {
@@ -63,6 +121,17 @@ export type ScopePerResourceRoleSeeder = {
   entities?: string[];
   specific_permissions?: string[];
   description: string;
+};
+
+export type WebhookSeeder = {
+  id: string;
+  name: string;
+  events: string[];
+  config: {
+    url: string;
+  };
+  signing_key: string;
+  enabled: true;
 };
 
 let inputSeeder: OgcioTenantSeeder | undefined;

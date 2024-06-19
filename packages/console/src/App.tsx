@@ -1,4 +1,3 @@
-import { AppInsightsBoundary } from '@logto/app-insights/react';
 import { UserScope } from '@logto/core-kit';
 import { LogtoProvider, Prompt, useLogto } from '@logto/react';
 import {
@@ -23,9 +22,6 @@ import AppLoading from '@/components/AppLoading';
 import { isCloud } from '@/consts/env';
 import { cloudApi, getManagementApi, meApi } from '@/consts/resources';
 import { ConsoleRoutes } from '@/containers/ConsoleRoutes';
-import useTrackUserId from '@/hooks/use-track-user-id';
-import { OnboardingRoutes } from '@/onboarding';
-import useUserOnboardingData from '@/onboarding/hooks/use-user-onboarding-data';
 
 import { GlobalScripts } from './components/Conversion';
 import { adminTenantEndpoint, mainTitle } from './consts';
@@ -114,26 +110,24 @@ function Providers() {
       }}
     >
       <AppThemeProvider>
-        <AppInsightsBoundary cloudRole="console">
-          <Helmet titleTemplate={`%s - ${mainTitle}`} defaultTitle={mainTitle} />
-          <ErrorBoundary>
-            <LogtoErrorBoundary>
-              {/**
-               * If it's not Cloud (OSS), render the tenant app container directly since only default tenant is available;
-               * if it's Cloud, render the tenant app container only when a tenant ID is available (in a tenant context).
-               */}
-              {!isCloud || currentTenantId ? (
-                <AppDataProvider>
-                  <AppConfirmModalProvider>
-                    <AppRoutes />
-                  </AppConfirmModalProvider>
-                </AppDataProvider>
-              ) : (
-                <CloudAppRoutes />
-              )}
-            </LogtoErrorBoundary>
-          </ErrorBoundary>
-        </AppInsightsBoundary>
+        <Helmet titleTemplate={`%s - ${mainTitle}`} defaultTitle={mainTitle} />
+        <ErrorBoundary>
+          <LogtoErrorBoundary>
+            {/**
+             * If it's not Cloud (OSS), render the tenant app container directly since only default tenant is available;
+             * if it's Cloud, render the tenant app container only when a tenant ID is available (in a tenant context).
+             */}
+            {!isCloud || currentTenantId ? (
+              <AppDataProvider>
+                <AppConfirmModalProvider>
+                  <AppRoutes />
+                </AppConfirmModalProvider>
+              </AppDataProvider>
+            ) : (
+              <CloudAppRoutes />
+            )}
+          </LogtoErrorBoundary>
+        </ErrorBoundary>
       </AppThemeProvider>
     </LogtoProvider>
   );
@@ -143,10 +137,7 @@ function Providers() {
 function AppRoutes() {
   const { tenantEndpoint } = useContext(AppDataContext);
   const { isLoaded } = useCurrentUser();
-  const { isOnboarding } = useUserOnboardingData();
   const { isAuthenticated } = useLogto();
-
-  useTrackUserId();
 
   // Authenticated user should load onboarding data before rendering the app.
   // This looks weird and it will be refactored soon by merging the onboarding
@@ -158,7 +149,7 @@ function AppRoutes() {
   return (
     <>
       <GlobalScripts />
-      {isAuthenticated && isOnboarding ? <OnboardingRoutes /> : <ConsoleRoutes />}
+      <ConsoleRoutes />
     </>
   );
 }

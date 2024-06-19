@@ -9,8 +9,7 @@ const quota_table = {
     title: 'Uygulamalar',
     total: 'Toplam uygulama sayısı',
     m2m: 'Makine-makine uygulamaları',
-    /** UNTRANSLATED */
-    third_party: 'Third-party apps',
+    third_party: 'Üçüncü taraf uygulamalar',
   },
   resource: {
     title: 'API Kaynakları',
@@ -49,11 +48,12 @@ const quota_table = {
   organizations: {
     title: 'Organizasyon',
     organizations: 'Organizasyonlar',
-    monthly_active_organization: 'Aylık aktif organizasyon',
-    allowed_users_per_org: 'Organizasyon başına izin verilen kullanıcılar',
-    invitation: 'Davet',
-    org_roles: 'Org rolleri',
-    org_permissions: 'Org izinleri',
+    organization: 'Organizasyon',
+    organization_count: 'Organizasyon sayısı',
+    allowed_users_per_org: 'Organizasyon başına kullanıcılar',
+    invitation: 'Davet (Management API)',
+    org_roles: 'Organizasyon rolleri',
+    org_permissions: 'Organizasyon izinleri',
     just_in_time_provisioning: 'İstisnai olana kadar temin',
   },
   support: {
@@ -66,20 +66,15 @@ const quota_table = {
     hipaa_or_baa_report: 'HIPAA/BAA raporu',
   },
   developers_and_platform: {
-    /** UNTRANSLATED */
-    title: 'Developers and platform',
-    /** UNTRANSLATED */
+    title: 'Geliştiriciler ve platform',
     hooks: 'Webhooks',
-    /** UNTRANSLATED */
-    audit_logs_retention: 'Audit logs retention',
-    /** UNTRANSLATED */
-    jwt_claims: 'JWT claims',
-    /** UNTRANSLATED */
-    tenant_members: 'Tenant members',
+    audit_logs_retention: 'Denetim kayıtları saklama',
+    jwt_claims: 'JWT iddiaları',
+    tenant_members: 'Kiracı üyeleri',
   },
   unlimited: 'Sınırsız',
   contact: 'İletişim',
-  monthly_price: '${{value, number}}/ay',
+  monthly_price: '${{value, number}} / ay',
   days_one: '{{count, number}} gün',
   days_other: '{{count, number}} gün',
   add_on: 'Ek Hizmet',
@@ -97,17 +92,15 @@ const quota_table = {
     'Logto tarafından ihraç edilen erişim tokeni, yenileme tokeni vb. dahil olmak üzere tüm token türleri.',
   mao_tip:
     "MAO (aylık aktif kuruluş) bir fatura döngüsünde en az bir MAU'ya (aylık aktif kullanıcı) sahip olan benzersiz kuruluşların sayısını ifade eder.",
-  /** UNTRANSLATED */
   third_party_tip:
-    'Use Logto as your OIDC identity provider for third-party app sign-ins and permission grants.',
+    "Logto'yu üçüncü taraf uygulama oturum açma ve izin verme için OIDC kimlik sağlayıcısı olarak kullanın.",
   included: '{{value, number}} dahil',
   included_mao: '{{value, number}} MAO dahil',
   extra_quota_price: 'Sonra aylık ${{value, number}} / sonrasında her biri',
   per_month_each: 'Aylık ${{value, number}} / her biri',
   extra_mao_price: 'Sonra MAO başına ${{value, number}}',
   per_month: 'Aylık ${{value, number}}',
-  /** UNTRANSLATED */
-  per_member: 'Then ${{value, number}} per member',
+  per_member: 'Sonra ${{value, number}} her üye',
 };
 
 export default Object.freeze(quota_table);

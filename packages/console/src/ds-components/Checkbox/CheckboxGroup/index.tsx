@@ -8,17 +8,17 @@ import Checkbox from '../Checkbox';
 
 import * as styles from './index.module.scss';
 
-type Option<T> = {
-  title: AdminConsoleKey;
+export type Option<T> = {
+  title?: AdminConsoleKey;
   tag?: ReactNode;
   value: T;
 };
 
 type Props<T> = {
-  options: Array<Option<T>>;
-  value: T[];
-  onChange: (value: T[]) => void;
-  className?: string;
+  readonly options: Array<Option<T>>;
+  readonly value: T[];
+  readonly onChange: (value: T[]) => void;
+  readonly className?: string;
 };
 
 function CheckboxGroup<T extends string>({
@@ -42,7 +42,7 @@ function CheckboxGroup<T extends string>({
           key={value}
           label={
             <>
-              <DynamicT forKey={title} />
+              {title ? <DynamicT forKey={title} /> : value}
               {tag}
             </>
           }

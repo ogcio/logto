@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 
+import ApplicationCreation from '@/components/ApplicationCreation';
 import ModalFooter from '@/components/Guide/ModalFooter';
 import ModalHeader from '@/components/Guide/ModalHeader';
 import useTenantPathname from '@/hooks/use-tenant-pathname';
 import * as modalStyles from '@/scss/modal.module.scss';
 
-import CreateForm from '../CreateForm';
 import GuideLibrary from '../GuideLibrary';
 
 import * as styles from './index.module.scss';
 
 type Props = {
-  isOpen: boolean;
-  onClose: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 };
 
 function GuideLibraryModal({ isOpen, onClose }: Props) {
@@ -47,8 +47,8 @@ function GuideLibraryModal({ isOpen, onClose }: Props) {
         />
       </div>
       {showCreateForm && (
-        <CreateForm
-          onClose={(newApp) => {
+        <ApplicationCreation
+          onCompleted={(newApp) => {
             if (newApp) {
               navigate(`/applications/${newApp.id}`);
             }

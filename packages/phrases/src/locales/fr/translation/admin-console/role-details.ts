@@ -4,7 +4,7 @@ const role_details = {
   delete_description:
     'Cela supprimera les autorisations associées à ce rôle des utilisateurs concernés et supprimera la correspondance entre les rôles, les utilisateurs et les autorisations.',
   role_deleted: '{{name}} a été supprimé avec succès.',
-  settings_tab: 'Paramètres',
+  general_tab: 'Général',
   users_tab: 'Utilisateurs',
   m2m_apps_tab: 'Applications machine-à-machine',
   permissions_tab: 'Autorisations',
@@ -13,8 +13,13 @@ const role_details = {
     "Les rôles sont un regroupement d'autorisations qui peuvent être attribuées aux utilisateurs. Ils fournissent également un moyen d'agréger les autorisations définies pour différentes API, ce qui rend plus efficace l'ajout, la suppression ou l'ajustement des autorisations par rapport à leur attribution individuelle aux utilisateurs.",
   field_name: 'Nom',
   field_description: 'Description',
+  field_is_default: 'Rôle par défaut',
+  field_is_default_description:
+    "Définissez ce rôle comme rôle par défaut pour les nouveaux utilisateurs. Plusieurs rôles par défaut peuvent être définis. Cela affectera également les rôles par défaut des utilisateurs créés via l'API de gestion.",
   type_m2m_role_tag: "Rôle de l'application machine-à-machine",
   type_user_role_tag: "Rôle d'utilisateur",
+  m2m_role_notification:
+    "Attribuez ce rôle machine à machine à une application machine à machine pour accorder l'accès aux ressources d'API relatives. <a>Créez d'abord une application machine à machine</a> si ce n'est pas déjà fait.",
   permission: {
     assign_button: 'Attribuer des autorisations',
     assign_title: 'Attribuer des autorisations',

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
 import {
   UsersPasswordEncryptionMethod,
@@ -10,16 +11,18 @@ import { conditional, pick, yes } from '@silverhand/essentials';
 import { boolean, literal, nativeEnum, object, string } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
+import { manageDefaultOrganizations } from '#src/libraries/ogcio-user.js';
 import { encryptUserPassword } from '#src/libraries/user.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
 
-import type { AuthedRouter, RouterInitArgs } from '../types.js';
+import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
-export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: RouterInitArgs<T>) {
+export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
+  ...args: RouterInitArgs<T>
+) {
   const [router, { queries, libraries }] = args;
   const {
-    oidcModelInstances: { revokeInstanceByUserId },
     users: {
       deleteUserById,
       findUserById,
@@ -28,10 +31,18 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
       hasUserWithEmail,
       hasUserWithPhone,
     },
-    userSsoIdentities,
+    // OGCIO
+    organizations,
   } = queries;
   const {
-    users: { checkIdentifierCollision, generateUserId, insertUser, verifyUserPassword },
+    users: {
+      checkIdentifierCollision,
+      generateUserId,
+      insertUser,
+      verifyUserPassword,
+      signOutUser,
+      findUserSsoIdentities,
+    },
   } = libraries;
 
   router.get(
@@ -55,7 +66,7 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
         ...conditional(
           includeSsoIdentities &&
             yes(includeSsoIdentities) && {
-              ssoIdentities: await userSsoIdentities.findUserSsoIdentitiesByUserId(userId),
+              ssoIdentities: await findUserSsoIdentities(userId),
             }
         ),
       };
@@ -151,7 +162,7 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
         profile: userProfileGuard,
       }).partial(),
       response: userProfileResponseGuard,
-      status: [200, 404, 422],
+      status: [200, 400, 404, 422],
     }),
     async (ctx, next) => {
       const {
@@ -211,6 +222,9 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
         },
         []
       );
+
+      // OGCIO
+      await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
 
       ctx.body = pick(user, ...userInfoSelectFields);
 
@@ -341,14 +355,13 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
       });
 
       if (isSuspended) {
-        await revokeInstanceByUserId('refreshToken', user.id);
+        await signOutUser(user.id);
       }
 
       ctx.body = pick(user, ...userInfoSelectFields);
 
       return next();
     }
-    // eslint-disable-next-line max-lines
   );
 
   router.delete(
@@ -366,6 +379,7 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
         throw new RequestError('user.cannot_delete_self');
       }
 
+      await signOutUser(userId);
       await deleteUserById(userId);
 
       ctx.status = 204;
@@ -374,3 +388,4 @@ export default function adminUserBasicsRoutes<T extends AuthedRouter>(...args: R
     }
   );
 }
+/* eslint-enable max-lines */

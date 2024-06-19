@@ -1,13 +1,14 @@
 import {
-  type CreateOrganizationRole,
   OrganizationRoles,
   organizationRoleWithScopesGuard,
-  organizationRoleWithScopesGuardDeprecated,
+  type CreateOrganizationRole,
+  type OrganizationRole,
+  type OrganizationRoleKeys,
 } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { z } from 'zod';
 
-import { EnvSet } from '#src/env-set/index.js';
+import { buildManagementApiContext } from '#src/libraries/hook/utils.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import koaPagination from '#src/middleware/koa-pagination.js';
 import koaQuotaGuard from '#src/middleware/koa-quota-guard.js';
@@ -15,11 +16,15 @@ import { organizationRoleSearchKeys } from '#src/queries/organization/index.js';
 import SchemaRouter from '#src/utils/SchemaRouter.js';
 import { parseSearchOptions } from '#src/utils/search.js';
 
-import { type AuthedRouter, type RouterInitArgs } from '../types.js';
+import {
+  type ManagementApiRouter,
+  type ManagementApiRouterContext,
+  type RouterInitArgs,
+} from '../types.js';
 
 import { errorHandler } from './utils.js';
 
-export default function organizationRoleRoutes<T extends AuthedRouter>(
+export default function organizationRoleRoutes<T extends ManagementApiRouter>(
   ...[
     originalRouter,
     {
@@ -33,7 +38,13 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
     },
   ]: RouterInitArgs<T>
 ) {
-  const router = new SchemaRouter(OrganizationRoles, roles, {
+  const router = new SchemaRouter<
+    OrganizationRoleKeys,
+    CreateOrganizationRole,
+    OrganizationRole,
+    unknown,
+    ManagementApiRouterContext
+  >(OrganizationRoles, roles, {
     middlewares: [koaQuotaGuard({ key: 'organizationsEnabled', quota, methods: ['POST', 'PUT'] })],
     disabled: { get: true, post: true },
     errorHandler,
@@ -45,10 +56,7 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
     koaPagination(),
     koaGuard({
       query: z.object({ q: z.string().optional() }),
-      // TODO @wangsijie - Remove this once the feature is ready
-      response: EnvSet.values.isDevFeaturesEnabled
-        ? organizationRoleWithScopesGuard.array()
-        : organizationRoleWithScopesGuardDeprecated.array(),
+      response: organizationRoleWithScopesGuard.array(),
       status: [200],
     }),
     async (ctx, next) => {
@@ -70,19 +78,6 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
     resourceScopeIds: string[];
   };
 
-  // TODO @wangsijie - Remove this once the feature is ready
-  const originalCreateCard: z.ZodType<
-    Omit<CreateOrganizationRolePayload, 'resourceScopeIds'> & { resourceScopeIds?: string[] },
-    z.ZodTypeDef,
-    unknown
-  > = OrganizationRoles.createGuard
-    .omit({
-      id: true,
-    })
-    .extend({
-      organizationScopeIds: z.array(z.string()).default([]),
-    });
-
   const createGuard: z.ZodType<CreateOrganizationRolePayload, z.ZodTypeDef, unknown> =
     OrganizationRoles.createGuard
       .omit({
@@ -96,7 +91,7 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
   router.post(
     '/',
     koaGuard({
-      body: EnvSet.values.isDevFeaturesEnabled ? createGuard : originalCreateCard,
+      body: createGuard,
       response: OrganizationRoles.guard,
       status: [201, 422],
     }),
@@ -110,8 +105,7 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
         );
       }
 
-      // TODO @wangsijie - Remove this once the feature is ready
-      if (EnvSet.values.isDevFeaturesEnabled && resourceScopeIds && resourceScopeIds.length > 0) {
+      if (resourceScopeIds.length > 0) {
         await rolesResourceScopes.insert(
           ...resourceScopeIds.map<[string, string]>((id) => [role.id, id])
         );
@@ -119,14 +113,22 @@ export default function organizationRoleRoutes<T extends AuthedRouter>(
 
       ctx.body = role;
       ctx.status = 201;
+
+      // Trigger `OrganizationRole.Scope.Updated` event if organizationScopeIds or resourceScopeIds are provided.
+      if (organizationScopeIds.length > 0 || resourceScopeIds.length > 0) {
+        ctx.appendDataHookContext({
+          event: 'OrganizationRole.Scopes.Updated',
+          ...buildManagementApiContext(ctx),
+          organizationRoleId: role.id,
+        });
+      }
+
       return next();
     }
   );
 
   router.addRelationRoutes(rolesScopes, 'scopes');
-  if (EnvSet.values.isDevFeaturesEnabled) {
-    router.addRelationRoutes(rolesResourceScopes, 'resource-scopes');
-  }
+  router.addRelationRoutes(rolesResourceScopes, 'resource-scopes');
 
   originalRouter.use(router.routes());
 }

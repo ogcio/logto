@@ -1,10 +1,11 @@
 import type { RoleResponse } from '@logto/schemas';
 import { RoleType, Roles, featuredApplicationGuard, featuredUserGuard } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
-import { pickState, tryThat } from '@silverhand/essentials';
-import { object, string, z, number } from 'zod';
+import { pickState, trySafe, tryThat } from '@silverhand/essentials';
+import { number, object, string, z } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
+import { buildManagementApiContext } from '#src/libraries/hook/utils.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import koaPagination from '#src/middleware/koa-pagination.js';
 import koaRoleRlsErrorHandler from '#src/middleware/koa-role-rls-error-handler.js';
@@ -13,12 +14,15 @@ import { parseSearchParamsForSearch } from '#src/utils/search.js';
 
 import roleApplicationRoutes from './role.application.js';
 import roleUserRoutes from './role.user.js';
-import type { AuthedRouter, RouterInitArgs } from './types.js';
+import type { ManagementApiRouter, RouterInitArgs } from './types.js';
 
-export default function roleRoutes<T extends AuthedRouter>(...[router, tenant]: RouterInitArgs<T>) {
+export default function roleRoutes<T extends ManagementApiRouter>(
+  ...[router, tenant]: RouterInitArgs<T>
+) {
   const { queries, libraries } = tenant;
   const {
     rolesScopes: { insertRolesScopes },
+    scopes: { findScopesByIds },
     roles: {
       countRoles,
       deleteRoleById,
@@ -170,6 +174,19 @@ export default function roleRoutes<T extends AuthedRouter>(...[router, tenant]: 
         await insertRolesScopes(
           scopeIds.map((scopeId) => ({ id: generateStandardId(), roleId: role.id, scopeId }))
         );
+
+        // Trigger the `Role.Scopes.Updated` event if scopeIds are provided. Should not break the request
+        await trySafe(async () => {
+          // Align the response type with POST /roles/:id/scopes
+          const newRolesScopes = await findScopesByIds(scopeIds);
+
+          ctx.appendDataHookContext({
+            event: 'Role.Scopes.Updated',
+            ...buildManagementApiContext(ctx),
+            roleId: role.id,
+            data: newRolesScopes,
+          });
+        });
       }
 
       ctx.body = role;
@@ -199,7 +216,7 @@ export default function roleRoutes<T extends AuthedRouter>(...[router, tenant]: 
   router.patch(
     '/roles/:id',
     koaGuard({
-      body: Roles.createGuard.pick({ name: true, description: true }).partial(),
+      body: Roles.createGuard.pick({ name: true, description: true, isDefault: true }).partial(),
       params: object({ id: string().min(1) }),
       response: Roles.guard,
       status: [200, 404, 422],

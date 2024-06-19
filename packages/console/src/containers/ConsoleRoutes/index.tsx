@@ -1,5 +1,3 @@
-import { Component, GeneralEvent } from '@logto/app-insights/custom-event';
-import { TrackOnce } from '@logto/app-insights/react';
 import { ossConsolePath } from '@logto/schemas';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { SWRConfig } from 'swr';
@@ -15,7 +13,7 @@ import Toast from '@/ds-components/Toast';
 import useSwrOptions from '@/hooks/use-swr-options';
 import Callback from '@/pages/Callback';
 import CheckoutSuccessCallback from '@/pages/CheckoutSuccessCallback';
-import HandleSocialCallback from '@/pages/Profile/containers/HandleSocialCallback';
+import Profile from '@/pages/Profile';
 import Welcome from '@/pages/Welcome';
 import { dropLeadingSlash } from '@/utils/url';
 
@@ -25,7 +23,6 @@ function Layout() {
   return (
     <SWRConfig value={swrOptions}>
       <AppBoundary>
-        <TrackOnce component={Component.Console} event={GeneralEvent.Visit} />
         <Toast />
         <Outlet />
       </AppBoundary>
@@ -46,7 +43,7 @@ export function ConsoleRoutes() {
         <Route path="callback" element={<Callback />} />
         <Route path="welcome" element={<Welcome />} />
         <Route element={<ProtectedRoutes />}>
-          <Route path="handle-social" element={<HandleSocialCallback />} />
+          <Route path={dropLeadingSlash(GlobalRoute.Profile) + '/*'} element={<Profile />} />
           <Route element={<TenantAccess />}>
             {isCloud && (
               <Route

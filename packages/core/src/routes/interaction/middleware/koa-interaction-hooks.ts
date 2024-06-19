@@ -1,22 +1,31 @@
-import { type Optional, trySafe, conditionalString } from '@silverhand/essentials';
+import { userInfoSelectFields, type DataHookEvent, type User } from '@logto/schemas';
+import { conditional, conditionalString, pick, trySafe } from '@silverhand/essentials';
 import type { MiddlewareType } from 'koa';
 import type { IRouterParamContext } from 'koa-router';
 
 import {
-  type InteractionHookContext,
-  type InteractionHookResult,
-} from '#src/libraries/hook/index.js';
+  DataHookContextManager,
+  InteractionHookContextManager,
+} from '#src/libraries/hook/context-manager.js';
 import type Libraries from '#src/tenants/Libraries.js';
+import { getConsoleLogFromContext } from '#src/utils/console.js';
 
 import { getInteractionStorage } from '../utils/interaction.js';
 
 import type { WithInteractionDetailsContext } from './koa-interaction-details.js';
 
-type AssignInteractionHookResult = (result: InteractionHookResult) => void;
+type AssignDataHookContext = (payload: {
+  event: DataHookEvent;
+  user?: User;
+  data?: Record<string, unknown>;
+}) => void;
 
 export type WithInteractionHooksContext<
   ContextT extends IRouterParamContext = IRouterParamContext,
-> = ContextT & { assignInteractionHookResult: AssignInteractionHookResult };
+> = ContextT & {
+  assignInteractionHookResult: InteractionHookContextManager['assignInteractionHookResult'];
+  assignDataHookContext: AssignDataHookContext;
+};
 
 /**
  * The factory to create a new interaction hook middleware function.
@@ -28,44 +37,59 @@ export default function koaInteractionHooks<
   ContextT extends WithInteractionDetailsContext,
   ResponseT,
 >({
-  hooks: { triggerInteractionHooks },
+  hooks: { triggerInteractionHooks, triggerDataHooks },
 }: Libraries): MiddlewareType<StateT, WithInteractionHooksContext<ContextT>, ResponseT> {
   return async (ctx, next) => {
-    const { event } = getInteractionStorage(ctx.interactionDetails.result);
+    const { event: interactionEvent } = getInteractionStorage(ctx.interactionDetails.result);
+
     const {
       interactionDetails,
       header: { 'user-agent': userAgent },
       ip,
     } = ctx;
 
-    // Predefined interaction hook context
-    const interactionHookContext: InteractionHookContext = {
-      event,
-      sessionId: interactionDetails.jti,
+    const interactionApiMetadata = {
+      interactionEvent,
+      userAgent,
       applicationId: conditionalString(interactionDetails.params.client_id),
-      userIp: ip,
+      sessionId: interactionDetails.jti,
     };
 
-    // eslint-disable-next-line @silverhand/fp/no-let
-    let interactionHookResult: Optional<InteractionHookResult>;
+    const interactionHookContext = new InteractionHookContextManager({
+      ...interactionApiMetadata,
+      userIp: ip,
+    });
 
-    /**
-     * Assign an interaction hook result to trigger webhook.
-     * Calling it multiple times will overwrite the original result, but only one webhook will be triggered.
-     * @param result The result to assign.
-     */
-    ctx.assignInteractionHookResult = (result) => {
-      // eslint-disable-next-line @silverhand/fp/no-mutation
-      interactionHookResult = result;
+    ctx.assignInteractionHookResult =
+      interactionHookContext.assignInteractionHookResult.bind(interactionHookContext);
+
+    const dataHookContext = new DataHookContextManager({
+      ...interactionApiMetadata,
+      ip,
+    });
+
+    // Assign user and event data to the data hook context
+    ctx.assignDataHookContext = ({ event, user, data: extraData }) => {
+      dataHookContext.appendContext({
+        event,
+        data: {
+          // Only return the selected user fields
+          ...conditional(user && pick(user, ...userInfoSelectFields)),
+          ...extraData,
+        },
+      });
     };
 
     await next();
 
-    if (interactionHookResult) {
+    if (interactionHookContext.interactionHookResult) {
       // Hooks should not crash the app
-      void trySafe(
-        triggerInteractionHooks(interactionHookContext, interactionHookResult, userAgent)
-      );
+      void trySafe(triggerInteractionHooks(getConsoleLogFromContext(ctx), interactionHookContext));
+    }
+
+    if (dataHookContext.contextArray.length > 0) {
+      // Hooks should not crash the app
+      void trySafe(triggerDataHooks(getConsoleLogFromContext(ctx), dataHookContext));
     }
   };
 }

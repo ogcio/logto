@@ -4,7 +4,7 @@ import { type GuideMetadata } from '../types';
 
 const metadata: Readonly<GuideMetadata> = Object.freeze({
   name: 'PHP',
-  description: 'Integrate Logto into your PHP web app, such as Lavarel.',
+  description: 'Integrate Logto into your PHP web app, such as Laravel.',
   target: ApplicationType.Traditional,
   sample: {
     repo: 'php',
@@ -12,7 +12,7 @@ const metadata: Readonly<GuideMetadata> = Object.freeze({
   },
   fullGuide: {
     title: 'Full PHP SDK tutorial',
-    url: 'https://docs.logto.io/sdk/php',
+    url: 'https://docs.logto.io/quick-starts/php',
   },
 });
 

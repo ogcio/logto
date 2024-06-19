@@ -9,8 +9,7 @@ const quota_table = {
     title: 'Aplicações',
     total: 'Total de aplicações',
     m2m: 'Aplicação máquina-a-máquina',
-    /** UNTRANSLATED */
-    third_party: 'Third-party apps',
+    third_party: 'Aplicativos de terceiros',
   },
   resource: {
     title: 'Recursos de API',
@@ -49,11 +48,12 @@ const quota_table = {
   organizations: {
     title: 'Organização',
     organizations: 'Organizações',
-    monthly_active_organization: 'Organização ativa mensal',
-    allowed_users_per_org: 'Usuários permitidos por organização',
-    invitation: 'Convite',
-    org_roles: 'Funções de organização',
-    org_permissions: 'Permissões de organização',
+    organization: 'Organização',
+    organization_count: 'Contagem de organizações',
+    allowed_users_per_org: 'Usuários por organização',
+    invitation: 'Convite (API de Gerenciamento)',
+    org_roles: 'Funções da organização',
+    org_permissions: 'Permissões da organização',
     just_in_time_provisioning: 'Provisionamento just-in-time',
   },
   support: {
@@ -61,21 +61,16 @@ const quota_table = {
     community: 'Comunidade',
     customer_ticket: 'Ticket de suporte',
     premium: 'Premium',
-    email_ticket_support: 'Suporte via e-mail',
+    email_ticket_support: 'Suporte por e-mail',
     soc2_report: 'Relatório SOC2',
     hipaa_or_baa_report: 'Relatório HIPAA/BAA',
   },
   developers_and_platform: {
-    /** UNTRANSLATED */
-    title: 'Developers and platform',
-    /** UNTRANSLATED */
+    title: 'Desenvolvedores e plataforma',
     hooks: 'Webhooks',
-    /** UNTRANSLATED */
-    audit_logs_retention: 'Audit logs retention',
-    /** UNTRANSLATED */
-    jwt_claims: 'JWT claims',
-    /** UNTRANSLATED */
-    tenant_members: 'Tenant members',
+    audit_logs_retention: 'Retenção de logs de auditoria',
+    jwt_claims: 'Reivindicações JWT',
+    tenant_members: 'Membros do locatário',
   },
   unlimited: 'Ilimitado',
   contact: 'Contato',
@@ -83,7 +78,7 @@ const quota_table = {
   days_one: '${ { count, number } } dia',
   days_other: '${ { count, number } } dias',
   add_on: 'Adicional',
-  tier: 'Nível${ { value, number } }: ',
+  tier: 'Nível${ { value, number } }:',
   paid_token_limit_tip:
     'O Logto adicionará cobranças para recursos que ultrapassem o limite da sua cota. Você pode usá-lo gratuitamente até começarmos a cobrar por volta do segundo trimestre de 2024. Se precisar de mais tokens, entre em contato conosco. Por padrão, cobramos $80 por mês para cada milhão de tokens.',
   paid_quota_limit_tip:
@@ -97,17 +92,15 @@ const quota_table = {
     'Todos os tipos de tokens emitidos pelo Logto, incluindo token de acesso, token de atualização, etc.',
   mao_tip:
     'MAO (Organização Ativa Mensal) significa o número de organizações únicas que têm pelo menos um MAU (Usuário Ativo Mensal) em um ciclo de faturamento.',
-  /** UNTRANSLATED */
   third_party_tip:
-    'Use Logto as your OIDC identity provider for third-party app sign-ins and permission grants.',
+    'Use Logto como seu provedor de identidade OIDC para logins e concessões de permissão de aplicativos de terceiros.',
   included: 'incluído{{value, number}}',
   included_mao: '{{value, number}} MAO incluído',
   extra_quota_price: 'Então ${{value, number}} por mês / cada depois',
   per_month_each: '${{value, number}} por mês / cada',
   extra_mao_price: 'Então ${{value, number}} por MAO',
   per_month: '${{value, number}} por mês',
-  /** UNTRANSLATED */
-  per_member: 'Then ${{value, number}} per member',
+  per_member: 'Então ${{value, number}} por membro',
 };
 
 export default Object.freeze(quota_table);
