@@ -174,7 +174,7 @@ export const seedResourceRbacData = async (params: {
 
 const getEmptyList = (): ScopesLists<ResourceSeedingScope> => ({
   scopesList: [],
-  scopesByEntity: {},
+  scopeByResource: {},
   scopesByAction: {},
   scopesByFullName: {},
 });

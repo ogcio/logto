@@ -42,7 +42,7 @@ export type ResourceSeedingRole = SeedingRole<ResourceSeedingScope>;
 
 export type ScopesLists<T extends ResourceSeedingScope | OrganizationSeedingScope> = {
   scopesList: T[];
-  scopesByEntity: Record<string, T[]>;
+  scopeByResource: Record<string, T[]>;
   scopesByAction: Record<string, T[]>;
   scopesByFullName: Record<string, T>;
 };
@@ -51,8 +51,8 @@ export type OrganizationScopesLists = ScopesLists<OrganizationSeedingScope>;
 
 export type ResourceScopesLists = Record<string, ScopesLists<ResourceSeedingScope>>;
 
-export const buildScopeFullName = (entity: string, action: string, subject?: string): string =>
-  [entity, action, subject].filter(Boolean).join(':');
+export const buildScopeFullName = (resource: string, action: string, prefix?: string): string =>
+  [prefix, resource, action].filter(Boolean).join(':');
 
 export const ensureRoleHasAtLeastOneScope = <T>(roleName: string, scopes: T[]): void => {
   if (scopes.length === 0) {
@@ -62,19 +62,21 @@ export const ensureRoleHasAtLeastOneScope = <T>(roleName: string, scopes: T[]): 
 
 export const buildCrossScopes = <T extends ResourceSeedingScope | OrganizationSeedingScope>(
   actions: string[],
-  entities: string[],
+  resources: string[],
   specificPermissions: string[],
-  scopesLists: ScopesLists<T>
+  scopesLists: ScopesLists<T>,
+  prefix?: string
 ): T[] => {
-  if (actions.length === 0 && entities.length === 0) {
+  if (actions.length === 0 && resources.length === 0) {
     return [];
   }
   const scopesByAction = actions.length > 0 ? actions : Object.keys(scopesLists.scopesByAction);
-  const scopesByEntity = entities.length > 0 ? entities : Object.keys(scopesLists.scopesByEntity);
+  const scopeByResource =
+    resources.length > 0 ? resources : Object.keys(scopesLists.scopeByResource);
   const byFullname: T[] = [];
   for (const action of scopesByAction) {
-    for (const entity of scopesByEntity) {
-      const fullName = buildScopeFullName(entity, action);
+    for (const entity of scopeByResource) {
+      const fullName = buildScopeFullName(entity, action, prefix);
       if (
         scopesLists.scopesByFullName[fullName] !== undefined &&
         !specificPermissions.includes(fullName)
@@ -112,22 +114,23 @@ const addScopeToLists = (
   resource: string,
   action: string,
   resourceId?: string,
-  subject?: string
+  prefix?: string
 ) => {
-  const { scopesByEntity, scopesList, scopesByAction, scopesByFullName } = lists;
+  const { scopeByResource, scopesList, scopesByAction, scopesByFullName } = lists;
 
   const scope: { name: string; description: string; resource_id?: string } = {
-    name: buildScopeFullName(resource, action, subject),
-    description: `${action} ${resource} ${subject}`,
+    name: buildScopeFullName(resource, action, prefix),
+    description:
+      prefix === undefined ? `${action} ${resource}` : `(${prefix}) ${action} ${resource}`,
   };
   if (resourceId) {
     scope.resource_id = resourceId;
   }
   scopesList.push(scope);
-  if (scopesByEntity[resource] === undefined) {
-    scopesByEntity[resource] = [];
+  if (scopeByResource[resource] === undefined) {
+    scopeByResource[resource] = [];
   }
-  scopesByEntity[resource]!.push(scope);
+  scopeByResource[resource]!.push(scope);
   if (scopesByAction[action] === undefined) {
     scopesByAction[action] = [];
   }
@@ -145,17 +148,30 @@ export const fillScopesGroup = <
   resourceId?: string
 ) => {
   for (const permission of seeder.specific_permissions ?? []) {
-    const [resource, action, subject] = permission.split(':');
+    let prefix;
+    let resource;
+    let action;
+    const [comp1, comp2, comp3] = permission.split(':');
+
+    if (comp3) {
+      prefix = comp1;
+      resource = comp2;
+      action = comp3;
+    } else {
+      resource = comp1;
+      action = comp2;
+    }
+
     if (!resource || !action) {
       continue;
     }
 
-    addScopeToLists(fullLists, resource, action, resourceId, subject);
+    addScopeToLists(fullLists, resource, action, resourceId, prefix);
   }
 
   for (const resource of seeder.entities ?? []) {
     for (const action of seeder.actions ?? []) {
-      addScopeToLists(fullLists, resource, action, resourceId);
+      addScopeToLists(fullLists, resource, action, resourceId, seeder.prefix);
     }
   }
 
@@ -247,6 +263,7 @@ export const getScopesPerRole = <U extends OrganizationSeedingScope | ResourceSe
     specific_permissions?: string[];
     actions?: string[];
     entities?: string[];
+    prefix?: string;
   },
   scopesLists: ScopesLists<U>
 ): U[] => {
@@ -257,7 +274,7 @@ export const getScopesPerRole = <U extends OrganizationSeedingScope | ResourceSe
   ensureRoleHasAtLeastOneScope(roleToSeed.name, [...specificScopes, ...byAction, ...byEntity]);
 
   const fullList = [
-    ...buildCrossScopes(byAction, byEntity, inputSpecific, scopesLists),
+    ...buildCrossScopes(byAction, byEntity, inputSpecific, scopesLists, roleToSeed.prefix),
     ...specificScopes,
   ];
 

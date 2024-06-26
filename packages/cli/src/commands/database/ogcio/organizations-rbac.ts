@@ -21,7 +21,7 @@ type SeedingRelation = { organization_role_id: string; organization_scope_id: st
 const fillScopes = (scopesToSeed: OrganizationPermissionSeeder[]): OrganizationScopesLists => {
   const fullLists: OrganizationScopesLists = {
     scopesList: [],
-    scopesByEntity: {},
+    scopeByResource: {},
     scopesByAction: {},
     scopesByFullName: {},
   };
@@ -117,7 +117,7 @@ export const seedOrganizationRbacData = async (params: {
   return {
     scopes: {
       scopesList: [],
-      scopesByEntity: {},
+      scopeByResource: {},
       scopesByAction: {},
       scopesByFullName: {},
     },

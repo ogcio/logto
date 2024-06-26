@@ -10,16 +10,22 @@
         "organization_permissions": [
             {
                 "specific_permissions": [
-                    "payments:create:providers"
+                    "payments:provider:*",
+                    "payments:payment_request:*",
+                    "payments:payment_request.public:read",
+                    "payments:transaction:*"
                 ]
             }
         ],
         "organization_roles": [
             {
-                "name": "Public servant",
+                "name": "Public Servant",
                 "description": "Building Blocks Public servant",
                 "specific_permissions": [
-                    "payments:create:providers"
+                    "payments:provider:*",
+                    "payments:payment_request:*",
+                    "payments:payment_request.public:read",
+                    "payments:transaction:*"
                 ]
             }
         ],
@@ -61,7 +67,10 @@
                     "payments-api"
                 ],
                 "specific_permissions": [
-                    "payments:create:payment"
+                    "payments:transaction.self:read",
+                    "payments:payment_request.public:read",
+                    "payments:transaction.self:write",
+                    "payments:provider.public:read"
                 ]
             }
         ],
@@ -75,7 +84,10 @@
                             "payments-api"
                         ],
                         "specific_permissions": [
-                            "payments:create:payment"
+                            "payments:transaction.self:read",
+                            "payments:payment_request.public:read",
+                            "payments:transaction.self:write",
+                            "payments:provider.public:read"
                         ]
                     }
                 ]

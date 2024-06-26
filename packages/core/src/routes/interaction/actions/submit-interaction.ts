@@ -101,7 +101,7 @@ async function handleSubmitRegister(
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
     roles,
-    usersRoles,
+    usersRoles
   } = queries;
 
   const {
@@ -171,10 +171,6 @@ async function handleSubmitRegister(
     getInitialUserRoles(isInAdminTenant, isCreatingFirstAdminUser, isCloud)
   );
 
-  // OGCIO
-  // @ts-expect-error weird error at findRoleByRoleName return type
-  await manageDefaultUserRole(user, roles.findRoleByRoleName, usersRoles.insertUsersRoles);
-
   if (isCreatingFirstAdminUser) {
     // In OSS, we need to limit sign-in experience to "sign-in only" once
     // the first admin has been create since we don't want other unexpected registrations
@@ -193,7 +189,10 @@ async function handleSubmitRegister(
     ]);
   } else {
     // OGCIO
-    await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
+    // await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
+    
+    // @ts-expect-error weird error at findRoleByRoleName return type
+    await manageDefaultUserRole(user, roles.findRoleByRoleName, usersRoles.insertUsersRoles, organizations);
   }
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 

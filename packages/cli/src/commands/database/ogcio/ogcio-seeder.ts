@@ -26,12 +26,14 @@ export type OrganizationPermissionSeeder = {
   specific_permissions?: string[];
   actions?: string[];
   entities?: string[];
+  prefix?: string;
 };
 
 export type OrganizationRoleSeeder = {
   name: string;
   actions?: string[];
   entities?: string[];
+  prefix?: string;
   specific_permissions?: string[];
   description: string;
 };
@@ -107,6 +109,7 @@ export type ResourcePermissionSeeder = {
   specific_permissions?: string[];
   actions?: string[];
   entities?: string[];
+  prefix?: string;
 };
 
 export type ResourceRoleSeeder = {
@@ -119,6 +122,7 @@ export type ScopePerResourceRoleSeeder = {
   for_resource_ids: string[];
   actions?: string[];
   entities?: string[];
+  prefix?: string;
   specific_permissions?: string[];
   description: string;
 };
