@@ -1,0 +1,5 @@
+variables:
+  awsServiceConnection: life-events-prd-ecr
+  awsRegion: eu-west-1
+  ecrEndpoint: ???.amazonaws.com
+  buildArguments: ""

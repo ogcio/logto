@@ -2,6 +2,7 @@ trigger:
   - dev
   - uat
   - sta
+  - prd
 
 pr:
   autoCancel: true
@@ -12,7 +13,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat"]
+    default: ["dev", "sta", "uat", "prd"]
 
   - name: validEnvironments
     type: object
