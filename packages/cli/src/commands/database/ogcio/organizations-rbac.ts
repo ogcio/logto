@@ -86,15 +86,15 @@ export const seedOrganizationRbacData = async (params: {
   transaction: DatabaseTransactionConnection;
   tenantId: string;
   toSeed: {
-    organization_permissions: OrganizationPermissionSeeder[];
-    organization_roles: OrganizationRoleSeeder[];
+    organization_permissions?: OrganizationPermissionSeeder[];
+    organization_roles?: OrganizationRoleSeeder[];
   };
 }): Promise<{
   scopes: OrganizationScopesLists;
   roles: Record<string, OrganizationSeedingRole>;
   relations: SeedingRelation[];
 }> => {
-  if (params.toSeed.organization_permissions.length > 0) {
+  if (params.toSeed.organization_permissions?.length && params.toSeed.organization_roles?.length) {
     const createdScopes = await createScopes({
       transaction: params.transaction,
       tenantId: params.tenantId,
