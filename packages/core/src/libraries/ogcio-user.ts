@@ -128,7 +128,7 @@ export const manageDefaultOrganizations = async (params: {
   });
 };
 
-const PUBLIC_SERVANT_DOMAINS = new Set(['gov.ie', 'mail.ie']);
+const PUBLIC_SERVANT_DOMAINS = new Set(['gov.ie']);
 
 const getDomainFromEmail = (email: string): string | undefined => {
   return email.split('@')[1];
@@ -154,20 +154,17 @@ const assignCitizenRole = async (
       roleId: userRole.id,
     },
   ]);
-}
+};
 
-const assignUserToOrganization = async (
-  user: User,
-  organizationQueries: OrganizationQueries
-) => {
+const assignUserToOrganization = async (user: User, organizationQueries: OrganizationQueries) => {
   try {
     const organization = await organizationQueries.findById('ogcio');
     await organizationQueries.relations.users.insert([organization.id, user.id]);
     return organization;
-  } catch (err) {
+  } catch {
     consoleLog.error(phrases.en.errors.entity.not_exists_with_id);
   }
-}
+};
 
 const assignOrganizationRoleToUser = async (
   user: User,
@@ -175,22 +172,21 @@ const assignOrganizationRoleToUser = async (
   organizationQueries: OrganizationQueries
 ) => {
   const allOrganizationRoles = await organizationQueries.roles.findAll(100, 0);
-  const publicServantRole = allOrganizationRoles[1].find((role) =>
-    role.name === "Public Servant"
-  );
+  const publicServantRole = allOrganizationRoles[1].find((role) => role.name === 'Public Servant');
 
   if (publicServantRole === undefined) {
     consoleLog.error(phrases.en.errors.role.default_role_missing);
     return;
   }
 
-  await organizationQueries.relations.rolesUsers.insert([organization.id, publicServantRole.id, user.id]);
-}
+  await organizationQueries.relations.rolesUsers.insert([
+    organization.id,
+    publicServantRole.id,
+    user.id,
+  ]);
+};
 
-const assignPublicServantRole = async (
-  user: User,
-  organizationQueries: OrganizationQueries
-) => {
+const assignPublicServantRole = async (user: User, organizationQueries: OrganizationQueries) => {
   const organization = await assignUserToOrganization(user, organizationQueries);
 
   if (!organization) {
@@ -198,7 +194,7 @@ const assignPublicServantRole = async (
   }
 
   await assignOrganizationRoleToUser(user, organization, organizationQueries);
-}
+};
 
 export const manageDefaultUserRole = async (
   user: User,
