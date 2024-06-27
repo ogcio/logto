@@ -21,7 +21,7 @@ import { conditional, conditionalArray, trySafe } from '@silverhand/essentials';
 
 import { EnvSet } from '#src/env-set/index.js';
 // OGCIO
-import { manageDefaultOrganizations, manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
+import { manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
 import { assignInteractionResults } from '#src/libraries/session.js';
 import { encryptUserPassword } from '#src/libraries/user.js';
 import type { LogEntry, WithLogContext } from '#src/middleware/koa-audit-log.js';
@@ -101,7 +101,7 @@ async function handleSubmitRegister(
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
     roles,
-    usersRoles
+    usersRoles,
   } = queries;
 
   const {
@@ -189,10 +189,17 @@ async function handleSubmitRegister(
     ]);
   } else {
     // OGCIO
+    // DO NOT DELETE THIS! It is disabled for now.
     // await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
-    
-    // @ts-expect-error weird error at findRoleByRoleName return type
-    await manageDefaultUserRole(user, roles.findRoleByRoleName, usersRoles.insertUsersRoles, organizations);
+
+    // OGCIO
+    await manageDefaultUserRole(
+      user,
+      // @ts-expect-error: strange error in roles.findRoleByRoleName return type
+      roles.findRoleByRoleName,
+      usersRoles.insertUsersRoles,
+      organizations
+    );
   }
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 
