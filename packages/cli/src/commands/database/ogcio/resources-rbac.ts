@@ -259,7 +259,7 @@ export const seedResourceRbacData = async (params: {
       rolesToSeed: params.toSeed.resource_roles,
     });
 
-    const createdRelations = await createRelations({
+    await createRelations({
       transaction: params.transaction,
       tenantId: params.tenantId,
       roles: createdRoles,

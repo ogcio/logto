@@ -7,16 +7,14 @@
                 "id": "ogcio"
             }
         ],
-        "organization_permissions": [
-            {
-                "specific_permissions": [
-                    "payments:provider:*",
-                    "payments:payment_request:*",
-                    "payments:payment_request.public:read",
-                    "payments:transaction:*"
-                ]
-            }
-        ],
+        "organization_permissions": {
+            "specific_permissions": [
+                "payments:provider:*",
+                "payments:payment_request:*",
+                "payments:payment_request.public:read",
+                "payments:transaction:*"
+            ]
+        },
         "organization_roles": [
             {
                 "name": "Public Servant",

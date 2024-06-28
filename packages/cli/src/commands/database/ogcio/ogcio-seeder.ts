@@ -5,7 +5,7 @@ export type OgcioTenantSeeder = Record<string, OgcioSeeder>;
 
 export type OgcioSeeder = {
   organizations?: OrganizationSeeder[];
-  organization_permissions?: OrganizationPermissionSeeder[];
+  organization_permissions?: OrganizationPermissionSeeder;
   organization_roles?: OrganizationRoleSeeder[];
   applications?: ApplicationSeeder[];
   resources?: ResourceSeeder[];
@@ -23,18 +23,12 @@ export type OrganizationSeeder = {
 };
 
 export type OrganizationPermissionSeeder = {
-  specific_permissions?: string[];
-  actions?: string[];
-  entities?: string[];
-  prefix?: string;
+  specific_permissions: string[];
 };
 
 export type OrganizationRoleSeeder = {
   name: string;
-  actions?: string[];
-  entities?: string[];
-  prefix?: string;
-  specific_permissions?: string[];
+  specific_permissions: string[];
   description: string;
 };
 

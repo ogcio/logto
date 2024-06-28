@@ -27,11 +27,11 @@ const createDataForTenant = async (
     });
   }
 
-  // const organizationsRbac = await seedOrganizationRbacData({
-  //   transaction,
-  //   tenantId,
-  //   toSeed: tenantData,
-  // });
+  await seedOrganizationRbacData({
+    transaction,
+    tenantId,
+    toSeed: tenantData,
+  });
 
   if (tenantData.applications?.length) {
     const applications = await seedApplications({
