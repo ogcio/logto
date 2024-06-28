@@ -101,6 +101,7 @@ export const seedOrganizationRbacData = async (params: {
       scopesToSeed: params.toSeed.organization_permissions,
       fillScopesMethod: fillScopes,
     });
+    
     const createdRoles = await createRoles({
       transaction: params.transaction,
       tenantId: params.tenantId,
