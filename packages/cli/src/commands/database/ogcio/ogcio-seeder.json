@@ -63,9 +63,7 @@
         ],
         "resource_permissions": [
             {
-                "for_resource_ids": [
-                    "payments-api"
-                ],
+                "resource_id": "payments-api",
                 "specific_permissions": [
                     "payments:transaction.self:read",
                     "payments:payment_request.public:read",
@@ -80,9 +78,7 @@
                 "description": "A citizen using Life Events and the Building Blocks ecosystem",
                 "permissions": [
                     {
-                        "for_resource_ids": [
-                            "payments-api"
-                        ],
+                        "resource_id": "payments-api",
                         "specific_permissions": [
                             "payments:transaction.self:read",
                             "payments:payment_request.public:read",

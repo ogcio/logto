@@ -169,11 +169,11 @@ export const fillScopesGroup = <
     addScopeToLists(fullLists, resource, action, resourceId, prefix);
   }
 
-  for (const resource of seeder.entities ?? []) {
-    for (const action of seeder.actions ?? []) {
-      addScopeToLists(fullLists, resource, action, resourceId, seeder.prefix);
-    }
-  }
+  // for (const resource of seeder.entities ?? []) {
+  //   for (const action of seeder.actions ?? []) {
+  //     addScopeToLists(fullLists, resource, action, resourceId, seeder.prefix);
+  //   }
+  // }
 
   return fullLists;
 };

@@ -105,11 +105,8 @@ export type SignInExperienceSeeder = {
 };
 
 export type ResourcePermissionSeeder = {
-  for_resource_ids: string[];
-  specific_permissions?: string[];
-  actions?: string[];
-  entities?: string[];
-  prefix?: string;
+  resource_id: string;
+  specific_permissions: string[];
 };
 
 export type ResourceRoleSeeder = {
@@ -119,11 +116,8 @@ export type ResourceRoleSeeder = {
 };
 
 export type ScopePerResourceRoleSeeder = {
-  for_resource_ids: string[];
-  actions?: string[];
-  entities?: string[];
-  prefix?: string;
-  specific_permissions?: string[];
+  resource_id: string;
+  specific_permissions: string[];
   description: string;
 };
 
