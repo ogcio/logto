@@ -203,15 +203,19 @@
     document.querySelector("#login-form").action = returnUrl;
   }
 
-  // const apiUsers = await (
-  //  await fetch(
-  //    location.protocol + "//" + location.host + "/users",
-  //  )
-  //).json();
 
   // Mock users
   const apiUsers = {
-    users: []
+    users: [
+      {
+        user_name: "Peter Parker",
+        govid_email: "peter.parker@mail.ie"
+      },
+      {
+        user_name: "Tony Stark",
+        govid_email: "tony.stark@mail.ie"
+      },
+    ]
   }
 
   const usersSelectElement = document.querySelector("#user_select");
