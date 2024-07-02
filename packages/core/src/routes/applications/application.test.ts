@@ -72,6 +72,7 @@ const applicationRoutes = await pickDefault(import('./application.js'));
 const customClientMetadata = {
   corsAllowedOrigins: [
     'http://localhost:5000',
+    // OGCIO - formsie port collision fixed
     'http://localhost:7001',
     'https://silverhand.com',
     'capacitor://localhost',
