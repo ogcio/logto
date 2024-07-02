@@ -72,7 +72,7 @@ const applicationRoutes = await pickDefault(import('./application.js'));
 const customClientMetadata = {
   corsAllowedOrigins: [
     'http://localhost:5000',
-    'http://localhost:5001',
+    'http://localhost:7001',
     'https://silverhand.com',
     'capacitor://localhost',
   ],
