@@ -36,10 +36,11 @@ export type ApplicationSeeder = {
   name: string;
   description: string;
   type: string;
-  redirect_uri: string;
-  logout_redirect_uri: string;
+  redirect_uri: string | string[];
+  logout_redirect_uri: string | string[];
   id: string;
   secret: string;
+  is_third_party?: boolean;
 };
 
 export type ResourceSeeder = {
