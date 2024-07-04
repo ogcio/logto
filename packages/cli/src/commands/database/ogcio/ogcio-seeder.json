@@ -12,11 +12,16 @@
                 "payments:provider:*",
                 "payments:payment_request:*",
                 "payments:payment_request.public:read",
-                "payments:transaction:*"
+                "payments:transaction:*",
+                "messaging:message:*",
+                "messaging:provider:*",
+                "messaging:template:*",
+                "messaging:citizen:*"
             ]
         },
         "organization_roles": [
             {
+                "id": "bb-public-servant",
                 "name": "Public Servant",
                 "description": "Building Blocks Public servant",
                 "specific_permissions": [
@@ -24,6 +29,17 @@
                     "payments:payment_request:*",
                     "payments:payment_request.public:read",
                     "payments:transaction:*"
+                ]
+            },
+            {
+                "id": "msg-public-servant",
+                "name": "Messaging Public Servant",
+                "description": "Messaging Public servant",
+                "specific_permissions": [
+                    "messaging:message:*",
+                    "messaging:provider:*",
+                    "messaging:template:*",
+                    "messaging:citizen:*"
                 ]
             }
         ],
@@ -35,7 +51,8 @@
                 "redirect_uri": "<SEEDER_PAYMENTS_APP_REDIRECT_URI>",
                 "logout_redirect_uri": "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>",
                 "secret": "<SEEDER_PAYMENTS_APP_SECRET>",
-                "id": "r5f56tpkytpqyyshiutd2"
+                "id": "r5f56tpkytpqyyshiutd2",
+                "is_third_party": false
             },
             {
                 "name": "Messaging Building Block",
@@ -44,7 +61,8 @@
                 "redirect_uri": "<SEEDER_MESSAGING_APP_REDIRECT_URI>",
                 "logout_redirect_uri": "<SEEDER_MESSAGING_APP_LOGOUT_REDIRECT_URI>",
                 "secret": "<SEEDER_MESSAGING_APP_SECRET>",
-                "id": "1lvmteh2ao3xrswyq7j3e"
+                "id": "1lvmteh2ao3xrswyq7j3e",
+                "is_third_party": false
             }
         ],
         "resources": [
@@ -68,10 +86,17 @@
                     "payments:transaction.self:write",
                     "payments:provider.public:read"
                 ]
+            },
+            {
+                "resource_id": "messaging-api",
+                "specific_permissions": [
+                    "messaging:message.self:read"
+                ]
             }
         ],
         "resource_roles": [
             {
+                "id": "bb-citizen",
                 "name": "Citizen",
                 "description": "A citizen using Life Events and the Building Blocks ecosystem",
                 "permissions": [
@@ -82,6 +107,12 @@
                             "payments:payment_request.public:read",
                             "payments:transaction.self:write",
                             "payments:provider.public:read"
+                        ]
+                    },
+                    {
+                        "resource_id": "messaging-api",
+                        "specific_permissions": [
+                            "messaging:message.self:read"
                         ]
                     }
                 ]
@@ -145,7 +176,7 @@
         ],
         "webhooks": [
             {
-                "id": "login_webhook",
+                "id": "login-webhook",
                 "name": "User log in",
                 "events": [
                     "PostRegister",
