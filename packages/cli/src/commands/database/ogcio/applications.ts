@@ -5,7 +5,7 @@ import { Applications } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import { type ApplicationSeeder } from './ogcio-seeder.js';
-import { createItem } from './queries.js';
+import { createOrUpdateItem } from './queries.js';
 
 type SeedingApplication = {
   id: string;
@@ -16,7 +16,7 @@ type SeedingApplication = {
   oidc_client_metadata: string;
   custom_client_metadata: string;
   protected_app_metadata?: string;
-  is_third_party?: boolean;
+  is_third_party: boolean;
 };
 
 const createApplication = async (
@@ -24,12 +24,12 @@ const createApplication = async (
   tenantId: string,
   appToSeed: SeedingApplication
 ) =>
-  createItem({
+  createOrUpdateItem({
     transaction,
     tenantId,
     toInsert: appToSeed,
     toLogFieldName: 'name',
-    whereClauses: [sql`name = ${appToSeed.name}`],
+    whereClauses: [sql`tenant_id = ${tenantId}`, sql`id = ${appToSeed.id}`],
     tableName: Applications.table,
   });
 
@@ -39,6 +39,14 @@ const setApplicationId = async (
   tenantId: string
 ) => {
   element = await createApplication(transaction, tenantId, element);
+};
+
+const createArrayString = (values: string | string[]): string => {
+  const valuesString = (Array.isArray(values) ? values : [values])
+    .map((uri) => `"${uri}"`)
+    .join(',');
+
+  return `[${valuesString}]`;
 };
 
 const fillApplications = (
@@ -52,9 +60,10 @@ const fillApplications = (
       secret: inputApp.secret,
       description: inputApp.description,
       type: inputApp.type,
-      oidc_client_metadata: `{"redirectUris": ["${inputApp.redirect_uri}"], "postLogoutRedirectUris": ["${inputApp.logout_redirect_uri}"]}`,
+      oidc_client_metadata: `{"redirectUris": ${createArrayString(inputApp.redirect_uri)}, "postLogoutRedirectUris": ${createArrayString(inputApp.logout_redirect_uri)}}`,
       custom_client_metadata:
         '{"idTokenTtl": 3600, "corsAllowedOrigins": [], "rotateRefreshToken": true, "refreshTokenTtlInDays": 14, "alwaysIssueRefreshToken": false}',
+      is_third_party: inputApp.is_third_party ?? false,
     };
   }
 
