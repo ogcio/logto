@@ -96,7 +96,7 @@
         ],
         "resource_roles": [
             {
-                "id": "bb_citizen",
+                "id": "bb-citizen",
                 "name": "Citizen",
                 "description": "A citizen using Life Events and the Building Blocks ecosystem",
                 "permissions": [
@@ -176,7 +176,7 @@
         ],
         "webhooks": [
             {
-                "id": "login_webhook",
+                "id": "login-webhook",
                 "name": "User log in",
                 "events": [
                     "PostRegister",

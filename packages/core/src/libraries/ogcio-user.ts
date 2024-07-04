@@ -16,6 +16,8 @@ import { EnvSet } from '#src/env-set/index.js';
 import type OrganizationQueries from '#src/queries/organization/index.js';
 import assertThat from '#src/utils/assert-that.js';
 
+import { OGCIO_ORGANIZATION_ROLES, OGCIO_ORGANIZATIONS, OGCIO_ROLES } from './ogcio-constants.js';
+
 const getDefaultOrganizationsForUser = async (organizationQueries: OrganizationQueries) => {
   const organizationNames: string[] = deduplicate(EnvSet.values.userDefaultOrganizationNames);
   consoleLog.info('DEFUALT ORG NAMES', organizationNames);
@@ -139,7 +141,7 @@ const assignCitizenRole = async (
   getRoles: (id: string) => Promise<Role>,
   insertUsersRoles: (usersRoles: CreateUsersRole[]) => Promise<QueryResult<QueryResultRow>>
 ) => {
-  const userRole = await getRoles('bb_citizen');
+  const userRole = await getRoles(OGCIO_ROLES.BB_CITIZEN);
 
   return insertUsersRoles([
     {
@@ -153,7 +155,7 @@ const assignCitizenRole = async (
 
 const assignUserToOrganization = async (user: User, organizationQueries: OrganizationQueries) => {
   try {
-    const organization = await organizationQueries.findById('ogcio');
+    const organization = await organizationQueries.findById(OGCIO_ORGANIZATIONS.OGCIO);
     await organizationQueries.relations.users.insert([organization.id, user.id]);
     return organization;
   } catch {
@@ -166,7 +168,9 @@ const assignOrganizationRoleToUser = async (
   organization: Organization,
   organizationQueries: OrganizationQueries
 ) => {
-  const publicServantRole = await organizationQueries.roles.findById('bb-public-servant');
+  const publicServantRole = await organizationQueries.roles.findById(
+    OGCIO_ORGANIZATION_ROLES.BB_PUBLIC_SERVANT
+  );
 
   await organizationQueries.relations.rolesUsers.insert([
     organization.id,
@@ -207,7 +211,7 @@ export const manageDefaultUserRole = async (
     return;
   }
 
-  if (!PUBLIC_SERVANT_DOMAINS.has(domain)) {
+  if (PUBLIC_SERVANT_DOMAINS.has(domain)) {
     return assignPublicServantRole(user, organizationQueries);
   }
 
