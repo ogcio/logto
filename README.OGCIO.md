@@ -120,6 +120,8 @@ In most cases, we have predefined IDs in our seeder to ensure the same database 
 
 Be careful when defining a new ID because data duplication is avoided based on this field. If you later want to change the ID of any of your entries, the seeder won't be able to detect the existence of the affected entry, and it will try to create a new one. Creating a duplicate entry with a different ID can cause a database error if some other fields have a unique constraint. If this is not the case, a duplicate entry will be created, which is also a mistake, and we want to avoid any of these situations. Once you have defined an ID, do not change it if unnecessary.
 
+Using resources other than those declared in the seeder's data file is also impossible because referencing any resource outside of the seeder's scope is not supported. The seeder is supposed to create all the required resources and use them to seed the custom configuration into the database.
+
 ### Edge cases
 
 Some changes might affect other entries from the database, like the user entities. In this case, a custom migration script is required to resolve the changes necessary to the affected entries. Before any change in the seeder data, analyse the situation to determine if it is safe to perform. The seeder is not intended to resolve conflicts or update other data than the configuration it seeds.
