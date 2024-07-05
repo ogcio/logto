@@ -1,32 +1,31 @@
-FROM base-deps as deps
+FROM node:20-alpine as builder
 
 WORKDIR /app
 
-COPY ./mygovid-mock-service/ /app/mygovid-mock-service/
-RUN pnpm ci
+# https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#node-gyp-alpine
+RUN apk add --no-cache python3 make g++ rsync
 
-FROM deps AS builder
+COPY ./mygovid-mock-service/package*.json ./
 
-WORKDIR /app/mygovid-mock-service/
-RUN pnpm run build
+RUN npm i
 
-FROM base-deps AS runner
+COPY ./mygovid-mock-service ./
+
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+
 WORKDIR /app
 
+COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package*.json /app/
+COPY --from=builder /app /app/
 
-COPY --from=builder /app/mygovid-mock-service/dist /app/mygovid-mock-service/dist
-COPY --from=builder /app/mygovid-mock-service/node_modules /app/mygovid-mock-service/node_modules
-COPY --from=builder /app/mygovid-mock-service/package*.json /app/mygovid-mock-service/
-
-
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV LOG_LEVEL=trace
 
 RUN npm prune --omit=dev
 
 EXPOSE 4005
-
-WORKDIR /app/mygovid-mock-service
 
 CMD [ "node", "dist/", "index.js" ]
