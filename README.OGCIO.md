@@ -38,11 +38,11 @@ You can also run Logto natively on your machine outside the docker container.
 
 If you start Logto natively, the database won't be available, and you will have to start it separately. The database is still dockerized and has its own Docker Compose configuration. Use the following command to start the database container:
 
-`docker compose -f docker-compose-db.yml up -d`
+`docker compose -f docker-compose-ogcio-logto.yml up -d postgres`
 
 With the following command, you can shut down the database container:
 
-`docker compose -f docker-compose-db.yml down`
+`docker compose -f docker-compose-ogcio-logto.yml down postgres`
 
 ### Configuration and installation
 
@@ -67,6 +67,9 @@ MOCK_KEYS_ENDPOINT=http://localhost:4005/logto/mock/keys
 ```
 make run-native
 ```
+
+Hi guys, I was thinking about how to manage versioning of the Logto image we pull from ECR as part of the PR. Right now the image pushed is not versioned at all, each new push is just going to overwrite the exist image. I haven't talked about this William yet, but I think we want to keep things this way for simplicity (keep in mind this is also the image we use to deploy Logto in dev).
+The same issue will apply to our mock mygovid service image, though that one is quite unlikely to change at all :)
 
 It runs, under the hood, all the following commands: 
 
