@@ -68,9 +68,6 @@ MOCK_KEYS_ENDPOINT=http://localhost:4005/logto/mock/keys
 make run-native
 ```
 
-Hi guys, I was thinking about how to manage versioning of the Logto image we pull from ECR as part of the PR. Right now the image pushed is not versioned at all, each new push is just going to overwrite the exist image. I haven't talked about this William yet, but I think we want to keep things this way for simplicity (keep in mind this is also the image we use to deploy Logto in dev).
-The same issue will apply to our mock mygovid service image, though that one is quite unlikely to change at all :)
-
 It runs, under the hood, all the following commands: 
 
 1. Install all the dependencies. Please also refer to the [original guide](.github/CONTRIBUTING.md) when building the project.
