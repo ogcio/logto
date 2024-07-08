@@ -2,9 +2,6 @@ FROM node:20-alpine as builder
 
 WORKDIR /app
 
-# https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#node-gyp-alpine
-RUN apk add --no-cache python3 make g++ rsync
-
 COPY ./mygovid-mock-service/package*.json ./
 
 RUN npm i
