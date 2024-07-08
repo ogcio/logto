@@ -5,6 +5,8 @@ parameters:
     default: false
   - name: buildArguments
     default: ""
+  - name: dockerfile
+    default: "./Dockerfile"
 
 jobs:
   - job: Build
