@@ -95,7 +95,7 @@ stages:
         serviceName: mygovid-mock-service
         pushArtefacts: true
         buildArguments: $(buildArguments)
-        dockerfile: .mygovid-mock-service/Dockerfile
+        dockerfile: ./mygovid-mock-service/Dockerfile
   - stage: Push_MyGovId_Mock
     displayName: Push MyGovId Mock to ECR
     dependsOn: Build_MyGovId_Mock
