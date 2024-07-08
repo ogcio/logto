@@ -61,11 +61,38 @@ PORT=3301
 USER_DEFAULT_ORGANIZATION_NAMES=OGCIO Seeded Org
 USER_DEFAULT_ORGANIZATION_ROLE_NAMES=OGCIO Employee, OGCIO Manager
 ```
-
 2. Run the makefile command
 ```
 make run-native
 ```
+
+It runs, under the hood, all the following commands: 
+
+1. Install all the dependencies. Please also refer to the [original guide](.github/CONTRIBUTING.md) when building the project.
+
+`pnpm pnpm:devPreinstall && pnpm i && pnpm prepack`
+
+2. After the installation, you can start seeding the database. You have to seed in two steps:
+- seed Logto's database: `pnpm cli db seed`
+- seed custom OGCIO data: `npm run cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"`
+
+    2.5. Database alteration
+
+    If you are upgrading your dev environment from an older version, or facing the `Found undeployed database alterations...` error when starting Logto, you need to deploy the database alteration first.
+
+    Run `pnpm alteration deploy` and start Logto again. See [Database alteration](https://docs.logto.io/docs/tutorials/using-cli/database-alteration) for reference of this command.
+
+    If you are developing something with database alterations, see [packages/schemas/alteration](https://github.com/logto-io/logto/tree/master/packages/schemas/alterations) to learn more.
+
+3. After the seeding of the database was finished, the connectors must be built and linked to the system:
+
+- `pnpm connectors build`
+
+- `pnpm cli connector link`
+
+4. The local Logto instance can be started by running the following command:
+
+`pnpm dev`
 
 After the system is up and running, you can access the admin interface by accessing `http://localhost:3302`
 
