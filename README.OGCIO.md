@@ -60,6 +60,8 @@ PORT=3301
 # OGCIO Config
 USER_DEFAULT_ORGANIZATION_NAMES=OGCIO Seeded Org
 USER_DEFAULT_ORGANIZATION_ROLE_NAMES=OGCIO Employee, OGCIO Manager
+MOCK_TOKEN_ENDPOINT=http://localhost:4005/logto/mock/token
+MOCK_KEYS_ENDPOINT=http://localhost:4005/logto/mock/keys
 ```
 2. Run the makefile command
 ```
