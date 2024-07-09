@@ -27,7 +27,6 @@ export default async function login(app: FastifyInstance) {
     "/auth",
     {
       schema: {
-        tags: ["Mock"],
         querystring: {
           response_type: Type.String(),
           client_id: Type.String(),
@@ -112,7 +111,6 @@ export default async function login(app: FastifyInstance) {
     "/token",
     {
       schema: {
-        tags: ["Mock"],
         body: Type.Object({
           code: Type.String(),
           grant_type: Type.String(),
@@ -167,7 +165,6 @@ export default async function login(app: FastifyInstance) {
     "/keys",
     {
       schema: {
-        tags: ["Mock"],
         response: {
           200: Type.Object({
             keys: Type.Array(
