@@ -23,6 +23,13 @@ print_in_red() {
     echo -e "${RED}$1${NC}"
 }
 
+DOCKER_COMPOSE_FILE=${1:-docker-compose-ogcio-logto.yml}
+
+if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
+  echo "Docker Compose file not found!"
+  exit 1
+fi
+
 aws_ecr_login() {
     print_in_blue "Logging in to AWS ECR..."
     aws sso login --profile $AWS_PROFILE
@@ -54,16 +61,16 @@ create_docker_network() {
     fi
 }
 
-docker-compose -f docker-compose-ogcio-logto.yml down
+docker-compose -f "$DOCKER_COMPOSE_FILE" down
 
 create_docker_network
 
-docker-compose -f docker-compose-ogcio-logto.yml up --detach
+docker-compose -f "$DOCKER_COMPOSE_FILE" up --detach
 if [ $? -ne 0 ]; then
     print_in_blue "docker-compose up failed. Trying to log in to AWS ECR..."
     aws_ecr_login
     print_in_blue "Retrying docker-compose up..."
-    docker-compose -f docker-compose-ogcio-logto.yml up --detach
+    docker-compose -f "$DOCKER_COMPOSE_FILE" up --detach
     if [ $? -ne 0 ]; then
         print_in_red "docker-compose up failed again. Exiting..."
         exit 1
