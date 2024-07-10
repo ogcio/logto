@@ -29,9 +29,21 @@ services:
       - MOCK_KEYS_ENDPOINT=http://mygovid-mock-service:4005/logto/mock/keys
       
   postgres:
-    extends:
-      file: docker-compose-db.yaml
-      service: postgres
+    image: postgres:14-alpine
+    user: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: p0stgr3s
+      PGPORT: 5433
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5433:5433
 
   mygovid-mock-service:
     image: mygovid-mock-service:latest
