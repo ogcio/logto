@@ -23,7 +23,7 @@ import { EnvSet } from '#src/env-set/index.js';
 // OGCIO
 import { manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
 import { assignInteractionResults } from '#src/libraries/session.js';
-import { encryptUserPassword } from '#src/libraries/user.js';
+import { encryptUserPassword } from '#src/libraries/user.utils.js';
 import type { LogEntry, WithLogContext } from '#src/middleware/koa-audit-log.js';
 import type TenantContext from '#src/tenants/TenantContext.js';
 import { getConsoleLogFromContext } from '#src/utils/console.js';
@@ -100,8 +100,6 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
-    roles,
-    usersRoles,
   } = queries;
 
   const {
@@ -139,7 +137,7 @@ async function handleSubmitRegister(
     (invitation) => invitation.status === OrganizationInvitationStatus.Pending
   );
 
-  const user = await insertUser(
+  const [user] = await insertUser(
     {
       id,
       ...userProfile,
@@ -181,16 +179,13 @@ async function handleSubmitRegister(
     // Create tenant organization and assign the admin user to it.
     // This is only for Cloud integration tests and data alignment, OSS still uses the legacy Management API user role.
     const organizationId = getTenantOrganizationId(defaultTenantId);
-    await organizations.relations.users.insert([organizationId, id]);
-    await organizations.relations.rolesUsers.insert([
+    await organizations.relations.users.insert({ organizationId, userId: id });
+    await organizations.relations.usersRoles.insert({
       organizationId,
-      getTenantRole(TenantRole.Admin).id,
-      id,
-    ]);
-  } else {
-    // OGCIO
-    // DO NOT DELETE THIS! It is disabled for now.
-    // await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
+      organizationRoleId: getTenantRole(TenantRole.Admin).id,
+      userId: id,
+    });
+  }
 
     // OGCIO
     await manageDefaultUserRole(
@@ -203,7 +198,21 @@ async function handleSubmitRegister(
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 
   ctx.assignInteractionHookResult({ userId: id });
-  ctx.assignDataHookContext({ event: 'User.Created', user });
+  ctx.appendDataHookContext('User.Created', { user });
+
+  // JIT provisioning for email domain
+  if (user.primaryEmail) {
+    const provisionedOrganizations = await libraries.users.provisionOrganizations({
+      userId: id,
+      email: user.primaryEmail,
+    });
+
+    for (const { organizationId } of provisionedOrganizations) {
+      ctx.appendDataHookContext('Organization.Membership.Updated', {
+        organizationId,
+      });
+    }
+  }
 
   log?.append({ userId: id });
   appInsights.client?.trackEvent({
@@ -257,10 +266,7 @@ async function handleSubmitSignIn(
   ctx.assignInteractionHookResult({ userId: accountId });
   // Trigger user.updated data hook event if the user profile or mfa data is updated
   if (hasUpdatedProfile(updateUserProfile) || mfaVerifications.length > 0) {
-    ctx.assignDataHookContext({
-      event: 'User.Data.Updated',
-      user: updatedUser,
-    });
+    ctx.appendDataHookContext('User.Data.Updated', { user: updatedUser });
   }
 
   appInsights.client?.trackEvent({
@@ -299,7 +305,7 @@ export default async function submitInteraction(
     passwordEncryptionMethod,
   });
   ctx.assignInteractionHookResult({ userId: accountId });
-  ctx.assignDataHookContext({ event: 'User.Data.Updated', user });
+  ctx.appendDataHookContext('User.Data.Updated', { user });
 
   await clearInteractionStorage(ctx, provider);
   ctx.status = 204;
