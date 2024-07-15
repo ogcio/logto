@@ -80,23 +80,6 @@ export default function organizationRoutes<T extends ManagementApiRouter>(
   applicationRoutes(router, organizations);
   jitRoutes(router, organizations);
 
-  router.get(
-    '/:id/users/:userId/scopes',
-    koaGuard({
-      params: z.object(params),
-      response: z.array(OrganizationScopes.guard),
-      status: [200, 422],
-    }),
-    async (ctx, next) => {
-      const { id, userId } = ctx.guard.params;
-
-      const scopes = await organizations.relations.rolesUsers.getUserScopes(id, userId);
-
-      ctx.body = scopes;
-      return next();
-    }
-  );
-
   // MARK: Mount sub-routes
   organizationRoleRoutes(...args);
   organizationScopeRoutes(...args);

@@ -100,6 +100,9 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
+    // OGCIO
+    roles,
+    usersRoles,
   } = queries;
 
   const {
@@ -187,14 +190,8 @@ async function handleSubmitRegister(
     });
   }
 
-    // OGCIO
-    await manageDefaultUserRole(
-      user,
-      roles.findRoleById,
-      usersRoles.insertUsersRoles,
-      organizations
-    );
-  }
+  // OGCIO
+  await manageDefaultUserRole(user, roles.findRoleById, usersRoles.insertUsersRoles, organizations);
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 
   ctx.assignInteractionHookResult({ userId: id });
