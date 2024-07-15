@@ -152,9 +152,6 @@ function RoleDetails() {
             <TabNavItem href={`/roles/${data.id}/${RoleDetailsTabs.General}`}>
               {t('role_details.general_tab')}
             </TabNavItem>
-            <TabNavItem href={`/roles/${data.id}/${RoleDetailsTabs.General}`}>
-              {t('role_details.general_tab')}
-            </TabNavItem>
           </TabNav>
           <Outlet
             context={
