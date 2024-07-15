@@ -176,12 +176,6 @@ export const createApplicationLibrary = (queries: Queries) => {
       );
     }
 
-    if (organizationResourceScopes) {
-      await userConsentOrganizationResourceScopes.insert(
-        ...organizationResourceScopes.map<[string, string]>((scope) => [applicationId, scope])
-      );
-    }
-
     if (userScopes) {
       await Promise.all(
         userScopes.map(async (userScope) =>

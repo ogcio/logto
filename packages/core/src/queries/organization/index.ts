@@ -42,11 +42,6 @@ import { UserRoleRelationQueries } from './user-role-relations.js';
  */
 export const organizationRoleSearchKeys = Object.freeze(['id', 'name', 'description'] as const);
 
-/**
- * The schema field keys that can be used for searching roles.
- */
-export const organizationRoleSearchKeys = Object.freeze(['id', 'name', 'description'] as const);
-
 class OrganizationRolesQueries extends SchemaQueries<
   OrganizationRoleKeys,
   CreateOrganizationRole,
