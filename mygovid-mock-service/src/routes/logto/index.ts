@@ -27,7 +27,6 @@ export default async function login(app: FastifyInstance) {
     "/auth",
     {
       schema: {
-        tags: ["Mock"],
         querystring: {
           response_type: Type.String(),
           client_id: Type.String(),
@@ -43,14 +42,14 @@ export default async function login(app: FastifyInstance) {
       const { redirect_uri, state } = request.query;
 
       const stream = fs.createReadStream(
-        path.join(__dirname, "..", "static", "mock-login.html")
+        path.join(__dirname, "..", "static", "mock-login.html"),
       );
 
       const result = (await streamToString(stream))
         .replace("%REDIRECT_URL%", redirect_uri)
         .replace("%STATE%", state);
       return reply.type("text/html").send(result);
-    }
+    },
   );
 
   app.post<{
@@ -61,19 +60,29 @@ export default async function login(app: FastifyInstance) {
       email: string;
       redirect_url: string;
       state: string;
+      sub: string;
+      oid: string;
     };
   }>("/login", async (request, reply) => {
-    const { password, firstName, lastName, email, redirect_url, state } =
-      request.body;
+    const {
+      password,
+      firstName,
+      lastName,
+      email,
+      redirect_url,
+      state,
+      sub,
+      oid,
+    } = request.body;
 
     if (password !== "123")
       reply.redirect(
-        `/logto/mock/auth?redirect_uri=${redirect_url}&state=${state}`
+        `/logto/mock/auth?redirect_uri=${redirect_url}&state=${state}`,
       );
 
     const id_token = await createMockSignedJwt(
-      { firstName, lastName, email },
-      request.headers.origin as unknown as string
+      { firstName, lastName, email, sub, oid },
+      request.headers.origin as unknown as string,
     );
 
     return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
@@ -102,7 +111,6 @@ export default async function login(app: FastifyInstance) {
     "/token",
     {
       schema: {
-        tags: ["Mock"],
         body: Type.Object({
           code: Type.String(),
           grant_type: Type.String(),
@@ -140,7 +148,7 @@ export default async function login(app: FastifyInstance) {
           "eyJ2ZXIiOiIxLjAiLCJ0aWQiOiI4OTc5MmE2ZC0xZWE0LTQxMjYtOTRkZi1hNzFkMjkyZGViYzciLCJzdWIiOm51bGwsIm5hbWUiOm51bGwsInByZWZlcnJlZF91c2VybmFtZSI6bnVsbCwiaWRwIjpudWxsfQ",
         scope: "openid",
       };
-    }
+    },
   );
 
   app.get<{
@@ -157,7 +165,6 @@ export default async function login(app: FastifyInstance) {
     "/keys",
     {
       schema: {
-        tags: ["Mock"],
         response: {
           200: Type.Object({
             keys: Type.Array(
@@ -167,7 +174,7 @@ export default async function login(app: FastifyInstance) {
                 kty: Type.Optional(Type.String()),
                 n: Type.Optional(Type.String()),
                 e: Type.Optional(Type.String()),
-              })
+              }),
             ),
           }),
           500: HttpError,
@@ -181,6 +188,6 @@ export default async function login(app: FastifyInstance) {
       return {
         keys: [{ kid: "signingkey.mygovid.v1", use: "sig", kty, n, e }],
       };
-    }
+    },
   );
 }

@@ -26,6 +26,46 @@ e.g. `git merge v1.17.0 --strategy-option theirs`
 - commit the changes with `git commit -a` to end the merge and let git write the correct message
 - push and open your PR!
 
+## Run with Docker Compose
+It is possible to run Logto, its database and our MyGovId mock service in a dockerized solution, with local or remote images.
+
+### With local images
+If you have the repository on your machine and want to use images built locally for both services you can run:
+```
+make build run
+```
+
+### With remote images
+If you want to run Logto on your machine without cloning the repo, you need to have access to aws to pull our images as a prerequisite. If you haven't already, install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+If not yet configured, run
+```
+aws sso configure
+```
+And follow the prompts. If you don't know what your SSO start URL is, you can find it on your AWS access portal. Click on your AWS account and then on the `Access keys` option.
+
+A script is available to login with AWS and Docker, create the custom network and run the containers. This is useful when launching it for the first time, or more in general when the image needs to be pulled.
+The script expects an environment variable for the aws profile that you need to be logged in:
+```
+AWS_PROFILE=awsProfile-accountId
+```
+
+To execute the script, run:
+```
+[ ! -f docker-compose-ogcio-logto.yml ] && curl -fsSL https://raw.githubusercontent.com/ogcio/logto/HEAD/docker-compose-ogcio-logto.yml > /tmp/docker-compose-ogcio-logto.yml && curl -fsSL https://raw.githubusercontent.com/ogcio/logto/HEAD/run-logto-remote.sh | bash -s /tmp/docker-compose-ogcio-logto.yml
+```
+The command downloads the Docker Compose file from Github to a temporary location if it doesn't exist already, then fetches and executes the script from GitHub, passing the temporary Docker Compose file.
+
+If you are already authenticated and just want to run the docker compose:
+
+```
+curl -fsSL https://raw.githubusercontent.com/ogcio/logto/HEAD/docker-compose-ogcio-logto.yml | docker compose -f - up -d
+```
+
+If you already have the repo cloned locally there is a Make command available:
+```
+make build run-remote
+```
+
 ## Setup and run Logto natively
 
 You can also run Logto natively on your machine outside the docker container.
@@ -58,19 +98,25 @@ ADMIN_PORT=3302
 PORT=3301
 
 # OGCIO Config
-USER_DEFAULT_ORGANIZATION_NAMES=OGCIO Seeded Org
-USER_DEFAULT_ORGANIZATION_ROLE_NAMES=OGCIO Employee, OGCIO Manager
+MOCK_TOKEN_ENDPOINT=http://localhost:4005/logto/mock/token
+MOCK_KEYS_ENDPOINT=http://localhost:4005/logto/mock/keys
+```
+2. Run the makefile command
+```
+make run-native
 ```
 
-2. Install all the dependencies. Please also refer to the [original guide](.github/CONTRIBUTING.md) when building the project.
+It runs, under the hood, all the following commands: 
+
+1. Install all the dependencies. Please also refer to the [original guide](.github/CONTRIBUTING.md) when building the project.
 
 `pnpm pnpm:devPreinstall && pnpm i && pnpm prepack`
 
-3. After the installation, you can start seeding the database. You have to seed in two steps:
+2. After the installation, you can start seeding the database. You have to seed in two steps:
 - seed Logto's database: `pnpm cli db seed`
 - seed custom OGCIO data: `npm run cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"`
 
-    3.5. Database alteration
+    2.5. Database alteration
 
     If you are upgrading your dev environment from an older version, or facing the `Found undeployed database alterations...` error when starting Logto, you need to deploy the database alteration first.
 
@@ -78,15 +124,13 @@ USER_DEFAULT_ORGANIZATION_ROLE_NAMES=OGCIO Employee, OGCIO Manager
 
     If you are developing something with database alterations, see [packages/schemas/alteration](https://github.com/logto-io/logto/tree/master/packages/schemas/alterations) to learn more.
 
-4. After the seeding of the database was finished, the connectors must be built and linked to the system:
+3. After the seeding of the database was finished, the connectors must be built and linked to the system:
 
 - `pnpm connectors build`
 
 - `pnpm cli connector link`
 
-### Starting Logto
-
-The local Logto instance can be started by running the following command:
+4. The local Logto instance can be started by running the following command:
 
 `pnpm dev`
 
