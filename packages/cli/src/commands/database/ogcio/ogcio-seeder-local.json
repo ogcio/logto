@@ -14,10 +14,10 @@
     ],
     "organization_permissions": {
       "specific_permissions": [
-        "analytics:superuser",
-        "analytics:admin",
-        "analytics:write",
-        "analytics:view",
+        "analytics:global:*",
+        "analytics:website:admin",
+        "analytics:website:write",
+        "analytics:website:view",
         "payments:provider:*",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
@@ -65,19 +65,19 @@
         "id": "anl-admin",
         "name": "Analytics Admin",
         "description": "Analytics Admin",
-        "specific_permissions": ["analytics:admin"]
+        "specific_permissions": ["analytics:website:admin"]
       },
       {
         "id": "anl-public-servant",
         "name": "Analytics Public Servant",
         "description": "Analytics Public servant",
-        "specific_permissions": ["analytics:view"]
+        "specific_permissions": ["analytics:website:view"]
       },
       {
         "id": "anl-super-user",
         "name": "Analytics Super User",
         "description": "Analytics Super User",
-        "specific_permissions": ["analytics:superuser"]
+        "specific_permissions": ["analytics:global:*"]
       },
       {
         "id": "bb-inactive-ps",
