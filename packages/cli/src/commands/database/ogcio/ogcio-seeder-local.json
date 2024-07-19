@@ -141,6 +141,11 @@
         "id": "messaging-api",
         "name": "Messaging Building Block API",
         "indicator": "http://localhost:8002/"
+      },
+      {
+        "id": "scheduler-api",
+        "name": "Scheduler Building Block API",
+        "indicator": "http://localhost:8005/"
       }
     ],
     "resource_permissions": [
