@@ -70,7 +70,7 @@
         ]
       },
       {
-        "id": "profile-public-servant",
+        "id": "pro-public-servant",
         "name": "Profile Public Servant",
         "description": "Profile Public servant",
         "specific_permissions": [
