@@ -135,7 +135,7 @@
         "description": "Building Blocks home application",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3004/callback",
-        "logout_redirect_uri": "http://localhost:3004/dashboard",
+        "logout_redirect_uri": "http://localhost:3004",
         "secret": "home_app_local_secret",
         "id": "4icd76x8we31j1e8bqyfn",
         "is_third_party": false
