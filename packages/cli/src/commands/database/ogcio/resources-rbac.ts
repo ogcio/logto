@@ -105,6 +105,7 @@ const createRole = async (params: {
     name: string;
     description: string;
     id: string;
+    type: string;
   };
 }) => {
   await createOrUpdateItem({
@@ -116,6 +117,7 @@ const createRole = async (params: {
       id: params.roleToSeed.id,
       name: params.roleToSeed.name,
       description: params.roleToSeed.description,
+      type: params.roleToSeed.type,
     },
     tableName: Roles.table,
   });
@@ -134,6 +136,7 @@ const createRoles = async (params: {
     name: role.name,
     description: role.description,
     scopes: role.permissions,
+    type: role.type ?? 'User',
   }));
 
   const queries = rolesToCreate.map(async (role) =>

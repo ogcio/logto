@@ -31,6 +31,7 @@ export type OrganizationRoleSeeder = {
   name: string;
   specific_permissions: string[];
   description: string;
+  type?: 'User' | 'MachineToMachine';
 };
 
 export type ApplicationSeeder = {
@@ -110,6 +111,7 @@ export type ResourceRoleSeeder = {
   name: string;
   description: string;
   permissions: ScopePerResourceRoleSeeder[];
+  type?: 'User' | 'MachineToMachine';
 };
 
 export type ScopePerResourceRoleSeeder = {

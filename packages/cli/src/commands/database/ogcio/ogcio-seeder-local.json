@@ -27,6 +27,7 @@
         "messaging:template:*",
         "messaging:citizen:*",
         "messaging:event:read",
+        "profile:user:read",
         "profile:user:*",
         "profile:address:*",
         "profile:entitlement:*",
@@ -108,7 +109,9 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*"]
+        "specific_permissions": [
+          "upload:file:*"
+        ]
       },
       {
         "id": "bb-inactive-ps",
@@ -117,6 +120,15 @@
         "specific_permissions": [
           "bb:public-servant.inactive:*"
         ]
+      },
+      {
+        "id": "m2m-ps-profile-reader",
+        "name": "M2M Public Servant Profile Reader",
+        "description": "Role for M2M Applications that need to read from Profile resources",
+        "specific_permissions": [
+          "profile:user:read"
+        ],
+        "type": "MachineToMachine"
       }
     ],
     "applications": [
@@ -315,6 +327,20 @@
             ]
           }
         ]
+      },
+      {
+        "id": "m2m-citizen-profile",
+        "name": "M2M Citizer Profile Reader role",
+        "description": "Role used to make M2M applications able to read from profile resource",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.self:read"
+            ]
+          }
+        ],
+        "type": "MachineToMachine"
       }
     ],
     "connectors": [
