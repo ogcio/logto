@@ -189,6 +189,16 @@
         "secret": "upload_app_local_sercret",
         "id": "5vnf94y2lr17s2u9htkmq",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Profile Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Profile resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "profile_reader_local_secret",
+        "id": "ddl4llp30risjwcjymqw3",
+        "is_third_party": false
       }
     ],
     "resources": [
