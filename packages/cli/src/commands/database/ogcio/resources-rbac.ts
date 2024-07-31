@@ -6,7 +6,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-import { Roles, RolesScopes, Scopes } from '@logto/schemas';
+import { ApplicationsRoles, Roles, RolesScopes, Scopes } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
 import {
@@ -106,6 +106,7 @@ const createRole = async (params: {
     description: string;
     id: string;
     type: string;
+    related_application_ids: string[];
   };
 }) => {
   await createOrUpdateItem({
@@ -137,6 +138,7 @@ const createRoles = async (params: {
     description: role.description,
     scopes: role.permissions,
     type: role.type ?? 'User',
+    related_application_ids: role.related_application_ids ?? [],
   }));
 
   const queries = rolesToCreate.map(async (role) =>
@@ -248,5 +250,50 @@ export const seedResourceRbacData = async (params: {
       roles: createdRoles,
       scopes: createdScopes,
     });
+
+    await assignRolesToM2MApplications(params.transaction, params.tenantId, createdRoles);
   }
 };
+
+const assignRolesToM2MApplications = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  roles: Array<{ id: string; related_application_ids: string[]; type: string }>
+) => {
+  const addedRoles: Array<Promise<{ role_id: string; application_id: string }>> = [];
+  for (const role of roles) {
+    if (role.type === 'MachineToMachine' && role.related_application_ids.length > 0) {
+      addedRoles.push(
+        ...role.related_application_ids.map(async (appId: string) =>
+          assignRoleToM2MApplication(transaction, tenantId, {
+            role_id: role.id,
+            application_id: appId,
+          })
+        )
+      );
+    }
+  }
+
+  await Promise.all(addedRoles);
+};
+
+const assignRoleToM2MApplication = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  relation: {
+    role_id: string;
+    application_id: string;
+  }
+) =>
+  createOrUpdateItem({
+    transaction,
+    tableName: ApplicationsRoles.table,
+    tenantId,
+    toLogFieldName: 'role_id',
+    whereClauses: [
+      sql`tenant_id = ${tenantId}`,
+      sql`role_id = ${relation.role_id}`,
+      sql`application_id = ${relation.application_id}`,
+    ],
+    toInsert: relation,
+  });

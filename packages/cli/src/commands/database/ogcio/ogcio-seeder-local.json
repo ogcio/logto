@@ -128,7 +128,8 @@
         "specific_permissions": [
           "profile:user:read"
         ],
-        "type": "MachineToMachine"
+        "type": "MachineToMachine",
+        "related_applications": [{"application_id":"ddl4llp30risjwcjymqw3", "organization_id": "ogcio"}]
       }
     ],
     "applications": [
@@ -330,7 +331,7 @@
       },
       {
         "id": "m2m-citizen-profile",
-        "name": "M2M Citizer Profile Reader role",
+        "name": "M2M Citizen Profile Reader role",
         "description": "Role used to make M2M applications able to read from profile resource",
         "permissions": [
           {
@@ -340,7 +341,8 @@
             ]
           }
         ],
-        "type": "MachineToMachine"
+        "type": "MachineToMachine",
+        "related_application_ids": ["ddl4llp30risjwcjymqw3"]
       }
     ],
     "connectors": [
