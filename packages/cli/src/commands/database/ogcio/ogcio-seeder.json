@@ -124,7 +124,7 @@
         "id": "4icd76x8we31j1e8bqyfn",
         "is_third_party": false
       },
-       {
+      {
         "name": "File Upload Service",
         "description": "File Upload Service",
         "type": "Traditional",
@@ -323,7 +323,7 @@
           "password": false,
           "identifiers": []
         },
-        "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)"],
+        "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)", "OGCIO EntraID"],
         "sign_in_mode": "SignInAndRegister"
       }
     ],
