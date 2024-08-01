@@ -321,9 +321,9 @@
         "sync_profile": true,
         "connector_id": "ogcio-entraid",
         "config": {
-          "clientId": "<client-id>",
+          "clientId": "mock-client-id",
           "tenantId": "organizations",
-          "clientSecret": "<client-secret>",
+          "clientSecret": "mock-client-secret",
           "cloudInstance": "https://login.microsoftonline.com"
         },
         "metadata": {
