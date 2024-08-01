@@ -63,19 +63,13 @@
         "id": "le-public-servant",
         "name": "Life Events Public Servant",
         "description": "Life Events Public servant",
-        "specific_permissions": [
-          "life-events:digital-wallet-flow:*"
-        ]
+        "specific_permissions": ["life-events:digital-wallet-flow:*"]
       },
       {
         "id": "pro-public-servant",
         "name": "Profile Public Servant",
         "description": "Profile Public servant",
-        "specific_permissions": [
-          "profile:user:*",
-          "profile:address:*",
-          "profile:entitlement:*"
-        ]
+        "specific_permissions": ["profile:user:*", "profile:address:*", "profile:entitlement:*"]
       },
       {
         "id": "upload-public-servant",
@@ -143,7 +137,7 @@
         "id": "4icd76x8we31j1e8bqyfn",
         "is_third_party": false
       },
-       {
+      {
         "name": "File Upload Service",
         "description": "File Upload Service",
         "type": "Traditional",
@@ -221,9 +215,7 @@
       },
       {
         "resource_id": "scheduler-api",
-        "specific_permissions": [
-          "scheduler:jobs:write"
-        ]
+        "specific_permissions": ["scheduler:jobs:write"]
       },
       {
         "resource_id": "profile-api",
@@ -329,6 +321,20 @@
           },
           "target": "MyGovId (MyGovId connector)"
         }
+      },
+      {
+        "id": "ogcio-entraid",
+        "sync_profile": true,
+        "connector_id": "ogcio-entraid",
+        "config": {
+          "clientId": "<SEEDER_ENTRAID_CONNECTOR_CLIENT_ID>",
+          "tenantId": "organizations",
+          "clientSecret": "<SEEDER_ENTRAID_CONNECTOR_CLIENT_SECRET>",
+          "cloudInstance": "https://login.microsoftonline.com"
+        },
+        "metadata": {
+          "target": "OGCIO EntraID"
+        }
       }
     ],
     "sign_in_experiences": [
@@ -355,9 +361,7 @@
           "password": false,
           "identifiers": []
         },
-        "social_sign_in_connector_targets": [
-          "MyGovId (MyGovId connector)"
-        ],
+        "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)", "OGCIO EntraID"],
         "sign_in_mode": "SignInAndRegister"
       }
     ],
