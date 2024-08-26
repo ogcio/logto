@@ -10,6 +10,16 @@
         "name": "Inactive Public Servants Org",
         "description": "Temporary organization for inactive Public Servants",
         "id": "inactive-ps-org"
+      },
+      {
+        "name": "First Testing Organisation",
+        "description": "Organisation used to do E2E testing",
+        "id": "first-testing"
+      },
+      {
+        "name": "Second Testing Organisation",
+        "description": "Organisation used to do E2E testing",
+        "id": "second-testing"
       }
     ],
     "organization_permissions": {
@@ -118,6 +128,23 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [{"application_id":"ddl4llp30risjwcjymqw3", "organization_id": "ogcio"}]
+      },
+      {
+        "id": "m2m-e2e-tester",
+        "name": "M2M E2E Tester Role",
+        "description": "Role for M2M Applications that need to perform E2E testing",
+        "specific_permissions": [
+          "messaging:message:*",
+          "messaging:provider:*",
+          "messaging:template:*",
+          "messaging:citizen:*",
+          "messaging:event:read"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          {"application_id":"qrtllp45fgbvsdjyasd5", "organization_id": "first-testing"},
+          {"application_id":"qrtllp45fgbvsdjyasd5", "organization_id": "second-testing"}
+        ]
       }
     ],
     "applications": [
@@ -201,6 +228,16 @@
         "secret": "profile_reader_local_secret",
         "id": "ddl4llp30risjwcjymqw3",
         "is_third_party": false
+      },
+      {
+        "name": "M2M E2E Tester",
+        "description": "Machine 2 Machine application used to do E2E testing",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "e2e_tester_local_secret",
+        "id": "qrtllp45fgbvsdjyasd5",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -260,15 +297,15 @@
           "profile:address.self:read",
           "profile:address.self:write",
           "profile:entitlement.self:read",
-          "profile:entitlement.self:write"
+          "profile:entitlement.self:write",
+          "profile:user:read"
         ]
       },
       {
         "resource_id": "upload-api",
         "specific_permissions": [
           "upload:file.self:write",
-          "upload:file.self:read",
-          "upload:file.self:delete"
+          "upload:file.self:read"
         ]
       }
     ],
@@ -309,9 +346,7 @@
           {
             "resource_id": "upload-api",
             "specific_permissions": [
-              "upload:file.self:write",
-              "upload:file.self:read",
-              "upload:file.self:delete"
+              "upload:file.self:read"
             ]
           }
         ]
@@ -324,7 +359,7 @@
           {
             "resource_id": "profile-api",
             "specific_permissions": [
-              "profile:user.self:read"
+              "profile:user:read"
             ]
           }
         ],
