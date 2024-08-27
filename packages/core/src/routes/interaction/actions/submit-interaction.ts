@@ -100,6 +100,8 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
+    roles,
+    usersRoles
   } = queries;
 
   const {
