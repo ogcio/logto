@@ -8,8 +8,8 @@ import { appendPath } from '@silverhand/essentials';
 import { useCallback, useContext, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import CaretDown from '@/assets/icons/caret-down.svg';
-import CaretUp from '@/assets/icons/caret-up.svg';
+import CaretDown from '@/assets/icons/caret-down.svg?react';
+import CaretUp from '@/assets/icons/caret-up.svg?react';
 import FormCard from '@/components/FormCard';
 import { openIdProviderConfigPath, openIdProviderPath } from '@/consts/oidc';
 import { AppDataContext } from '@/contexts/AppDataProvider';
