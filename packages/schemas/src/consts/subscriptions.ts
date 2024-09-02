@@ -17,6 +17,13 @@ export enum ReservedPlanId {
    * - LOG-8339: Migrate legacy Stripe data
    */
   Hobby = 'hobby',
+  /**
+   * @deprecated
+   * Now this `pro` ID is not used anymore, we use `hobby` as the `pro` plan ID.
+   * Only use this `pro` value when displaying the plan ID to the user.
+   *
+   * Todo @darcyYe see `Hobby` todo
+   */
   Pro = 'pro',
   /**
    * @deprecated
