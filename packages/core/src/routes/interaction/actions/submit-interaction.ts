@@ -20,6 +20,8 @@ import { generateStandardId } from '@logto/shared';
 import { conditional, conditionalArray, trySafe } from '@silverhand/essentials';
 
 import { EnvSet } from '#src/env-set/index.js';
+// OGCIO
+import { manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
 import { assignInteractionResults } from '#src/libraries/session.js';
 import { encryptUserPassword } from '#src/libraries/user.utils.js';
 import type { LogEntry, WithLogContext } from '#src/middleware/koa-audit-log.js';
@@ -98,6 +100,10 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
+    // OGCIO
+    roles,
+    // OGCIO
+    usersRoles,
   } = queries;
 
   const {
@@ -185,6 +191,8 @@ async function handleSubmitRegister(
     });
   }
 
+  // OGCIO
+  await manageDefaultUserRole(user, roles.findRoleById, usersRoles.insertUsersRoles, organizations);
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 
   ctx.assignInteractionHookResult({ userId: id });

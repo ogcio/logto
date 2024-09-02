@@ -12,6 +12,8 @@ import { boolean, literal, nativeEnum, object, string } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 import { buildManagementApiContext } from '#src/libraries/hook/utils.js';
+// OGCIO
+import { manageDefaultOrganizations } from '#src/libraries/ogcio-user.js';
 import { encryptUserPassword } from '#src/libraries/user.utils.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
@@ -31,6 +33,8 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       hasUserWithEmail,
       hasUserWithPhone,
     },
+    // OGCIO
+    organizations,
   } = queries;
   const {
     users: {
@@ -220,6 +224,9 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
         },
         []
       );
+
+      // OGCIO
+      await manageDefaultOrganizations({ userId: id, organizationQueries: organizations });
 
       ctx.body = pick(user, ...userInfoSelectFields);
       return next();
