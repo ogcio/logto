@@ -4,15 +4,8 @@ The Microsoft Azure AD connector provides a succinct way for your application to
 
 **Table of contents**
 
-
 - [Microsoft Azure AD connector](#microsoft-azure-ad-connector)
   - [Set up Microsoft Azure AD in the Azure Portal](#set-up-microsoft-azure-ad-in-the-azure-portal)
-  - [Fill in the configuration in Logto](#fill-in-the-configuration-in-logto)
-    - [Client ID](#client-id)
-    - [Client Secret](#client-secret)
-    - [Cloud Instance](#cloud-instance)
-    - [Tenant ID](#tenant-id)
-    - [Prompts](#prompts)
   - [Fill in the configuration in Logto](#fill-in-the-configuration-in-logto)
     - [Client ID](#client-id)
     - [Client Secret](#client-secret)
@@ -25,9 +18,6 @@ The Microsoft Azure AD connector provides a succinct way for your application to
 
 - Visit the [Azure Portal](https://portal.azure.com/#home) and sign in with your Azure account. You need to have an active subscription to access Microsoft Azure AD.
 - Click the **Azure Active Directory** from the services they offer, and click the **App Registrations** from the left menu.
-- Click **New Registration** at the top, enter a description, select your **access type** and add your **Redirect URI**, which will redirect the user to the application after logging in. In our case, this will be `${your_logto_endpoint}/callback/${connector_id}`. e.g. `https://foo.logto.app/callback/${connector_id}`. (The `connector_id` can be also found on the top bar of the Logto Admin Console connector details page)
-  > You can copy the `Callback URI` in the configuration section.
-- Select Web as Platform.
 - Click **New Registration** at the top, enter a description, select your **access type** and add your **Redirect URI**, which will redirect the user to the application after logging in. In our case, this will be `${your_logto_endpoint}/callback/${connector_id}`. e.g. `https://foo.logto.app/callback/${connector_id}`. (The `connector_id` can be also found on the top bar of the Logto Admin Console connector details page)
   > You can copy the `Callback URI` in the configuration section.
 - Select Web as Platform.
@@ -77,7 +67,5 @@ The `prompts` field is an array of strings that specifies the type of user inter
 Logto will concatenate the prompts with a space as the value of `prompt` in the authorization URL.
 
 ## References
-
-- [Web app that signs in users](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-overview)
 
 - [Web app that signs in users](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-sign-user-overview)
