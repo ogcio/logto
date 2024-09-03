@@ -23,7 +23,8 @@ type Properties = {
 export default function koaSpaProxy<StateT, ContextT extends IRouterParamContext, ResponseBodyT>({
   mountedApps,
   packagePath = 'experience',
-  port = 5001,
+  // OGCIO - formsie port clash
+  port = 7001,
   prefix = '',
   queries,
 }: Properties): MiddlewareType<StateT, ContextT, ResponseBodyT> {
