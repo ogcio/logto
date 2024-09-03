@@ -23,9 +23,6 @@
     "typescript",
     "typescriptreact",
   ],
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
   "json.schemas": [
     {
       "fileMatch": [
@@ -55,6 +52,7 @@
     "topbar",
     "upsell",
     "withtyped",
-    "backchannel"
+    "backchannel",
+    "deepmerge"
   ]
 }
