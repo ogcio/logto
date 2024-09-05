@@ -6,8 +6,6 @@
 
 import type { CommonQueryMethods, DatabaseTransactionConnection } from '@silverhand/slonik';
 
-import { consoleLog } from '../../../utils.js';
-
 import { seedApplications } from './applications.js';
 import { seedConnectors } from './connectors.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
@@ -89,7 +87,6 @@ const createDataForTenant = async (
 
   if (tenantData.users?.length) {
     const webhookToUse = webhooks.find((web) => web.id === WEBHOOK_ID_FOR_USERS && web.enabled);
-    consoleLog.info(`WEBHOOK ID: ${webhookToUse?.id}`);
     const users = await seedUsers({
       transaction,
       tenantId,
@@ -107,8 +104,6 @@ const transactionMethod = async (transaction: DatabaseTransactionConnection) => 
   }
 
   await Promise.all(items);
-
-  // Const resourcesRbac = await seedResourceRbacData(transaction, defaultTenantId, resources);
 };
 
 export const seedOgcio = async (connection: CommonQueryMethods) => {
