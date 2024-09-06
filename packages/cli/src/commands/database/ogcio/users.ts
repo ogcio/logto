@@ -6,7 +6,7 @@ import { createHmac } from 'node:crypto';
 import { Users, UsersRoles } from '@logto/schemas';
 import { conditional } from '@silverhand/essentials';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
-import { got } from 'got';
+import { got, type RequestError } from 'got';
 
 import { consoleLog } from '../../../utils.js';
 
@@ -84,9 +84,24 @@ const createUser = async (params: {
 
   if (params.webhook) {
     consoleLog.info(`Invoking webhook for user. User id: ${params.userToSeed.id}`);
-    await sendWebhookRequest({ seededUser: params.userToSeed, webhook: params.webhook });
-    consoleLog.info(`Webhook invoked for user. User id: ${params.userToSeed.id}`);
+    try {
+      await sendWebhookRequest({ seededUser: params.userToSeed, webhook: params.webhook });
+      consoleLog.info(`Webhook invoked for user. User id: ${params.userToSeed.id}`);
+    } catch (error) {
+      consoleLog.error(
+        'Error invoking webhook. Please ensure profile-api service is available and reachable'
+      );
+      if (isRequestError(error)) {
+        consoleLog.error(error.code);
+      } else {
+        consoleLog.error(error);
+      }
+    }
   }
+};
+
+const isRequestError = (input: unknown): input is RequestError => {
+  return input instanceof Error && 'input' in input && 'code' in input && 'stack' in input;
 };
 
 export const sendWebhookRequest = async (params: {
