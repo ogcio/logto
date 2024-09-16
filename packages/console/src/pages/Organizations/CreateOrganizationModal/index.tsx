@@ -25,8 +25,6 @@ import { isPaidPlan, isFeatureEnabled } from '@/utils/subscription';
 
 import styles from './index.module.scss';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly isOpen: boolean;
   readonly onClose: (createdId?: string) => void;

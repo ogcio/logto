@@ -6,7 +6,6 @@ import { type SubscriptionUsage } from '#src/utils/subscription/types.js';
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'COPY' | 'HEAD' | 'OPTIONS';
 
-/** @deprecated */
 type UsageGuardConfig = {
   key: keyof SubscriptionUsage;
   quota: QuotaLibrary;

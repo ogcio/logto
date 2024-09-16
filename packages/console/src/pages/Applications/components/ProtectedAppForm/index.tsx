@@ -36,8 +36,6 @@ type Props = {
   readonly onCreateSuccess?: (createdApp: Application) => void;
 };
 
-// TODO: refactor this component to reduce complexity
-// eslint-disable-next-line complexity
 function ProtectedAppForm({
   className,
   buttonAlignment = 'right',

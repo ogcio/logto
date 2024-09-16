@@ -13,7 +13,6 @@ import { generateStandardId, generateStandardSecret } from '@logto/shared';
 import { conditional } from '@silverhand/essentials';
 import { boolean, object, string, z } from 'zod';
 
-import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import koaPagination from '#src/middleware/koa-pagination.js';
@@ -360,4 +359,3 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
 
   applicationCustomDataRoutes(router, tenant);
 }
-/* eslint-enable max-lines */

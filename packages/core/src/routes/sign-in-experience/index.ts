@@ -4,7 +4,6 @@ import { ConnectorType, SignInExperiences } from '@logto/schemas';
 import { tryThat } from '@silverhand/essentials';
 import { literal, object, string, z } from 'zod';
 
-import { EnvSet } from '#src/env-set/index.js';
 import { validateSignUp, validateSignIn } from '#src/libraries/sign-in-experience/index.js';
 import { validateMfa } from '#src/libraries/sign-in-experience/mfa.js';
 import koaGuard from '#src/middleware/koa-guard.js';

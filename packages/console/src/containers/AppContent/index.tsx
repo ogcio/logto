@@ -26,15 +26,6 @@ export default function AppContent() {
   const isTenantSuspended = isCloud && currentTenant?.isSuspended;
   // TODO: @darcyYe remove this
   const { isLoading: isLoadingSubscriptionData, ...subscriptionDta } = useSubscriptionData();
-  const {
-    isLoading: isLoadingNewSubscriptionData,
-    logtoSkus,
-    currentSku,
-    currentSubscriptionQuota,
-    currentSubscriptionUsage,
-    currentSubscriptionScopeResourceUsage,
-    currentSubscriptionScopeRoleUsage,
-  } = useNewSubscriptionData();
 
   const { isLoading: isLoadingNewSubscriptionData, ...newSubscriptionData } =
     useNewSubscriptionData();

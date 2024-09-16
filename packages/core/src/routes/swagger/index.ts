@@ -3,7 +3,6 @@ import { type OpenAPIV3 } from 'openapi-types';
 
 import type { AnonymousRouter } from '../types.js';
 
-import { managementApiAuthDescription } from './consts.js';
 import {
   assembleSwaggerDocument,
   buildManagementApiBaseDocument,

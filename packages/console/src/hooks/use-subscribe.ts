@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { useCallback, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -11,10 +11,6 @@ import { GlobalRoute, TenantsContext } from '@/contexts/TenantsProvider';
 import { createLocalCheckoutSession } from '@/utils/checkout';
 import { dropLeadingSlash } from '@/utils/url';
 
-import useNewSubscriptionQuota from './use-new-subscription-quota';
-import useNewSubscriptionScopeUsage from './use-new-subscription-scopes-usage';
-import useNewSubscriptionUsage from './use-new-subscription-usage';
-import useSubscription from './use-subscription';
 import useTenantPathname from './use-tenant-pathname';
 
 type SubscribeProps = {
@@ -40,30 +36,6 @@ const useSubscribe = () => {
 
   const { getUrl } = useTenantPathname();
   const [isSubscribeLoading, setIsSubscribeLoading] = useState(false);
-
-  const { mutate: mutateSubscription } = useSubscription(currentTenantId);
-  const { mutate: mutateSubscriptionQuota } = useNewSubscriptionQuota(currentTenantId);
-  const { mutate: mutateSubscriptionUsage } = useNewSubscriptionUsage(currentTenantId);
-  const {
-    scopeResourceUsage: { mutate: mutateScopeResourceUsage },
-    scopeRoleUsage: { mutate: mutateScopeRoleUsage },
-  } = useNewSubscriptionScopeUsage(currentTenantId);
-
-  const syncSubscriptionData = useCallback(() => {
-    void mutateSubscription();
-    if (isDevFeaturesEnabled) {
-      void mutateSubscriptionQuota();
-      void mutateSubscriptionUsage();
-      void mutateScopeResourceUsage();
-      void mutateScopeRoleUsage();
-    }
-  }, [
-    mutateScopeResourceUsage,
-    mutateScopeRoleUsage,
-    mutateSubscription,
-    mutateSubscriptionQuota,
-    mutateSubscriptionUsage,
-  ]);
 
   const subscribe = async ({
     skuId,
@@ -163,7 +135,6 @@ const useSubscribe = () => {
     isSubscribeLoading,
     subscribe,
     cancelSubscription,
-    syncSubscriptionData,
     visitManagePaymentPage,
   };
 };

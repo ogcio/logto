@@ -7,7 +7,6 @@ import { toastResponseError } from '@/cloud/hooks/use-cloud-api';
 import { type LogtoSkuResponse } from '@/cloud/types/router';
 import SkuName from '@/components/SkuName';
 import { contactEmailLink } from '@/consts';
-import { isDevFeaturesEnabled } from '@/consts/env';
 import { subscriptionPage } from '@/consts/pages';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
@@ -137,8 +136,8 @@ function SwitchPlanActionBar({ onSubscriptionUpdated, currentSkuId, logtoSkus }:
                 isCurrentSku
                   ? 'subscription.current'
                   : isDowngrade
-                  ? 'subscription.downgrade'
-                  : 'subscription.upgrade'
+                    ? 'subscription.downgrade'
+                    : 'subscription.upgrade'
               }
               type={isDowngrade ? 'default' : 'primary'}
               disabled={isCurrentSku}

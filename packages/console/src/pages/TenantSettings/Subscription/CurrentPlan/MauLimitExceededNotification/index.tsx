@@ -52,11 +52,6 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
 
   const { mauLimit } = currentSubscriptionQuota;
 
-  // Should be safe to access `mauLimit` here since we have excluded the case where `isDevFeaturesEnabled` is `true` but `currentSubscriptionQuota` is `null` in the above condition.
-  const mauLimit = isDevFeaturesEnabled
-    ? currentSubscriptionQuota.mauLimit
-    : oldPricingModelMauLimit;
-
   if (
     mauLimit === null || // Unlimited
     periodicUsage.mauLimit < mauLimit ||

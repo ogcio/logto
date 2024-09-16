@@ -5,7 +5,7 @@ import { useCallback, useContext, useState } from 'react';
 import Plus from '@/assets/icons/plus.svg?react';
 import PageMeta from '@/components/PageMeta';
 import { organizationsFeatureLink } from '@/consts';
-import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
+import { isCloud } from '@/consts/env';
 import { subscriptionPage } from '@/consts/pages';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';

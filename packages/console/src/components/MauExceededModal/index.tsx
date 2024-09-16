@@ -5,7 +5,6 @@ import ReactModal from 'react-modal';
 
 import PlanUsage from '@/components/PlanUsage';
 import { contactEmailLink } from '@/consts';
-import { isDevFeaturesEnabled } from '@/consts/env';
 import { subscriptionPage } from '@/consts/pages';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';

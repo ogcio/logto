@@ -69,31 +69,3 @@ export const isReportSubscriptionUpdatesUsageKey = (
   // eslint-disable-next-line no-restricted-syntax
   return allReportSubscriptionUpdatesUsageKeys.includes(value as ReportSubscriptionUpdatesUsageKey);
 };
-
-export const getTenantSubscriptionQuotaAndUsage = async (
-  cloudConnection: CloudConnectionLibrary
-): Promise<{
-  quota: SubscriptionQuota;
-  usage: SubscriptionUsage;
-}> => {
-  const client = await cloudConnection.getClient();
-  const [quota, usage] = await Promise.all([
-    client.get('/api/tenants/my/subscription/quota'),
-    client.get('/api/tenants/my/subscription/usage'),
-  ]);
-
-  return { quota, usage };
-};
-
-export const getTenantSubscriptionScopeUsage = async (
-  cloudConnection: CloudConnectionLibrary,
-  entityName: 'resources' | 'roles'
-): Promise<Record<string, number>> => {
-  const client = await cloudConnection.getClient();
-  const scopeUsages = await client.get('/api/tenants/my/subscription/usage/:entityName/scopes', {
-    params: { entityName },
-    search: {},
-  });
-
-  return scopeUsages;
-};

@@ -1,11 +1,4 @@
-import { conditional } from '@silverhand/essentials';
-
-import {
-  type TenantResponse,
-  type NewSubscriptionUsage,
-  type NewSubscriptionQuota,
-} from '@/cloud/types/router';
-import { isDevFeaturesEnabled } from '@/consts/env';
+import { type TenantResponse } from '@/cloud/types/router';
 import DynamicT from '@/ds-components/DynamicT';
 import Tag from '@/ds-components/Tag';
 
@@ -40,19 +33,11 @@ function TenantStatusTag({ tenantData, className }: Props) {
     );
   }
 
-  const { usage: tenantUsage, quota: tenantQuota } = tenantStatus;
-
   const { activeUsers } = usage;
 
   const { mauLimit } = quota;
 
-  const isMauExceeded =
-    conditional(
-      isDevFeaturesEnabled &&
-        tenantQuota.mauLimit !== null &&
-        tenantUsage.mauLimit >= tenantQuota.mauLimit
-    ) ??
-    (mauLimit !== null && activeUsers >= mauLimit);
+  const isMauExceeded = mauLimit !== null && activeUsers >= mauLimit;
 
   if (isMauExceeded) {
     return (

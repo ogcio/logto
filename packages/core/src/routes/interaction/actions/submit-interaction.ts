@@ -100,6 +100,10 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
+    // OGCIO
+    roles,
+    // OGCIO
+    usersRoles,
   } = queries;
 
   const {

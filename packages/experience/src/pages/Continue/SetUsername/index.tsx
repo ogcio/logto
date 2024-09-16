@@ -18,8 +18,6 @@ const SetUsername = ({ interactionEvent }: Props) => {
 
   const { setIdentifierInputValue } = useContext(UserInteractionContext);
 
-  const { setIdentifierInputValue } = useContext(UserInteractionContext);
-
   const handleSubmit = async (identifier: SignInIdentifier, value: string) => {
     if (identifier !== SignInIdentifier.Username) {
       return;

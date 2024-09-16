@@ -3,7 +3,7 @@ import { cond } from '@silverhand/essentials';
 import { useContext, type ReactNode } from 'react';
 
 import PageMeta from '@/components/PageMeta';
-import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
+import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import CardTitle from '@/ds-components/CardTitle';

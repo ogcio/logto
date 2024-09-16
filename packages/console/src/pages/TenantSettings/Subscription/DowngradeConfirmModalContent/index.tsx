@@ -36,11 +36,6 @@ function DowngradeConfirmModalContent({ currentSku, targetSku }: Props) {
     [targetSku.quota, currentSku.quota]
   );
 
-  const targetSkuQuotaDiff = useMemo(
-    () => excludeSkuComingSoonFeatures(diff(currentSku.quota, targetSku.quota)),
-    [targetSku.quota, currentSku.quota]
-  );
-
   return (
     <div className={styles.container}>
       <div className={styles.description}>

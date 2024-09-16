@@ -14,7 +14,6 @@ import { conditional, deduplicate, yes } from '@silverhand/essentials';
 import { subDays } from 'date-fns';
 import { z } from 'zod';
 
-import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import koaPagination from '#src/middleware/koa-pagination.js';
@@ -158,9 +157,7 @@ export default function hookRoutes<T extends ManagementApiRouter>(
 
   router.post(
     '/hooks',
-    EnvSet.values.isDevFeaturesEnabled
-      ? newKoaQuotaGuard({ key: 'hooksLimit', quota })
-      : koaQuotaGuard({ key: 'hooksLimit', quota }),
+    koaQuotaGuard({ key: 'hooksLimit', quota }),
     koaGuard({
       body: Hooks.createGuard.omit({ id: true, signingKey: true }).extend({
         event: hookEventGuard.optional(),
