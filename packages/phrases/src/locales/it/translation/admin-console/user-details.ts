@@ -83,7 +83,6 @@ const user_details = {
   roles: {
     name_column: 'Ruolo utente',
     description_column: 'Descrizione',
-    assign_button: 'Assegna ruoli',
     delete_description:
       'Questa azione rimuoverà questo ruolo da questo utente. Il ruolo stesso esisterà ancora, ma non sarà più associato a questo utente.',
     deleted: '{{nome}} è stato rimosso con successo da questo utente.',
@@ -93,7 +92,6 @@ const user_details = {
     role_search_placeholder: 'Cerca per nome ruolo',
     added_text: '{{value, number}} aggiunti',
     assigned_user_count: '{{value, number}} utenti',
-    confirm_assign: 'Assegna ruoli',
     role_assigned: 'Ruolo(ruoli) assegnati con successo',
     search: 'Cerca per nome ruolo, descrizione o ID',
     empty: 'Nessun ruolo disponibile',

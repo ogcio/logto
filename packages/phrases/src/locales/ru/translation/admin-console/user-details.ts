@@ -80,7 +80,6 @@ const user_details = {
   roles: {
     name_column: 'Роль пользователя',
     description_column: 'Описание',
-    assign_button: 'Назначить роли',
     delete_description:
       'Это действие удалит эту роль у данного пользователя. Роль все еще будет существовать, но она больше не будет связана с этим пользователем.',
     deleted: '{{name}} был(а) успешно удален(а) из этого пользователя.',
@@ -91,7 +90,6 @@ const user_details = {
     role_search_placeholder: 'Поиск по названию роли',
     added_text: '{{value, number}} добавлен(а)',
     assigned_user_count: '{{value, number}} пользователей',
-    confirm_assign: 'Назначить роли',
     role_assigned: 'Роль(и) успешно назначена(ы)',
     search: 'Поиск по названию роли, описанию или ID',
     empty: 'Нет доступных ролей',

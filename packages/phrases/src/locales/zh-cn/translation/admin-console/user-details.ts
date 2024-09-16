@@ -74,7 +74,6 @@ const user_details = {
   roles: {
     name_column: '用户角色',
     description_column: '描述',
-    assign_button: '分配角色',
     delete_description: '此操作将从此用户中删除此角色。角色本身仍将存在，但不再与此用户相关联。',
     deleted: '已成功将 {{name}} 从此用户中删除。',
     assign_title: '分配角色至 {{name}}',
@@ -83,7 +82,6 @@ const user_details = {
     role_search_placeholder: '按角色名称搜索',
     added_text: '添加了 {{value, number}} 个',
     assigned_user_count: '{{value, number}} 个用户',
-    confirm_assign: '分配角色',
     role_assigned: '已成功分配角色',
     search: '按角色名称、描述或 ID 搜索',
     empty: '无可用角色',

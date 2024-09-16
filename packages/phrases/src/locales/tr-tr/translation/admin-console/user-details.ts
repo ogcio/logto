@@ -92,7 +92,6 @@ const user_details = {
     role_search_placeholder: 'Rol adına göre arama yapın',
     added_text: '{{value, number}} eklendi',
     assigned_user_count: '{{value, number}} kullanıcı',
-    confirm_assign: 'Rolleri ata',
     role_assigned: 'Rol(ler) başarıyla atandı',
     search: 'Rol adına, açıklamasına veya Kimliğine göre arama yapın',
     empty: 'Uygun rol yok',

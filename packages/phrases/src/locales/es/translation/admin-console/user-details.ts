@@ -82,7 +82,6 @@ const user_details = {
   roles: {
     name_column: 'Rol de usuario',
     description_column: 'Descripción',
-    assign_button: 'Asignar roles',
     delete_description:
       'Esta acción eliminará este rol de este usuario. El rol en sí seguirá existiendo, pero ya no estará asociado con este usuario.',
     deleted: 'Se eliminó "{{name}}" correctamente de este usuario.',
@@ -93,7 +92,6 @@ const user_details = {
     role_search_placeholder: 'Buscar por nombre de rol',
     added_text: '{{value, number}} agregados',
     assigned_user_count: '{{value, number}} usuarios',
-    confirm_assign: 'Asignar roles',
     role_assigned: 'Rol(es) asignado(s) con éxito',
     search: 'Buscar por nombre de rol, descripción o ID',
     empty: 'No hay roles disponibles',
