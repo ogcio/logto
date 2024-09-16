@@ -272,6 +272,16 @@
         "id": "46ewhh940rn1e29cmecxs",
         "is_third_party": false,
         "apply_management_api_role": true
+      },
+      {
+        "name": "Integrator Building Block",
+        "description": "Integrator App for Building Block",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3009/callback",
+        "logout_redirect_uri": "http://localhost:3009",
+        "secret": "integrator_app_local_secret",
+        "id": "1qpp7cfssbb4mcrvmfe0c",
+        "is_third_party": false
       }
     ],
     "resources": [
