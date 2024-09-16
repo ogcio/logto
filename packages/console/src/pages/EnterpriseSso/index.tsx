@@ -37,8 +37,7 @@ function EnterpriseSso() {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { isDevTenant } = useContext(TenantsContext);
   const {
-    currentPlan,
-    currentSubscription: { planId },
+    currentSubscription: { planId, isAddOnAvailable },
     currentSubscriptionQuota,
   } = useContext(SubscriptionDataContext);
 
@@ -47,10 +46,7 @@ function EnterpriseSso() {
   });
 
   const isSsoEnabled =
-    !isCloud ||
-    (isDevFeaturesEnabled
-      ? currentSubscriptionQuota.enterpriseSsoLimit !== 0
-      : currentPlan.quota.ssoEnabled);
+    !isCloud || currentSubscriptionQuota.enterpriseSsoLimit !== 0 || planId === ReservedPlanId.Pro;
 
   const url = buildUrl('api/sso-connectors', {
     page: String(page),
@@ -72,6 +68,7 @@ function EnterpriseSso() {
           : conditional((!isSsoEnabled || isDevTenant) && ReservedPlanId.Pro),
         title: 'enterprise_sso.title',
         subtitle: 'enterprise_sso.subtitle',
+        hasAddOnTag: isAddOnAvailable,
       }}
       pageMeta={{ titleKey: 'enterprise_sso.page_title' }}
       createButton={conditional(

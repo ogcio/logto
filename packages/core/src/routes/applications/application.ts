@@ -1,5 +1,5 @@
 // TODO: @darcyYe refactor this file later to remove disable max line comment
-/* eslint-disable max-lines */
+
 import type { Role } from '@logto/schemas';
 import {
   Applications,
@@ -148,26 +148,15 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       response: Applications.guard,
       status: [200, 400, 422, 500],
     }),
-    // eslint-disable-next-line complexity
+
     async (ctx, next) => {
       const { oidcClientMetadata, protectedAppMetadata, ...rest } = ctx.guard.body;
 
-      const {
-        values: { isDevFeaturesEnabled },
-      } = EnvSet;
-
       await Promise.all([
         rest.type === ApplicationType.MachineToMachine &&
-          (isDevFeaturesEnabled
-            ? quota.guardTenantUsageByKey('machineToMachineLimit')
-            : quota.guardKey('machineToMachineLimit')),
-        rest.isThirdParty &&
-          (isDevFeaturesEnabled
-            ? quota.guardTenantUsageByKey('thirdPartyApplicationsLimit')
-            : quota.guardKey('thirdPartyApplicationsLimit')),
-        isDevFeaturesEnabled
-          ? quota.guardTenantUsageByKey('applicationsLimit')
-          : quota.guardKey('applicationsLimit'),
+          quota.guardTenantUsageByKey('machineToMachineLimit'),
+        rest.isThirdParty && quota.guardTenantUsageByKey('thirdPartyApplicationsLimit'),
+        quota.guardTenantUsageByKey('applicationsLimit'),
       ]);
 
       assertThat(
@@ -213,6 +202,11 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       }
 
       ctx.body = application;
+
+      if (rest.type === ApplicationType.MachineToMachine) {
+        await quota.reportSubscriptionUpdatesUsage('machineToMachineLimit');
+      }
+
       return next();
     }
   );
@@ -355,6 +349,10 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       // Note: will need delete cascade when application is joint with other tables
       await queries.applications.deleteApplicationById(id);
       ctx.status = 204;
+
+      if (type === ApplicationType.MachineToMachine) {
+        await quota.reportSubscriptionUpdatesUsage('machineToMachineLimit');
+      }
 
       return next();
     }

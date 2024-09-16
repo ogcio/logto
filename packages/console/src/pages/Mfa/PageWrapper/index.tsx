@@ -17,22 +17,17 @@ type Props = {
 function PageWrapper({ children }: Props) {
   const { isDevTenant } = useContext(TenantsContext);
   const {
-    currentPlan,
-    currentSubscription: { planId },
+    currentSubscription: { planId, isAddOnAvailable },
     currentSubscriptionQuota: { mfaEnabled },
   } = useContext(SubscriptionDataContext);
-  const isMfaEnabled =
-    !isCloud || (isDevFeaturesEnabled ? mfaEnabled : currentPlan.quota.mfaEnabled);
+  const isMfaEnabled = !isCloud || mfaEnabled || planId === ReservedPlanId.Pro;
 
   return (
     <div className={styles.container}>
       <PageMeta titleKey="mfa.title" />
       <CardTitle
-        paywall={
-          isDevFeaturesEnabled
-            ? cond(planId === ReservedPlanId.Pro && ReservedPlanId.Pro)
-            : cond((!isMfaEnabled || isDevTenant) && ReservedPlanId.Pro)
-        }
+        paywall={cond((!isMfaEnabled || isDevTenant) && ReservedPlanId.Pro)}
+        hasAddOnTag={isAddOnAvailable}
         title="mfa.title"
         subtitle="mfa.description"
         className={styles.cardTitle}

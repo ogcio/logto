@@ -27,9 +27,7 @@ const guardConnectorsQuota = async (
   quota: QuotaLibrary
 ) => {
   if (factory.type === ConnectorType.Social) {
-    await (EnvSet.values.isDevFeaturesEnabled
-      ? quota.guardTenantUsageByKey('socialConnectorsLimit')
-      : quota.guardKey('socialConnectorsLimit'));
+    await quota.guardTenantUsageByKey('socialConnectorsLimit');
   }
 };
 
@@ -71,7 +69,7 @@ export default function connectorRoutes<T extends ManagementApiRouter>(
         */
         .merge(Connectors.createGuard.pick({ id: true }).partial()),
       response: connectorResponseGuard,
-      status: [200, 400, 422],
+      status: [200, 400, 403, 422],
     }),
     async (ctx, next) => {
       const {

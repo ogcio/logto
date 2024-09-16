@@ -1,12 +1,22 @@
 @use '@/scss/underscore' as _;
 
 .container {
-  padding: _.unit(6) _.unit(6) _.unit(6) _.unit(4);
+  padding-block: _.unit(6);
+  padding-inline: _.unit(4) _.unit(6);
   border-radius: 16px;
   // Force dark theme on the code editor
   background: #34353f;
   position: relative;
   overflow-y: auto;
+  direction: ltr;
+
+  .title {
+    margin-top: _.unit(-2);
+    padding-bottom: _.unit(2);
+    margin-bottom: _.unit(3);
+    border-bottom: 1px solid var(--color-border);
+    color: #f7f8f8;
+  }
 
   .title {
     margin-top: _.unit(-2);

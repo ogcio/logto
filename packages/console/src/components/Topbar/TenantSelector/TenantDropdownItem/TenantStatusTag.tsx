@@ -8,20 +8,14 @@ import {
 import { isDevFeaturesEnabled } from '@/consts/env';
 import DynamicT from '@/ds-components/DynamicT';
 import Tag from '@/ds-components/Tag';
-import { type SubscriptionPlan } from '@/types/subscriptions';
 
 type Props = {
   readonly tenantData: TenantResponse;
-  readonly tenantSubscriptionPlan: SubscriptionPlan;
-  readonly tenantStatus: {
-    usage: NewSubscriptionUsage;
-    quota: NewSubscriptionQuota;
-  };
   readonly className?: string;
 };
 
-function TenantStatusTag({ tenantData, tenantSubscriptionPlan, tenantStatus, className }: Props) {
-  const { usage, openInvoices, isSuspended } = tenantData;
+function TenantStatusTag({ tenantData, className }: Props) {
+  const { usage, quota, openInvoices, isSuspended } = tenantData;
 
   /**
    * Tenant status priority:
@@ -50,9 +44,7 @@ function TenantStatusTag({ tenantData, tenantSubscriptionPlan, tenantStatus, cla
 
   const { activeUsers } = usage;
 
-  const {
-    quota: { mauLimit },
-  } = tenantSubscriptionPlan;
+  const { mauLimit } = quota;
 
   const isMauExceeded =
     conditional(

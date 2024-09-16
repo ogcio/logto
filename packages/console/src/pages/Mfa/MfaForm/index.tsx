@@ -18,6 +18,7 @@ import Switch from '@/ds-components/Switch';
 import useApi from '@/hooks/use-api';
 import useDocumentationUrl from '@/hooks/use-documentation-url';
 import { trySubmitSafe } from '@/utils/form';
+import { isPaidPlan } from '@/utils/subscription';
 
 import { type MfaConfigForm, type MfaConfig } from '../types';
 
@@ -33,10 +34,13 @@ type Props = {
 };
 
 function MfaForm({ data, onMfaUpdated }: Props) {
-  const { currentPlan, currentSubscriptionQuota } = useContext(SubscriptionDataContext);
+  const {
+    currentSubscription: { planId, isEnterprisePlan },
+    currentSubscriptionQuota,
+    mutateSubscriptionQuotaAndUsages,
+  } = useContext(SubscriptionDataContext);
   const isMfaDisabled =
-    isCloud &&
-    !(isDevFeaturesEnabled ? currentSubscriptionQuota.mfaEnabled : currentPlan.quota.mfaEnabled);
+    isCloud && !currentSubscriptionQuota.mfaEnabled && !isPaidPlan(planId, isEnterprisePlan);
 
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { getDocumentationUrl } = useDocumentationUrl();
@@ -77,6 +81,7 @@ function MfaForm({ data, onMfaUpdated }: Props) {
           json: { mfa: mfaConfig },
         })
         .json<SignInExperience>();
+      mutateSubscriptionQuotaAndUsages();
       reset(convertMfaConfigToForm(updatedMfaConfig));
       toast.success(t('general.saved'));
       onMfaUpdated(updatedMfaConfig);
