@@ -82,7 +82,7 @@ const user_details = {
   roles: {
     name_column: 'Função de usuário',
     description_column: 'Descrição',
-    assign_button: 'Atribuir papéis',
+    assign_button: 'Atribuir funções',
     delete_description:
       'Esta ação irá remover esta função deste utilizador. A função em si ainda existirá, mas não estará mais associada a este utilizador.',
     deleted: '{{name}} foi removido do utilizador com sucesso.',
