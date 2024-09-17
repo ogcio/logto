@@ -7,9 +7,9 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { KoaInstrumentation } from '@opentelemetry/instrumentation-koa';
 import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base';
 import { Resource } from '@opentelemetry/resources';
-import { LoggerProvider, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
+import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
-import { NodeSDK, logs } from '@opentelemetry/sdk-node';
+import { NodeSDK } from '@opentelemetry/sdk-node';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
 const { OTEL_COLLECTOR_URL } = process.env;
@@ -37,7 +37,7 @@ if (OTEL_COLLECTOR_URL) {
       }),
 
       logRecordProcessors: [
-        new logs.SimpleLogRecordProcessor(
+        new BatchLogRecordProcessor(
           new OTLPLogExporter({
             url: `${OTEL_COLLECTOR_URL}`,
             compression: CompressionAlgorithm.GZIP,
@@ -85,7 +85,7 @@ export function getLogger(): Logger {
   });
 
   loggerProvider.addLogRecordProcessor(
-    new SimpleLogRecordProcessor(
+    new BatchLogRecordProcessor(
       new OTLPLogExporter({
         url: OTEL_COLLECTOR_URL,
         compression: CompressionAlgorithm.GZIP,
