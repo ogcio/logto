@@ -77,6 +77,7 @@ const user_details = {
   roles: {
     name_column: '사용자 역할',
     description_column: '설명',
+    assign_button: '역할 할당',
     delete_description:
       '이 행동은 사용자에게서 이 역할을 삭제할 거예요. 역할은 그대로 존재하지만, 이 사용자에게 더 이상 할당되지 않아요.',
     deleted: '{{name}}이/가 성공적으로 이 사용자에게서 제거되었어요.',
@@ -86,6 +87,7 @@ const user_details = {
     role_search_placeholder: '역할 이름으로 검색',
     added_text: '{{value, number}}이/가 추가되었어요',
     assigned_user_count: '사용자 {{value, number}}명',
+    confirm_assign: '역할 할당',
     role_assigned: '역할을 성공적으로 할당했어요',
     search: '역할 이름, 설명, ID로 검색',
     empty: '역할 없음',

@@ -90,9 +90,6 @@ export default function koaOidcErrorHandler<StateT, ContextT>(): Middleware<Stat
         throw error;
       }
 
-      // Report oidc exceptions to ApplicationInsights
-      void appInsights.trackException(error, buildAppInsightsTelemetry(ctx));
-
       // Mimic oidc-provider's error handling, thus we can use the unified logic below.
       // See https://github.com/panva/node-oidc-provider/blob/37d0a6cfb3c618141a44cbb904ce45659438f821/lib/shared/error_handler.js
       ctx.status = error.statusCode || 500;

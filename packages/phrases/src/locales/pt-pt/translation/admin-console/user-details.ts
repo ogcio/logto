@@ -82,6 +82,7 @@ const user_details = {
   roles: {
     name_column: 'Função de usuário',
     description_column: 'Descrição',
+    assign_button: 'Atribuir papéis',
     delete_description:
       'Esta ação irá remover esta função deste utilizador. A função em si ainda existirá, mas não estará mais associada a este utilizador.',
     deleted: '{{name}} foi removido do utilizador com sucesso.',
@@ -92,6 +93,7 @@ const user_details = {
     role_search_placeholder: 'Pesquisar pelo nome da função',
     added_text: '{{value, number}} adicionados',
     assigned_user_count: '{{value, number}} utilizador(es)',
+    confirm_assign: 'Atribuir funções',
     role_assigned: 'Função(ões) atribuída(s) com sucesso',
     search: 'Pesquisar pelo nome, descrição ou ID da função',
     empty: 'Nenhuma função disponível',

@@ -83,6 +83,7 @@ const user_details = {
   roles: {
     name_column: 'Benutzerrolle',
     description_column: 'Beschreibung',
+    assign_button: 'Rollen zuweisen',
     delete_description:
       'Diese Aktion entfernt diese Rolle von diesem Benutzer. Die Rolle selbst bleibt erhalten, aber sie wird nicht mehr mit diesem Benutzer verknüpft sein.',
     deleted: '{{name}} wurde erfolgreich von diesem Benutzer entfernt.',
@@ -93,6 +94,7 @@ const user_details = {
     role_search_placeholder: 'Nach Rollennamen suchen',
     added_text: '{{value, number}} hinzugefügt',
     assigned_user_count: '{{value, number}} Benutzer',
+    confirm_assign: 'Rollen zuweisen',
     role_assigned: 'Rolle(n) erfolgreich zugewiesen',
     search: 'Nach Rollennamen, Beschreibung oder ID suchen',
     empty: 'Keine Rolle verfügbar',

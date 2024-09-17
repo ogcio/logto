@@ -277,7 +277,6 @@ export default class SchemaRouter<
         } = ctx.guard;
 
         await relationQueries.replace(id, relationIds ?? []);
-        appendHookContext(ctx, id);
         ctx.status = 204;
         appendHookContext(ctx, id);
         return next();
@@ -303,8 +302,6 @@ export default class SchemaRouter<
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `koaGuard()` ensures the value is not `undefined`
           [columns.relationSchemaId]: relationId!,
         });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        appendHookContext(ctx, id!);
         ctx.status = 204;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         appendHookContext(ctx, id!);
