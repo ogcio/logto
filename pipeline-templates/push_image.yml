@@ -1,7 +1,10 @@
+# OGCIO
+
 parameters:
   - name: serviceName
   - name: awsRegion
   - name: awsServiceConnection
+  - name: containerTag
   
 jobs:
   - job: Push
@@ -23,5 +26,5 @@ jobs:
         imageSource: 'imagename'
         sourceImageName: ${{ parameters.serviceName }}
         sourceImageTag: $(Build.BuildId)
-        pushTag: $(Build.SourceBranchName)
+        pushTag: ${{ parameters.containerTag }}
         repositoryName: life-events-logto

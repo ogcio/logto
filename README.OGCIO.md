@@ -26,6 +26,9 @@ e.g. `git merge v1.17.0 --strategy-option theirs`
 - commit the changes with `git commit -a` to end the merge and let git write the correct message
 - push and open your PR!
 
+To help with conflict resolution you can leverage git rerere functionality (reuse recorded resolution). To enable it run `git config rerere.enabled true`. Enabling the rerere setting makes Git run for you `git rerere`, with no subcommand, at the appropriate times. When performing any merge, git will record the conflicting diff hunks and record, at commit time, how they were manually resolved. If there is already any previous recorded resolutions for those conflicts, git will use them to resolve the conflicts automatically. Additional [subcommands](https://git-scm.com/docs/git-rerere) are available and can help interacting with its working state.
+
+
 ## Run with Docker Compose
 It is possible to run Logto, its database and our MyGovId mock service in a dockerized solution, with local or remote images.
 
@@ -39,9 +42,10 @@ make build run
 If you want to run Logto on your machine without cloning the repo, you need to have access to aws to pull our images as a prerequisite. If you haven't already, install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 If not yet configured, run
 ```
-aws sso configure
+aws configure sso
 ```
-And follow the prompts. If you don't know what your SSO start URL is, you can find it on your AWS access portal. Click on your AWS account and then on the `Access keys` option.
+After that, follow the prompts. You should be asked a name for the session (whatever helps you identify the session), the SSO start URL and the region. If you don't know what your SSO start URL is, you can find it on your AWS access portal. Click on your AWS account and then on the `Access keys` option. You can also find the region value in the same section.
+For all other options, such as registration scopes, you can go with the default.
 
 A script is available to login with AWS and Docker, create the custom network and run the containers. This is useful when launching it for the first time, or more in general when the image needs to be pulled.
 The script expects an environment variable for the aws profile that you need to be logged in:
@@ -63,7 +67,7 @@ curl -fsSL https://raw.githubusercontent.com/ogcio/logto/HEAD/docker-compose-ogc
 
 If you already have the repo cloned locally there is a Make command available:
 ```
-make build run-remote
+make run-remote
 ```
 
 ## Setup and run Logto natively

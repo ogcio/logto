@@ -5,10 +5,32 @@
         "name": "OGCIO Seeded Org",
         "description": "Organization created through seeder",
         "id": "ogcio"
+      },
+      {
+        "name": "Inactive Public Servants Org",
+        "description": "Temporary organization for inactive Public Servants",
+        "id": "inactive-ps-org"
+      },
+      {
+        "name": "First Testing Organisation",
+        "description": "Organisation used to do E2E testing",
+        "id": "first-testing"
+      },
+      {
+        "name": "Second Testing Organisation",
+        "description": "Organisation used to do E2E testing",
+        "id": "second-testing"
       }
     ],
     "organization_permissions": {
       "specific_permissions": [
+        "analytics:global:*",
+        "analytics:measurable:admin",
+        "analytics:measurable:write",
+        "analytics:measurable:view",
+        "analytics:website:read",
+        "analytics:website:write",
+        "analytics:website:tracking",
         "payments:provider:*",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
@@ -18,7 +40,14 @@
         "messaging:template:*",
         "messaging:citizen:*",
         "messaging:event:read",
-        "life-events:digital-wallet-flow:*"
+        "profile:user:read",
+        "profile:user:*",
+        "profile:address:*",
+        "profile:entitlement:*",
+        "life-events:digital-wallet-flow:*",
+        "bb:public-servant.inactive:*",
+        "scheduler:jobs:write",
+        "upload:file:*"
       ]
     },
     "organization_roles": [
@@ -30,7 +59,8 @@
           "payments:provider:*",
           "payments:payment_request:*",
           "payments:payment_request.public:read",
-          "payments:transaction:*"
+          "payments:transaction:*",
+          "scheduler:jobs:write"
         ]
       },
       {
@@ -42,7 +72,8 @@
           "messaging:provider:*",
           "messaging:template:*",
           "messaging:citizen:*",
-          "messaging:event:read"
+          "messaging:event:read",
+          "scheduler:jobs:write"
         ]
       },
       {
@@ -50,6 +81,100 @@
         "name": "Life Events Public Servant",
         "description": "Life Events Public servant",
         "specific_permissions": ["life-events:digital-wallet-flow:*"]
+      },
+      {
+        "id": "pro-public-servant",
+        "name": "Profile Public Servant",
+        "description": "Profile Public servant",
+        "specific_permissions": ["profile:user:*", "profile:address:*", "profile:entitlement:*"]
+      },
+      {
+        "id": "anl-admin",
+        "name": "Analytics Admin",
+        "description": "Analytics Admin",
+        "specific_permissions": ["analytics:measurable:admin"]
+      },
+      {
+        "id": "anl-public-servant",
+        "name": "Analytics Public Servant",
+        "description": "Analytics Public servant",
+        "specific_permissions": ["analytics:measurable:view"]
+      },
+      {
+        "id": "anl-super-user",
+        "name": "Analytics Super User",
+        "description": "Analytics Super User",
+        "specific_permissions": ["analytics:global:*"]
+      },
+      {
+        "id": "upload-public-servant",
+        "name": "File Upload Public Servant",
+        "description": "File Upload Public servant",
+        "specific_permissions": ["upload:file:*", "profile:user:read"]
+      },
+      {
+        "id": "bb-inactive-ps",
+        "name": "Inactive Public Servant",
+        "description": "Inactive Public Servant",
+        "specific_permissions": ["bb:public-servant.inactive:*"]
+      },
+      {
+        "id": "m2m-ps-profile-reader",
+        "name": "M2M Public Servant Profile Reader",
+        "description": "Role for M2M Applications that need to read from Profile resources",
+        "specific_permissions": ["profile:user:read"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "ogcio" },
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-ps-sched-writer",
+        "name": "M2M Public Servant Scheduler Writer",
+        "description": "Role for M2M Applications that need to write to Scheduler resources",
+        "specific_permissions": ["scheduler:jobs:write"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "ogcio" },
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-analytics-sdk",
+        "name": "M2M Analytics SDK Role",
+        "description": "Role for M2M Applications that need to read from Analytics resources",
+        "specific_permissions": [
+          "analytics:website:read",
+          "analytics:website:write",
+          "analytics:website:tracking"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "m2m-e2e-tester",
+        "name": "M2M E2E Tester Role",
+        "description": "Role for M2M Applications that need to perform E2E testing",
+        "specific_permissions": [
+          "messaging:message:*",
+          "messaging:provider:*",
+          "messaging:template:*",
+          "messaging:citizen:*",
+          "messaging:event:read",
+          "profile:user:read",
+          "upload:file:*",
+          "scheduler:jobs:write"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "first-testing" },
+          { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "second-testing" }
+        ]
       }
     ],
     "applications": [
@@ -78,9 +203,101 @@
         "description": "Life Events App",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3000/callback",
-        "logout_redirect_uri": "http://localhost:3000",
+        "logout_redirect_uri": "http://localhost:3000/admin",
         "secret": "life_events_app_local_secret",
         "id": "nfg61tuyfsgizsx8c4p3t",
+        "is_third_party": false
+      },
+      {
+        "name": "Profile Building Block",
+        "description": "Profile App of Life Events",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3003/callback",
+        "logout_redirect_uri": "http://localhost:3003",
+        "secret": "profile_app_local_secret",
+        "id": "RZmVtZUnrv01YzUYEIwYW",
+        "is_third_party": false
+      },
+      {
+        "name": "Analytics Building Block",
+        "description": "Shared platform for Analytics",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:8055/index.php?module=LoginOGCIO&action=callback&provider=oidc",
+        "logout_redirect_uri": "http://localhost:8055",
+        "secret": "analytics_app_local_secret",
+        "id": "kgz1zomlw27cxx4pxh5gi",
+        "is_third_party": false,
+        "always_issue_refresh_token": true
+      },
+      {
+        "name": "Home Building Block",
+        "description": "Building Blocks home application",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3004/callback",
+        "logout_redirect_uri": "http://localhost:3004",
+        "secret": "home_app_local_secret",
+        "id": "4icd76x8we31j1e8bqyfn",
+        "is_third_party": false
+      },
+      {
+        "name": "File Upload Service",
+        "description": "File Upload Service",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3008/callback",
+        "logout_redirect_uri": "http://localhost:3008",
+        "secret": "upload_app_local_sercret",
+        "id": "5vnf94y2lr17s2u9htkmq",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Profile Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Profile resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "profile_reader_local_secret",
+        "id": "ddl4llp30risjwcjymqw3",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Scheduler Writer",
+        "description": "Machine 2 Machine application used to communicate between services and Scheduler resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "scheduler_writer_local_secret",
+        "id": "bjd8knt92hxslvrfyezp7",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M E2E Tester",
+        "description": "Machine 2 Machine application used to do E2E testing",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "e2e_tester_local_secret",
+        "id": "qrtllp45fgbvsdjyasd5",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Management APIs",
+        "description": "Machine 2 Machine application used to communicate with the Logto Management APIs",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_management_api_local_secret",
+        "id": "46ewhh940rn1e29cmecxs",
+        "is_third_party": false,
+        "apply_management_api_role": true
+      },
+      {
+        "name": "M2M Analytics API",
+        "description": "Machine 2 Machine application used to communicate with the Analytics APIs",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_analytics_api_local_secret",
+        "id": "03emabp0dwznxw414mxme",
         "is_third_party": false
       }
     ],
@@ -94,6 +311,26 @@
         "id": "messaging-api",
         "name": "Messaging Building Block API",
         "indicator": "http://localhost:8002/"
+      },
+      {
+        "id": "scheduler-api",
+        "name": "Scheduler Building Block API",
+        "indicator": "http://localhost:8005/"
+      },
+      {
+        "id": "profile-api",
+        "name": "Profile Building Block API",
+        "indicator": "http://localhost:8003/"
+      },
+      {
+        "id": "upload-api",
+        "name": "File Upload Service API",
+        "indicator": "http://localhost:8008/"
+      },
+      {
+        "id": "analytics-api",
+        "name": "Analytics Building Block API",
+        "indicator": "http://localhost:8075/"
       }
     ],
     "resource_permissions": [
@@ -112,6 +349,34 @@
           "messaging:message.self:read",
           "messaging:citizen.self:read",
           "messaging:citizen.self:write"
+        ]
+      },
+      {
+        "resource_id": "scheduler-api",
+        "specific_permissions": ["scheduler:jobs:write"]
+      },
+      {
+        "resource_id": "profile-api",
+        "specific_permissions": [
+          "profile:user.self:read",
+          "profile:user.self:write",
+          "profile:address.self:read",
+          "profile:address.self:write",
+          "profile:entitlement.self:read",
+          "profile:entitlement.self:write",
+          "profile:user:read"
+        ]
+      },
+      {
+        "resource_id": "upload-api",
+        "specific_permissions": ["upload:file.self:write", "upload:file.self:read"]
+      },
+      {
+        "resource_id": "analytics-api",
+        "specific_permissions": [
+          "analytics:website:read",
+          "analytics:website:write",
+          "analytics:website:tracking"
         ]
       }
     ],
@@ -137,14 +402,59 @@
               "messaging:citizen.self:read",
               "messaging:citizen.self:write"
             ]
+          },
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.self:read",
+              "profile:user.self:write",
+              "profile:address.self:read",
+              "profile:address.self:write",
+              "profile:entitlement.self:read",
+              "profile:entitlement.self:write"
+            ]
+          },
+          {
+            "resource_id": "upload-api",
+            "specific_permissions": ["upload:file.self:read"]
           }
         ]
+      },
+      {
+        "id": "m2m-citizen-profile",
+        "name": "M2M Citizen Profile Reader role",
+        "description": "Role used to make M2M applications able to read from profile resource",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": ["profile:user:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ddl4llp30risjwcjymqw3"]
+      },
+      {
+        "id": "m2m-e2e-messaging",
+        "name": "M2M E2E Messaging Citizen",
+        "description": "Role used to make M2M applications able to login as messaging citizen to perform E2E testing",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message.self:read",
+              "messaging:citizen.self:read",
+              "messaging:citizen.self:write"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
       }
     ],
     "connectors": [
       {
         "id": "mygovid",
-        "sync_profile": false,
+        "sync_profile": true,
         "connector_id": "mygovid",
         "config": {
           "scope": "openid profile email",
@@ -164,6 +474,20 @@
             "en": "MyGovId"
           },
           "target": "MyGovId (MyGovId connector)"
+        }
+      },
+      {
+        "id": "ogcio-entraid",
+        "sync_profile": true,
+        "connector_id": "ogcio-entraid",
+        "config": {
+          "clientId": "mock-client-id",
+          "tenantId": "organizations",
+          "clientSecret": "mock-client-secret",
+          "cloudInstance": "https://login.microsoftonline.com"
+        },
+        "metadata": {
+          "target": "OGCIO EntraID"
         }
       }
     ],
@@ -191,7 +515,7 @@
           "password": false,
           "identifiers": []
         },
-        "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)"],
+        "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)", "OGCIO EntraID"],
         "sign_in_mode": "SignInAndRegister"
       }
     ],
@@ -210,6 +534,18 @@
         },
         "signing_key": "webhooks_local_signing_key",
         "enabled": true
+      }
+    ],
+    "users": [
+      {
+        "id": "e2e-user-1",
+        "username": "e2e_test_user_1",
+        "primary_email": "e2e_test_1@user.com",
+        "primary_phone": "+21312666999",
+        "name": "E2E First User",
+        "application_id": "4695d8onfb9f3bv18phtq",
+        "resource_role_ids": ["bb-citizen"],
+        "ppsn": "E2E_TEST_USER_1"
       }
     ]
   }

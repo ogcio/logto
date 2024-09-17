@@ -1,6 +1,8 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable @silverhand/fp/no-mutation */
 /* eslint-disable @silverhand/fp/no-let */
+
+export type OgcioApplicationTypes = 'User' | 'MachineToMachine';
 export type OgcioTenantSeeder = Record<string, OgcioSeeder>;
 
 export type OgcioSeeder = {
@@ -14,6 +16,7 @@ export type OgcioSeeder = {
   sign_in_experiences?: SignInExperienceSeeder[];
   resource_permissions?: ResourcePermissionSeeder[];
   resource_roles?: ResourceRoleSeeder[];
+  users?: UserSeeder[];
 };
 
 export type OrganizationSeeder = {
@@ -31,6 +34,8 @@ export type OrganizationRoleSeeder = {
   name: string;
   specific_permissions: string[];
   description: string;
+  type?: OgcioApplicationTypes;
+  related_applications?: Array<{ application_id: string; organization_id: string }>;
 };
 
 export type ApplicationSeeder = {
@@ -42,6 +47,8 @@ export type ApplicationSeeder = {
   logout_redirect_uri: string | string[];
   secret: string;
   is_third_party?: boolean;
+  always_issue_refresh_token?: boolean;
+  apply_management_api_role?: boolean;
 };
 
 export type ResourceSeeder = {
@@ -110,6 +117,8 @@ export type ResourceRoleSeeder = {
   name: string;
   description: string;
   permissions: ScopePerResourceRoleSeeder[];
+  type?: OgcioApplicationTypes;
+  related_application_ids?: string[];
 };
 
 export type ScopePerResourceRoleSeeder = {
@@ -126,7 +135,18 @@ export type WebhookSeeder = {
     url: string;
   };
   signing_key: string;
-  enabled: true;
+  enabled: boolean;
+};
+
+export type UserSeeder = {
+  id: string;
+  username: string;
+  primary_email: string;
+  primary_phone?: string;
+  name: string;
+  application_id: string;
+  resource_role_ids: string[];
+  ppsn: string;
 };
 
 let inputSeeder: OgcioTenantSeeder | undefined;

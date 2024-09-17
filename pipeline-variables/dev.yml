@@ -1,5 +1,9 @@
+# OGCIO
+
 variables:
   awsServiceConnection: life-events-dev-ecr
   awsRegion: eu-west-1
   ecrEndpoint: 730335224023.dkr.ecr.eu-west-1.amazonaws.com
   buildArguments: ""
+  environment: LifeEvents-dev
+  
