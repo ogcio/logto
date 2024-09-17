@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { appInsights } from '@logto/app-insights/node';
 import { ConsoleLog } from '@logto/shared';
+import * as logsAPI from '@opentelemetry/api-logs';
 import { toTitle, trySafe } from '@silverhand/essentials';
 import chalk from 'chalk';
 import type Koa from 'koa';
@@ -14,6 +15,8 @@ import { EnvSet } from '#src/env-set/index.js';
 import { TenantNotFoundError, tenantPool } from '#src/tenants/index.js';
 import { buildAppInsightsTelemetry } from '#src/utils/request.js';
 import { getTenantId } from '#src/utils/tenant.js';
+
+import { getLogger } from '../instrumentation.js';
 
 const logListening = (type: 'core' | 'admin' = 'core') => {
   const urlSet = type === 'core' ? EnvSet.values.urlSet : EnvSet.values.adminUrlSet;
@@ -32,13 +35,21 @@ export default async function initApp(app: Koa): Promise<void> {
     const consoleLog = new ConsoleLog(chalk.blue(requestId));
     ctx.requestId = requestId;
     ctx.console = consoleLog;
-
+    const loggerOtel = getLogger();
     await koaLogger({
       transporter: (string, [, _, requestPath]) => {
         // Ignoring static file requests in development since vite will load a crazy amount of files
         if (!EnvSet.values.isProduction && path.basename(requestPath).includes('.')) {
           return;
         }
+
+        loggerOtel.emit({
+          severityNumber: logsAPI.SeverityNumber.INFO,
+          severityText: 'INFO',
+          body: string,
+          attributes: { 'log.type': 'LogRecord' },
+        });
+
         consoleLog.plain(string);
       },
     })(ctx, next);
