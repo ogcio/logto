@@ -149,9 +149,7 @@
         "specific_permissions": ["upload:file:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "first-testing" },
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "second-testing" }
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" }
         ]
       }
     ],
