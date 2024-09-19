@@ -35,6 +35,7 @@ export default async function initApp(app: Koa): Promise<void> {
     const consoleLog = new ConsoleLog(chalk.blue(requestId));
     ctx.requestId = requestId;
     ctx.console = consoleLog;
+    // OGCIO
     const loggerOtel = getLogger();
     await koaLogger({
       transporter: (string, [, _, requestPath]) => {
@@ -42,13 +43,15 @@ export default async function initApp(app: Koa): Promise<void> {
         if (!EnvSet.values.isProduction && path.basename(requestPath).includes('.')) {
           return;
         }
-
-        loggerOtel.emit({
-          severityNumber: logsAPI.SeverityNumber.INFO,
-          severityText: 'INFO',
-          body: string,
-          attributes: { 'log.type': 'LogRecord' },
-        });
+        // OGCIO
+        if (loggerOtel) {
+          loggerOtel.emit({
+            severityNumber: logsAPI.SeverityNumber.INFO,
+            severityText: 'INFO',
+            body: string,
+            attributes: { 'log.type': 'LogRecord' },
+          });
+        }
 
         consoleLog.plain(string);
       },
