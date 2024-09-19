@@ -133,4 +133,8 @@ stages:
     dependsOn: Push_MyGovId_Mock
     jobs:
     - template: pipeline-templates/deploy_ecs.yml
+      parameters:
+        awsServiceConnection: ${{ variables.awsServiceConnection }}
+        awsRegion: ${{ variables.awsRegion }}
+        serviceName: mygov-mock
     
