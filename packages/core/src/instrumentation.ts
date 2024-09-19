@@ -1,3 +1,4 @@
+// OGCIO whole file
 import { type Logger } from '@opentelemetry/api-logs';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
@@ -66,10 +67,10 @@ if (OTEL_COLLECTOR_URL) {
 }
 /* eslint-enable no-console, @silverhand/fp/no-let, @silverhand/fp/no-mutation */
 
-export function getLogger(): Logger {
+export function getLogger(): Logger | undefined {
   /* eslint-disable @silverhand/fp/no-mutation */
   if (!OTEL_COLLECTOR_URL) {
-    throw new Error('OTEL_COLLECTOR_URL not set. Logger not available!');
+    return;
   }
 
   if (loggerOtel) {
@@ -107,7 +108,7 @@ process.on('SIGTERM', () => {
         console.log('SDK shut down successfully');
       },
       (error) => {
-        console.log('Error shutting down SDK', error);
+        console.error('Error shutting down SDK', error);
       }
     )
     .finally(() => process.exit(0));
