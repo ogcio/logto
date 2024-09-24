@@ -175,6 +175,18 @@
           { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "first-testing" },
           { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "second-testing" }
         ]
+      },
+      {
+        "id": "m2m-ps-uploader",
+        "name": "M2M Public Servant Uploader",
+        "description": "Role for M2M Applications that need to interact with the Upload API",
+        "specific_permissions": ["upload:file:*"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "ogcio" },
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" }
+        ]
       }
     ],
     "applications": [
@@ -299,6 +311,16 @@
         "secret": "m2m_analytics_api_local_secret",
         "id": "03emabp0dwznxw414mxme",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Uploader",
+        "description": "Machine 2 Machine application used to communicate between services and Upload API",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "uploader_local_secret",
+        "id": "upl1wqp66oisjwcjyder9",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -347,6 +369,7 @@
         "resource_id": "messaging-api",
         "specific_permissions": [
           "messaging:message.self:read",
+          "messaging:message.self:write",
           "messaging:citizen.self:read",
           "messaging:citizen.self:write"
         ]
@@ -399,6 +422,7 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message.self:read",
+              "messaging:message.self:write",
               "messaging:citizen.self:read",
               "messaging:citizen.self:write"
             ]
@@ -442,6 +466,7 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message.self:read",
+              "messaging:message.self:write",
               "messaging:citizen.self:read",
               "messaging:citizen.self:write"
             ]
