@@ -44,7 +44,8 @@
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
-        "upload:file:*"
+        "upload:file:*",
+        "integrator:journey:read"
       ]
     },
     "organization_roles": [
@@ -158,7 +159,19 @@
           { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "first-testing" },
           { "application_id": "qrtllp45fgbvsdjyasd5", "organization_id": "second-testing" }
         ]
-      }
+      },
+      {
+        "id": "m2m-ps-integ-reader",
+        "name": "M2M Public Servant Integrator Reader",
+        "description": "Role for M2M Applications that need to read from Integrator resources",
+        "specific_permissions": ["integrator:journey:read"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "first-testing" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "second-testing" }
+        ]
+      }   
     ],
     "applications": [
       {
@@ -282,6 +295,16 @@
         "secret": "integrator_app_local_secret",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Integrator Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Integrator resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "integrator_reader_local_secret",
+        "id": "ca0c4izoo6dli4vko06g3",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -309,6 +332,11 @@
         "id": "upload-api",
         "name": "File Upload Service API",
         "indicator": "http://localhost:8008/"
+      },
+      {
+        "id": "integrator-api",
+        "name": "Integrator Building Block API",
+        "indicator": "http://localhost:8009/"
       }
     ],
     "resource_permissions": [
@@ -348,6 +376,10 @@
       {
         "resource_id": "upload-api",
         "specific_permissions": ["upload:file.self:write", "upload:file.self:read"]
+      },
+      {
+        "resource_id": "integrator-api",
+        "specific_permissions": ["integrator:journey:read"]
       }
     ],
     "resource_roles": [
@@ -419,6 +451,19 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
+      },
+      {
+        "id": "m2m-citizen-integrator",
+        "name": "M2M Citizen Integrator Reader role",
+        "description": "Role used to make M2M applications able to read from integrator resources",
+        "permissions": [
+          {
+            "resource_id": "integrator-api",
+            "specific_permissions": ["integrator:journey:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
       }
     ],
     "connectors": [
