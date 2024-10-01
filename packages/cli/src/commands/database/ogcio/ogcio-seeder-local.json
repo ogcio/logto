@@ -45,7 +45,10 @@
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
         "upload:file:*",
-        "integrator:journey:read"
+        "integrator:journey:read",
+        "integrator:journey:*",
+        "integrator:step:*",
+        "integrator:submission:*"
       ]
     },
     "organization_roles": [
@@ -109,6 +112,16 @@
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
         "specific_permissions": ["upload:file:*", "profile:user:read"]
+      },
+      {
+        "id": "int-public-servant",
+        "name": "Integrator Public Servant",
+        "description": "Integrator Public servant",
+        "specific_permissions": [
+          "integrator:journey:*",
+          "integrator:step:*",
+          "integrator:submission:*"
+        ]
       },
       {
         "id": "bb-inactive-ps",
@@ -379,7 +392,11 @@
       },
       {
         "resource_id": "integrator-api",
-        "specific_permissions": ["integrator:journey:read"]
+        "specific_permissions": [
+          "integrator:journey:read",
+          "integrator:journey:*",
+          "integrator:step:*", 
+          "integrator:submission:*"]
       }
     ],
     "resource_roles": [
@@ -453,7 +470,7 @@
         "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
       },
       {
-        "id": "m2m-citizen-integrator",
+        "id": "m2m-citiz-integrator",
         "name": "M2M Citizen Integrator Reader role",
         "description": "Role used to make M2M applications able to read from integrator resources",
         "permissions": [
