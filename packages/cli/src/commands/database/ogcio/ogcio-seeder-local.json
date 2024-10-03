@@ -45,9 +45,11 @@
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
         "upload:file:*",
+        "integrator:journey.public:read",
         "integrator:journey:*",
         "integrator:step:*",
-        "integrator:submission:*"
+        "integrator:submission:*",
+        "integrator:submission:read"
       ]
     },
     "organization_roles": [
@@ -392,9 +394,14 @@
       {
         "resource_id": "integrator-api",
         "specific_permissions": [
+          "integrator:journey.public:read",
           "integrator:journey:*",
           "integrator:step:*", 
-          "integrator:submission:*"]
+          "integrator:submission:*",
+          "integrator:submission.self:read",
+          "integrator:submission:write",
+          "integrator:submission:read"
+        ]
       }
     ],
     "resource_roles": [
