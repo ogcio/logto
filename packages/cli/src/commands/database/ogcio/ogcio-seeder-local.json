@@ -48,8 +48,8 @@
         "integrator:journey.public:read",
         "integrator:journey:*",
         "integrator:step:*",
-        "integrator:submission:*",
-        "integrator:submission:read"
+        "integrator:run:*",
+        "integrator:run:read"
       ]
     },
     "organization_roles": [
@@ -121,7 +121,7 @@
         "specific_permissions": [
           "integrator:journey:*",
           "integrator:step:*",
-          "integrator:submission:read"
+          "integrator:run:read"
         ]
       },
       {
@@ -397,10 +397,10 @@
           "integrator:journey.public:read",
           "integrator:journey:*",
           "integrator:step:*", 
-          "integrator:submission:*",
-          "integrator:submission.self:read",
-          "integrator:submission:write",
-          "integrator:submission:read"
+          "integrator:run:*",
+          "integrator:run.self:read",
+          "integrator:run:write",
+          "integrator:run:read"
         ]
       }
     ],
@@ -446,8 +446,8 @@
             "resource_id": "integrator-api",
             "specific_permissions": [
               "integrator:journey.public:read", 
-              "integrator:submission.self:read", 
-              "integrator:submission:write"
+              "integrator:run.self:read", 
+              "integrator:run:write"
             ]
           }
         ]
