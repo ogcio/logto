@@ -3,7 +3,12 @@
 
 import { createHmac } from 'node:crypto';
 
-import { Users, UsersRoles } from '@logto/schemas';
+import {
+  OrganizationRoleUserRelations,
+  OrganizationUserRelations,
+  Users,
+  UsersRoles,
+} from '@logto/schemas';
 import { conditional } from '@silverhand/essentials';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 import { got, type RequestError } from 'got';
@@ -11,7 +16,7 @@ import { got, type RequestError } from 'got';
 import { consoleLog } from '../../../utils.js';
 
 import { type UserSeeder } from './ogcio-seeder.js';
-import { createOrUpdateItem } from './queries.js';
+import { createOrUpdateItem, createOrUpdateItemWithoutId } from './queries.js';
 import { type SeedingWebhook } from './webhooks.js';
 
 const MYGOVID_IDENTITY = 'MyGovId (MyGovId connector)';
@@ -27,7 +32,6 @@ export const seedUsers = async (params: {
   }
 
   const queries: Array<Promise<void>> = [];
-
   for (const user of params.usersToSeed) {
     queries.push(createUser({ ...params, userToSeed: user }));
   }
@@ -80,7 +84,58 @@ const createUser = async (params: {
     );
   }
 
-  await Promise.all(assignRoleQueries);
+  const assignUserToOrganization = [];
+  const userRoleOrgToInsert = [];
+  for (const rolesPerOrg of params.userToSeed.related_organizations) {
+    assignUserToOrganization.push(
+      createOrUpdateItemWithoutId({
+        transaction: params.transaction,
+        tenantId: params.tenantId,
+        toLogFieldName: 'organization_id',
+        columnToGet: 'organization_id',
+        whereClauses: [
+          sql`user_id = ${params.userToSeed.id}`,
+          sql`organization_id = ${rolesPerOrg.organization_id}`,
+        ],
+        toInsert: {
+          user_id: params.userToSeed.id,
+          organization_id: rolesPerOrg.organization_id,
+        },
+        tableName: OrganizationUserRelations.table,
+      })
+    );
+    userRoleOrgToInsert.push(
+      ...rolesPerOrg.roles.map((roleId) => ({
+        organization_role_id: roleId,
+        user_id: params.userToSeed.id,
+        organization_id: rolesPerOrg.organization_id,
+      }))
+    );
+  }
+
+  await Promise.all(assignUserToOrganization);
+
+  const assignOrganizationRoleQueries = [];
+
+  for (const currentMapping of userRoleOrgToInsert) {
+    assignOrganizationRoleQueries.push(
+      createOrUpdateItemWithoutId({
+        transaction: params.transaction,
+        tenantId: params.tenantId,
+        toLogFieldName: 'organization_role_id',
+        columnToGet: 'organization_role_id',
+        whereClauses: [
+          sql`user_id = ${currentMapping.user_id}`,
+          sql`organization_id = ${currentMapping.organization_id}`,
+          sql`organization_role_id = ${currentMapping.organization_role_id}`,
+        ],
+        toInsert: currentMapping,
+        tableName: OrganizationRoleUserRelations.table,
+      })
+    );
+  }
+
+  await Promise.all(assignOrganizationRoleQueries);
 
   if (params.webhook) {
     consoleLog.info(`Invoking webhook for user. User id: ${params.userToSeed.id}`);
