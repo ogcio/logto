@@ -400,6 +400,7 @@
           "integrator:run:*",
           "integrator:run.self:read",
           "integrator:run:write",
+          "integrator:run.self:write",
           "integrator:run:read"
         ]
       }
@@ -447,7 +448,7 @@
             "specific_permissions": [
               "integrator:journey.public:read", 
               "integrator:run.self:read", 
-              "integrator:run:write"
+              "integrator:run.self:write"
             ]
           }
         ]
