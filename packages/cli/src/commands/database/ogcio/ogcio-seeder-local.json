@@ -380,7 +380,7 @@
       {
         "id": "otel-collector-http",
         "name": "Observability Open Telemetry Collector HTTP",
-        "indicator": "http://localhost:12345/"
+        "indicator": "http://localhost:4318/"
       }
     ],
     "resource_permissions": [
