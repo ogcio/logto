@@ -97,7 +97,12 @@
         "id": "int-public-servant",
         "name": "Integrator Public Servant",
         "description": "Integrator Public servant",
-        "specific_permissions": ["integrator:journey:*", "integrator:step:*", "integrator:run:read"]
+        "specific_permissions": [
+          "integrator:journey:*",
+          "integrator:step:*",
+          "integrator:run:read",
+          "messaging:template:*"
+        ]
       },
       {
         "id": "bb-inactive-ps",
