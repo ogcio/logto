@@ -47,7 +47,13 @@
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
-        "upload:file:*"
+        "upload:file:*",
+        "o11y:metrics:*",
+        "integrator:journey.public:read",
+        "integrator:journey:*",
+        "integrator:step:*",
+        "integrator:run:*",
+        "integrator:run:read"
       ]
     },
     "organization_roles": [
@@ -110,7 +116,13 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*"]
+        "specific_permissions": ["upload:file:*", "profile:user:read"]
+      },
+      {
+        "id": "int-public-servant",
+        "name": "Integrator Public Servant",
+        "description": "Integrator Public servant",
+        "specific_permissions": ["integrator:journey:*", "integrator:step:*", "integrator:run:read"]
       },
       {
         "id": "bb-inactive-ps",
@@ -177,6 +189,18 @@
         ]
       },
       {
+        "id": "m2m-citiz-integrator",
+        "name": "M2M Citizen Integrator Reader",
+        "description": "Role for M2M Applications that need to read from Integrator resources",
+        "specific_permissions": ["integrator:journey.public:read"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "first-testing" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "second-testing" }
+        ]
+      },
+      {
         "id": "m2m-ps-uploader",
         "name": "M2M Public Servant Uploader",
         "description": "Role for M2M Applications that need to interact with the Upload API",
@@ -186,6 +210,30 @@
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "ogcio" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-messaging",
+        "name": "M2M Messaging",
+        "description": "Role for M2M Applications that need to interact with the Messaging API",
+        "specific_permissions": [
+          "messaging:message:*",
+          "messaging:template:*",
+          "messaging:citizen:*"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "m2m-otel-collector",
+        "name": "M2M Open Telemetry Collector",
+        "description": "Role for M2M Applications that need to push metrics to Open Telemetry Collector",
+        "specific_permissions": ["o11y:metrics:*"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
         ]
       }
     ],
@@ -303,6 +351,25 @@
         "apply_management_api_role": true
       },
       {
+        "name": "Integrator Building Block",
+        "description": "Integrator App for Building Block",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3009/callback",
+        "logout_redirect_uri": "http://localhost:3009",
+        "secret": "integrator_app_local_secret",
+        "id": "1qpp7cfssbb4mcrvmfe0c",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Integrator Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Integrator resources",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "integrator_reader_local_secret",
+        "id": "ca0c4izoo6dli4vko06g3"
+      },
+      {
         "name": "M2M Analytics API",
         "description": "Machine 2 Machine application used to communicate with the Analytics APIs",
         "type": "MachineToMachine",
@@ -320,6 +387,26 @@
         "logout_redirect_uri": "",
         "secret": "uploader_local_secret",
         "id": "upl1wqp66oisjwcjyder9",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Messaging",
+        "description": "Machine 2 Machine application used to communicate between services and Messaging API",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "messaging_local_secret",
+        "id": "ouhygzydwvrv67j4hpm9p",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Open Telemetry Collector",
+        "description": "Machine 2 Machine application used to communicate with the Otel Collector",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_otel_collector_local_secret",
+        "id": "628ud3kj186xzpid7zo5n",
         "is_third_party": false
       }
     ],
@@ -350,9 +437,24 @@
         "indicator": "http://localhost:8008/"
       },
       {
+        "id": "integrator-api",
+        "name": "Integrator Building Block API",
+        "indicator": "http://localhost:8009/"
+      },
+      {
         "id": "analytics-api",
         "name": "Analytics Building Block API",
         "indicator": "http://localhost:8075/"
+      },
+      {
+        "id": "otel-collector-http",
+        "name": "Observability Open Telemetry Collector HTTP",
+        "indicator": "http://localhost:4318/"
+      },
+      {
+        "id": "otel-collector-grpc",
+        "name": "Observability Open Telemetry Collector GRPC",
+        "indicator": "http://localhost:4317/"
       }
     ],
     "resource_permissions": [
@@ -395,12 +497,28 @@
         "specific_permissions": ["upload:file.self:write", "upload:file.self:read"]
       },
       {
+        "resource_id": "integrator-api",
+        "specific_permissions": [
+          "integrator:journey.public:read",
+          "integrator:run.self:read",
+          "integrator:run.self:write"
+        ]
+      },
+      {
         "resource_id": "analytics-api",
         "specific_permissions": [
           "analytics:website:read",
           "analytics:website:write",
           "analytics:website:tracking"
         ]
+      },
+      {
+        "resource_id": "otel-collector-http",
+        "specific_permissions": ["o11y:metrics:*"]
+      },
+      {
+        "resource_id": "otel-collector-grpc",
+        "specific_permissions": ["o11y:metrics:*"]
       }
     ],
     "resource_roles": [
@@ -441,6 +559,14 @@
           {
             "resource_id": "upload-api",
             "specific_permissions": ["upload:file.self:read"]
+          },
+          {
+            "resource_id": "integrator-api",
+            "specific_permissions": [
+              "integrator:journey.public:read",
+              "integrator:run.self:read",
+              "integrator:run.self:write"
+            ]
           }
         ]
       },
@@ -474,6 +600,19 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
+      },
+      {
+        "id": "m2m-citiz-integrator",
+        "name": "M2M Citizen Integrator Reader role",
+        "description": "Role used to make M2M applications able to read from integrator resources",
+        "permissions": [
+          {
+            "resource_id": "integrator-api",
+            "specific_permissions": ["integrator:journey.public:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
       }
     ],
     "connectors": [

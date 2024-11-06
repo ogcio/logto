@@ -37,7 +37,8 @@
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
-        "upload:file:*"
+        "upload:file:*",
+        "o11y:metrics:*"
       ]
     },
     "organization_roles": [
@@ -100,7 +101,7 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*"]
+        "specific_permissions": ["upload:file:*", "profile:user:read"]
       },
       {
         "id": "bb-inactive-ps",
@@ -150,6 +151,16 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "m2m-otel-collector",
+        "name": "M2M Open Telemetry Collector",
+        "description": "Role for M2M Applications that need to push metrics to Open Telemetry Collector",
+        "specific_permissions": ["o11y:metrics:*"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
         ]
       }
     ],
@@ -275,6 +286,16 @@
         "secret": "<SEEDER_M2M_UPLOADER_APP_SECRET>",
         "id": "der1wqp78uhshgbjyupl0",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Open Telemetry Collector",
+        "description": "Machine 2 Machine application used to communicate with the Otel Collector",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_OTEL_COLLECTOR_APP_SECRET>",
+        "id": "628ud3kj186xzpid7zo5n",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -307,6 +328,16 @@
         "id": "analytics-api",
         "name": "Analytics Building Block API",
         "indicator": "<SEEDER_ANALYTICS_API_INDICATOR>"
+      },
+      {
+        "id": "otel-collector-http",
+        "name": "Observability Open Telemetry Collector HTTP",
+        "indicator": "<SEEDER_OTEL_COLLECTOR_HTTP_INDICATOR>"
+      },
+      {
+        "id": "otel-collector-grpc",
+        "name": "Observability Open Telemetry Collector GRPC",
+        "indicator": "<SEEDER_OTEL_COLLECTOR_GRPC_INDICATOR>"
       }
     ],
     "resource_permissions": [
@@ -355,6 +386,14 @@
           "analytics:website:write",
           "analytics:website:tracking"
         ]
+      },
+      {
+        "resource_id": "otel-collector-http",
+        "specific_permissions": ["o11y:metrics:*"]
+      },
+      {
+        "resource_id": "otel-collector-grpc",
+        "specific_permissions": ["o11y:metrics:*"]
       }
     ],
     "resource_roles": [
