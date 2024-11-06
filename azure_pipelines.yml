@@ -120,7 +120,9 @@ stages:
         dockerfile: ./mygovid-mock-service/Dockerfile
   - stage: Push_MyGovId_Mock
     displayName: Push MyGovId Mock to ECR
-    dependsOn: EnvApproval
+    dependsOn: 
+      - EnvApproval
+      - Build_MyGovId_Mock
     condition: and(eq(variables['Build.SourceBranchName'], 'dev'), succeeded())
     jobs:
     - template: build/push_image_ecr.yml@pipeline-templates
