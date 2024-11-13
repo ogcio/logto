@@ -46,7 +46,8 @@ export const createMockSignedJwt = async (
     oid: user.oid,
     AlternateIds: "",
     BirthDate: "13/06/1941",
-    PublicServiceNumber: "0111019P",
+    // We need to have a unique static PPSN per user
+    PublicServiceNumber: user.email,
     LastJourney: "Login",
     mobile: getRandomPhoneNumber(),
     DSPOnlineLevel: "0",
