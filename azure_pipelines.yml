@@ -34,7 +34,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: refs/tags/v0.5
+      ref: refs/tags/v0.5.1
       endpoint: ogcio
     - repository: logto-k8s-apps
       type: github
