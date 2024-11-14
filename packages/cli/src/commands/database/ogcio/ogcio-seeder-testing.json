@@ -224,7 +224,7 @@
         "name": "Feature Flags Unleash Role",
         "description": "Role for Applications that need access to the Feature Flags service",
         "specific_permissions": []
-      }      
+      }
     ],
     "applications": [
       {
