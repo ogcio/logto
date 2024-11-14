@@ -218,7 +218,13 @@
         "related_applications": [
           { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
         ]
-      }
+      },
+      {
+        "id": "ff-public-servant",
+        "name": "Feature Flags Unleash Role",
+        "description": "Role for Applications that need access to the Feature Flags service",
+        "specific_permissions": []
+      }      
     ],
     "applications": [
       {
@@ -380,6 +386,16 @@
         "logout_redirect_uri": "",
         "secret": "<SEEDER_OTEL_COLLECTOR_APP_SECRET>",
         "id": "628ud3kj186xzpid7zo5n",
+        "is_third_party": false
+      },
+      {
+        "name": "FF Building Block",
+        "description": "Feature Flags Service for Life Events",
+        "type": "Traditional",
+        "redirect_uri": "<FEATURE_FLAGS_UNLEASH_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<FEATURE_FLAGS_UNLEASH_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<FEATURE_FLAGS_UNLEASH_APP_SECRET>",
+        "id": "43geanp0dwznxw412mxme",
         "is_third_party": false
       }
     ],
