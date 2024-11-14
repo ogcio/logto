@@ -235,7 +235,13 @@
         "related_applications": [
           { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
         ]
-      }
+      },
+      {
+        "id": "ff-public-servant",
+        "name": "Feature Flags Unleash Role",
+        "description": "Role for Applications that need access to the Feature Flags service",
+        "specific_permissions": []
+      }      
     ],
     "applications": [
       {
@@ -407,6 +413,16 @@
         "logout_redirect_uri": "",
         "secret": "m2m_otel_collector_local_secret",
         "id": "628ud3kj186xzpid7zo5n",
+        "is_third_party": false
+      },
+      {
+        "name": "FF Building Block",
+        "description": "Feature Flags Service for Life Events",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:4242/api/auth/callback",
+        "logout_redirect_uri": "http://localhost:4242",
+        "secret": "unleash_app_local_secret",
+        "id": "43geanp0dwznxw412mxme",
         "is_third_party": false
       }
     ],
