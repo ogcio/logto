@@ -50,6 +50,7 @@
         "upload:file:*",
         "o11y:metrics:*",
         "integrator:journey.public:read",
+        "integrator:journey:read",
         "integrator:journey:*",
         "integrator:step:*",
         "integrator:run:*",
@@ -224,7 +225,17 @@
         "name": "Feature Flags Unleash Role",
         "description": "Role for Applications that need access to the Feature Flags service",
         "specific_permissions": []
-      }
+      },
+      {
+        "id": "m2m-ps-int-reader",
+        "name": "M2M Public Servant Integrator Reader",
+        "description": "Role to access integrator reader api with public servant privilege",
+        "type": "MachineToMachine",
+        "specific_permissions": ["integrator:journey:read"],
+        "related_applications": [
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
+        ]
+      }  
     ],
     "applications": [
       {
@@ -397,6 +408,16 @@
         "secret": "<FEATURE_FLAGS_UNLEASH_APP_SECRET>",
         "id": "43geanp0dwznxw412mxme",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Public Servant Integrator Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Integrator resources for public servant",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_PS_INTEGRATOR_APP_SECRET>",
+        "id": "cn49p0bq3ulq6ncodwwio",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -505,6 +526,7 @@
         "resource_id": "integrator-api",
         "specific_permissions": [
           "integrator:journey.public:read",
+          "integrator:journey:read",
           "integrator:run.self:read",
           "integrator:run.self:write"
         ]
@@ -602,6 +624,19 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
+      },
+      {
+        "id": "m2m-ps-int-reader",
+        "name": "M2M Public Servant Integrator Reader role",
+        "description": "Role used to make M2M applications able to read from integrator resources with public servant privilege",
+        "permissions": [
+          {
+            "resource_id": "integrator-api",
+            "specific_permissions": ["integrator:journey:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
       }
     ],
     "connectors": [
