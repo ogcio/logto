@@ -294,7 +294,7 @@
         "redirect_uri": "http://localhost:3011/callback",
         "logout_redirect_uri": "http://localhost:3011",
         "secret": "dashboard_app_local_secret",
-        "id": "dashboard_app_id",
+        "id": "kti441l5vjcjyenbn8f6f",
         "is_third_party": false
       },
       {
