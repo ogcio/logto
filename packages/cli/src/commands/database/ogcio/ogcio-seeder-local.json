@@ -57,7 +57,9 @@
         "integrator:journey:*",
         "integrator:step:*",
         "integrator:run:*",
-        "integrator:run:read"
+        "integrator:run:read",
+        "dashboard:admin:read",
+        "dashboard:admin:write"
       ]
     },
     "organization_roles": [
@@ -84,6 +86,15 @@
           "messaging:citizen:*",
           "messaging:event:read",
           "scheduler:jobs:write"
+        ]
+      },
+      {
+        "id": "db-public-servant",
+        "name": "Dashboard Public Servant",
+        "description": "Dashboard Public servant",
+        "specific_permissions": [
+          "dashboard:admin:read",
+          "dashboard:admin:write"
         ]
       },
       {
