@@ -49,6 +49,9 @@
         "scheduler:jobs:write",
         "upload:file:*",
         "o11y:metrics:*",
+        "o11y:dashboard:read",
+        "o11y:dashboard:write",
+        "o11y:dashboard:admin",
         "integrator:journey.public:read",
         "integrator:journey:read",
         "integrator:journey:*",
@@ -229,6 +232,15 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "o11y-dashboard-admin",
+        "name": "Observability Dashboard Administrator Role",
+        "description": "Role to access observability dashboard applications",
+        "specific_permissions": ["o11y:dashboard:admin"],
+        "related_applications": [
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
         ]
       },
       {
@@ -421,6 +433,16 @@
         "is_third_party": false
       },
       {
+        "name": "Observability Dashboard",
+        "description": "Observability dashboard application",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_O11Y_DASHBOARD_APP_SECRET>",
+        "id": "yiuxr16z76vw4ssb2tjpg",
+        "is_third_party": false
+      },
+      {
         "name": "FF Building Block",
         "description": "Feature Flags Service for Life Events",
         "type": "Traditional",
@@ -486,6 +508,11 @@
         "id": "otel-collector-grpc",
         "name": "Observability Open Telemetry Collector GRPC",
         "indicator": "<SEEDER_OTEL_COLLECTOR_GRPC_INDICATOR>"
+      },
+      {
+        "id": "o11y-dashboard",
+        "name": "Observability Dashboard Application",
+        "indicator": "https://grafana.observability.dev.blocks.gov.ie/"
       }
     ],
     "resource_permissions": [
@@ -550,6 +577,14 @@
           "integrator:journey:read",
           "integrator:run.self:read",
           "integrator:run.self:write"
+        ]
+      },
+      {
+        "resource_id": "o11y-dashboard",
+        "specific_permissions": [
+            "o11y:dashboard:read",
+            "o11y:dashboard:write",
+            "o11y:dashboard:admin"
         ]
       }
     ],
