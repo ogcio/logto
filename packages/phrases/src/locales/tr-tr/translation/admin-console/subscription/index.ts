@@ -20,7 +20,6 @@ const subscription = {
   plan_cycle: 'Plan döngüsü: {{period}}. Kullanım {{renewDate}} tarihinde yenilenir.',
   next_bill: 'Yaklaşan faturanız',
   next_bill_hint: 'Hesaplama hakkında daha fazla bilgi için lütfen bu <a>makaleye</a> başvurun.',
-  /** UNTRANSLATED */
   next_bill_tip:
     'Burada gösterilen fiyatlar vergiler hariçtir ve güncellemelerde hafif bir gecikmeye tabi olabilir. Vergi tutarı, verdiğiniz bilgilere ve yerel düzenleyici gereksinimlerinize göre hesaplanacak ve faturalarınızda gösterilecektir.',
   manage_payment: 'Ödemeleri düzenle',

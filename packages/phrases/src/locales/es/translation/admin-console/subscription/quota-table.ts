@@ -83,13 +83,6 @@ const quota_table = {
     jwt_claims: 'Reclamos JWT',
     tenant_members: 'Miembros del inquilino',
   },
-  developers_and_platform: {
-    title: 'Desarrolladores y plataforma',
-    hooks: 'Webhooks',
-    audit_logs_retention: 'Retención de registros de auditoría',
-    jwt_claims: 'Reclamos JWT',
-    tenant_members: 'Miembros del inquilino',
-  },
   unlimited: 'Ilimitado',
   contact: 'Contacto',
   monthly_price: '${{value, number}}/mes',

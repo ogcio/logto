@@ -20,7 +20,6 @@ const subscription = {
   plan_cycle: 'Cykl planu: {{period}}. Użycie odnawiane w dniu {{renewDate}}.',
   next_bill: 'Twój nadchodzący rachunek',
   next_bill_hint: 'Aby dowiedzieć się więcej o obliczeniach, zapoznaj się z tym <a>artykułem</a>.',
-  /** UNTRANSLATED */
   next_bill_tip:
     'Ceny przedstawione tutaj są bez podatku i mogą podlegać niewielkiemu opóźnieniu w aktualizacjach. Kwota podatku zostanie obliczona na podstawie informacji, które podasz oraz lokalnych wymogów prawnych, i będzie wyświetlona na twoich fakturach.',
   manage_payment: 'Zarządzanie płatnościami',

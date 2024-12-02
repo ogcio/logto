@@ -83,13 +83,6 @@ const quota_table = {
     jwt_claims: 'JWT聲明',
     tenant_members: '租戶成員',
   },
-  developers_and_platform: {
-    title: '開發者和平台',
-    hooks: 'Webhooks',
-    audit_logs_retention: '審計日誌保留',
-    jwt_claims: 'JWT聲明',
-    tenant_members: '租戶成員',
-  },
   unlimited: '無限制',
   contact: '聯絡',
   monthly_price: '${{value, number}} /月',

@@ -19,7 +19,6 @@ const subscription = {
   plan_cycle: '計劃週期：{{period}}。使用情況訂閱日期為{{renewDate}}。',
   next_bill: '您的即將到來的帳單',
   next_bill_hint: '要了解更多計算方法，請參閱本<a>文章</a>。',
-  /** UNTRANSLATED */
   next_bill_tip:
     '此處顯示的價格不含稅，更新可能會有輕微延遲。稅額將根據你提供的信息和當地法規計算，並顯示在您的發票中。',
   manage_payment: '管理付款',

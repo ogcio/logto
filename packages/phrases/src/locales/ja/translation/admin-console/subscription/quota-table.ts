@@ -83,13 +83,6 @@ const quota_table = {
     jwt_claims: 'JWTクレーム',
     tenant_members: 'テナントメンバー',
   },
-  developers_and_platform: {
-    title: 'デベロッパーとプラットフォーム',
-    hooks: 'Webhooks',
-    audit_logs_retention: '監査ログの保持',
-    jwt_claims: 'JWTクレーム',
-    tenant_members: 'テナントメンバー',
-  },
   unlimited: '無制限',
   contact: 'お問い合わせ',
   monthly_price: '${{value, number}}/mo',

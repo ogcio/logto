@@ -18,10 +18,8 @@ const subscription = {
     'Aqui está o seu plano atual. Você pode facilmente ver o uso do seu plano, verificar a sua próxima fatura e fazer alterações no plano, conforme necessário.',
   plan_usage: 'Uso do plano',
   plan_cycle: 'Ciclo do plano: {{period}}. O uso é renovado em {{renewDate}}.',
-  /** UNTRANSLATED */
-  next_bill: 'Your upcoming bill',
+  next_bill: 'Sua próxima fatura',
   next_bill_hint: 'Para saber mais sobre o cálculo, consulte este <a>artigo</a>.',
-  /** UNTRANSLATED */
   next_bill_tip:
     'Os preços exibidos aqui são sem impostos e podem estar sujeitos a um ligeiro atraso nas atualizações. O montante do imposto será calculado com base nas informações que você fornecer e nos requisitos regulamentares locais, e será mostrado nas suas faturas.',
   manage_payment: 'Gerenciar pagamento',
