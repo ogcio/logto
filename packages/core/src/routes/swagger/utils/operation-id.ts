@@ -4,6 +4,9 @@ import pluralize from 'pluralize';
 
 import { EnvSet } from '#src/env-set/index.js';
 
+import { accountApiPrefix } from '../../account/constants.js';
+import { verificationApiPrefix } from '../../verification/index.js';
+
 import { shouldThrow } from './general.js';
 
 const chunk = <T>(array: T[], chunkSize: number): T[][] =>
@@ -24,10 +27,7 @@ const methodToVerb = Object.freeze({
 
 type RouteDictionary = Record<`${OpenAPIV3.HttpMethods} ${string}`, string>;
 
-const devFeatureCustomRoutes: RouteDictionary = Object.freeze({
-  // Subject tokens
-  'post /subject-tokens': 'CreateSubjectToken',
-});
+const devFeatureCustomRoutes: RouteDictionary = Object.freeze({});
 
 export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   // Authn
@@ -127,6 +127,8 @@ const exceptionPrefixes = Object.freeze([
   '/interaction',
   '/experience',
   '/sign-in-exp/default/check-password',
+  accountApiPrefix,
+  verificationApiPrefix,
 ]);
 
 const isPathParameter = (segment?: string) =>

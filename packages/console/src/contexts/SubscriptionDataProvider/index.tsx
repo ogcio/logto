@@ -2,15 +2,11 @@ import { noop } from '@silverhand/essentials';
 import { createContext, type ReactNode } from 'react';
 
 import {
-  defaultSubscriptionPlan,
   defaultLogtoSku,
   defaultTenantResponse,
   defaultSubscriptionQuota,
   defaultSubscriptionUsage,
 } from '@/consts';
-// Used in the docs
-// eslint-disable-next-line unused-imports/no-unused-imports
-import TenantAccess from '@/containers/TenantAccess';
 
 import { type FullContext } from './types';
 
@@ -21,29 +17,30 @@ const defaultSubscription = defaultTenantResponse.subscription;
  * CAUTION: You should only use this data context under the {@link TenantAccess} component
  */
 export const SubscriptionDataContext = createContext<FullContext>({
-  subscriptionPlans: [],
-  currentPlan: defaultSubscriptionPlan,
   currentSubscription: defaultSubscription,
   onCurrentSubscriptionUpdated: noop,
   /* ==== For new pricing model ==== */
   logtoSkus: [],
   currentSku: defaultLogtoSku,
   currentSubscriptionQuota: defaultSubscriptionQuota,
+  currentSubscriptionBasicQuota: defaultSubscriptionQuota,
   currentSubscriptionUsage: defaultSubscriptionUsage,
   currentSubscriptionResourceScopeUsage: {},
   currentSubscriptionRoleScopeUsage: {},
   mutateSubscriptionQuotaAndUsages: noop,
   /* ==== For new pricing model ==== */
+  hasSurpassedSubscriptionQuotaLimit: () => false,
+  hasReachedSubscriptionQuotaLimit: () => false,
 });
 
 type Props = {
-  readonly subscriptionData: FullContext;
+  readonly subscriptionDataAndUtils: FullContext;
   readonly children: ReactNode;
 };
 
-function SubscriptionDataProvider({ children, subscriptionData }: Props) {
+function SubscriptionDataProvider({ children, subscriptionDataAndUtils }: Props) {
   return (
-    <SubscriptionDataContext.Provider value={subscriptionData}>
+    <SubscriptionDataContext.Provider value={subscriptionDataAndUtils}>
       {children}
     </SubscriptionDataContext.Provider>
   );

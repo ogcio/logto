@@ -6,28 +6,43 @@ import {
   type NewSubscriptionResourceScopeUsage,
   type NewSubscriptionRoleScopeUsage,
 } from '@/cloud/types/router';
-import { type SubscriptionPlan } from '@/types/subscriptions';
 
 export type Context = {
-  /** @deprecated */
-  subscriptionPlans: SubscriptionPlan[];
-  /** @deprecated */
-  currentPlan: SubscriptionPlan;
   currentSubscription: Subscription;
   onCurrentSubscriptionUpdated: (subscription?: Subscription) => void;
+};
+
+export type SubscriptionUsageOptions<T extends keyof NewSubscriptionCountBasedUsage> = {
+  quotaKey: T;
+  subscriptionUsage: NewSubscriptionCountBasedUsage;
+  subscriptionQuota: NewSubscriptionQuota;
+  usage?: NewSubscriptionCountBasedUsage[T];
 };
 
 type NewSubscriptionSupplementContext = {
   logtoSkus: LogtoSkuResponse[];
   currentSku: LogtoSkuResponse;
   currentSubscriptionQuota: NewSubscriptionQuota;
+  currentSubscriptionBasicQuota: NewSubscriptionQuota;
   currentSubscriptionUsage: NewSubscriptionCountBasedUsage;
   currentSubscriptionResourceScopeUsage: NewSubscriptionResourceScopeUsage;
   currentSubscriptionRoleScopeUsage: NewSubscriptionRoleScopeUsage;
   mutateSubscriptionQuotaAndUsages: () => void;
 };
 
-export type NewSubscriptionContext = Omit<Context, 'subscriptionPlans' | 'currentPlan'> &
-  NewSubscriptionSupplementContext;
+type NewSubscriptionResourceStatus = {
+  hasSurpassedSubscriptionQuotaLimit: <T extends keyof NewSubscriptionCountBasedUsage>(
+    quotaKey: T,
+    usage?: NewSubscriptionCountBasedUsage[T]
+  ) => boolean;
+  hasReachedSubscriptionQuotaLimit: <T extends keyof NewSubscriptionCountBasedUsage>(
+    quotaKey: T,
+    usage?: NewSubscriptionCountBasedUsage[T]
+  ) => boolean;
+};
 
-export type FullContext = Context & NewSubscriptionSupplementContext;
+export type NewSubscriptionContext = Context & NewSubscriptionSupplementContext;
+
+export type FullContext = Context &
+  NewSubscriptionSupplementContext &
+  NewSubscriptionResourceStatus;

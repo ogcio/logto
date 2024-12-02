@@ -47,6 +47,17 @@ export enum TenantSettingsTabs {
 export enum EnterpriseSsoDetailsTabs {
   Connection = 'connection',
   Experience = 'experience',
+  IdpInitiatedAuth = 'idp-initiated-auth',
+}
+
+export enum OrganizationTemplateTabs {
+  OrganizationRoles = 'organization-roles',
+  OrganizationPermissions = 'organization-permissions',
+}
+
+export enum OrganizationRoleDetailsTabs {
+  Permissions = 'permissions',
+  General = 'general',
 }
 
 export enum OrganizationTemplateTabs {

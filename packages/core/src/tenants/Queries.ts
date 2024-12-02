@@ -29,7 +29,9 @@ import { createUserQueries } from '#src/queries/user.js';
 import { createUsersRolesQueries } from '#src/queries/users-roles.js';
 import { createVerificationStatusQueries } from '#src/queries/verification-status.js';
 
+import { AccountCenterQueries } from '../queries/account-center.js';
 import { PersonalAccessTokensQueries } from '../queries/personal-access-tokens.js';
+import { VerificationRecordQueries } from '../queries/verification-records.js';
 
 export default class Queries {
   applications = createApplicationQueries(this.pool);
@@ -59,6 +61,8 @@ export default class Queries {
   userSsoIdentities = new UserSsoIdentityQueries(this.pool);
   subjectTokens = createSubjectTokenQueries(this.pool);
   personalAccessTokens = new PersonalAccessTokensQueries(this.pool);
+  verificationRecords = new VerificationRecordQueries(this.pool);
+  accountCenters = new AccountCenterQueries(this.pool);
   tenants = createTenantQueries(this.pool);
 
   constructor(

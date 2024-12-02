@@ -18,6 +18,7 @@ import RadioGroup, { Radio } from '@/ds-components/RadioGroup';
 import TextInput from '@/ds-components/TextInput';
 import useTheme from '@/hooks/use-theme';
 import modalStyles from '@/scss/modal.module.scss';
+import { trySubmitSafe } from '@/utils/form';
 
 import EnvTagOptionContent from './EnvTagOptionContent';
 import SelectTenantPlanModal from './SelectTenantPlanModal';
@@ -56,16 +57,18 @@ function CreateTenantModal({ isOpen, onClose }: Props) {
   };
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
 
-  const onCreateClick = handleSubmit(async (data: CreateTenantData) => {
-    const { tag } = data;
-    if (tag === TenantTag.Development) {
-      await createTenant(data);
-      toast.success(t('tenants.create_modal.tenant_created'));
-      return;
-    }
+  const onCreateClick = handleSubmit(
+    trySubmitSafe(async (data: CreateTenantData) => {
+      const { tag } = data;
+      if (tag === TenantTag.Development) {
+        await createTenant(data);
+        toast.success(t('tenants.create_modal.tenant_created'));
+        return;
+      }
 
-    setTenantData(data);
-  });
+      setTenantData(data);
+    })
+  );
 
   return (
     <Modal
@@ -122,7 +125,7 @@ function CreateTenantModal({ isOpen, onClose }: Props) {
               render={({ field: { onChange, value, name } }) => (
                 <RadioGroup type="small" name={name} value={value} onChange={onChange}>
                   {/* Manually maintaining the list of regions to avoid unexpected changes. We may consider using an API in the future. */}
-                  {[RegionName.EU, RegionName.US].map((region) => (
+                  {[RegionName.EU, RegionName.US, RegionName.AU].map((region) => (
                     <Radio
                       key={region}
                       title={

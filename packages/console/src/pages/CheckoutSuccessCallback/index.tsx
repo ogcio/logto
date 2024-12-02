@@ -15,7 +15,6 @@ import { checkoutStateQueryKey } from '@/consts/subscriptions';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import useLogtoSkus from '@/hooks/use-logto-skus';
-import useSubscriptionPlans from '@/hooks/use-subscription-plans';
 import useTenantPathname from '@/hooks/use-tenant-pathname';
 import { clearLocalCheckoutSession, getLocalCheckoutSession } from '@/utils/checkout';
 
@@ -27,14 +26,12 @@ function CheckoutSuccessCallback() {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console.subscription' });
   const { navigate } = useTenantPathname();
   const cloudApi = useCloudApi({ hideErrorToast: true });
-  const { currentTenantId, navigateTenant } = useContext(TenantsContext);
+  const { currentTenantId, navigateTenant, updateTenant } = useContext(TenantsContext);
   const { onCurrentSubscriptionUpdated } = useContext(SubscriptionDataContext);
   const { search } = useLocation();
   const checkoutState = new URLSearchParams(search).get(checkoutStateQueryKey);
   const { state, sessionId, callbackPage, isDowngrade } = getLocalCheckoutSession() ?? {};
 
-  const { data: subscriptionPlans, error: fetchPlansError } = useSubscriptionPlans();
-  const isLoadingPlans = !subscriptionPlans && !fetchPlansError;
   const { data: logtoSkus, error: fetchLogtoSkusError } = useLogtoSkus();
   const isLoadingLogtoSkus = !logtoSkus && !fetchLogtoSkusError;
 
@@ -104,6 +101,10 @@ function CheckoutSuccessCallback() {
       }
 
       onCurrentSubscriptionUpdated(tenantSubscription);
+      updateTenant(checkoutTenantId, {
+        subscription: tenantSubscription,
+        ...conditional(tenantSubscription?.planId && { planId: tenantSubscription.planId }),
+      });
 
       // No need to check `isDowngrade` here, since a downgrade must occur in a tenant with a Pro
       // plan, and the purchase conversion has already been reported using the same tenant ID. We
@@ -132,12 +133,12 @@ function CheckoutSuccessCallback() {
     navigate,
     navigateTenant,
     onCurrentSubscriptionUpdated,
-    subscriptionPlans,
     t,
     tenantSubscription,
+    updateTenant,
   ]);
 
-  if (!isValidSession && !isLoadingPlans) {
+  if (!isValidSession) {
     return <Navigate replace to={consoleHomePage} />;
   }
 
