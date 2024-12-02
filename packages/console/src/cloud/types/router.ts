@@ -9,8 +9,6 @@ export type GetArrayElementType<T> = T extends Array<infer U> ? U : never;
 
 export type LogtoSkuResponse = GetArrayElementType<GuardedResponse<GetRoutes['/api/skus']>>;
 
-export type LogtoSkuResponse = GetArrayElementType<GuardedResponse<GetRoutes['/api/skus']>>;
-
 export type Subscription = GuardedResponse<GetRoutes['/api/tenants/:tenantId/subscription']>;
 
 /* ===== Use `New` in the naming to avoid confusion with legacy types ===== */
