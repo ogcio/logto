@@ -40,7 +40,6 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
       ),
     [currentTenant, rawPeriodicUsage]
   );
-  const proSku = useMemo(() => logtoSkus.find(({ id }) => id === ReservedPlanId.Pro), [logtoSkus]);
 
   if (!periodicUsage) {
     return null;

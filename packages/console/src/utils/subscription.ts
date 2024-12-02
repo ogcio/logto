@@ -24,21 +24,6 @@ export const addSupportQuota = (logtoSkuResponse: LogtoSkuResponse) => {
   };
 };
 
-export const addSupportQuota = (logtoSkuResponse: LogtoSkuResponse) => {
-  const { id, quota } = logtoSkuResponse;
-
-  return {
-    ...logtoSkuResponse,
-    quota: {
-      ...quota,
-      /**
-       * Manually add this support quota item to the plan since it will be compared in the downgrade plan notification modal.
-       */
-      ticketSupportResponseTime: ticketSupportResponseTimeMap[id] ?? 0, // Fallback to not supported
-    },
-  };
-};
-
 const getSubscriptionPlanOrderById = (id: string) => {
   const index = featuredPlanIdOrder.indexOf(id);
 

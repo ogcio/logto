@@ -36,7 +36,6 @@ import interactionRoutes from './interaction/index.js';
 import logRoutes from './log.js';
 import logtoConfigRoutes from './logto-config/index.js';
 import organizationRoutes from './organization/index.js';
-import profileRoutes from './profile/index.js';
 import resourceRoutes from './resource.js';
 import resourceScopeRoutes from './resource.scope.js';
 import roleRoutes from './role.js';
@@ -111,11 +110,6 @@ const createRouters = (tenant: TenantContext) => {
   verificationRoutes(userRouter, tenant);
 
   wellKnownRoutes(anonymousRouter, tenant);
-  wellKnownOpenApiRoutes(anonymousRouter, {
-    experienceRouters: [experienceRouter, interactionRouter],
-    managementRouters: [managementRouter, anonymousRouter],
-  });
-
   statusRoutes(anonymousRouter, tenant);
   authnRoutes(anonymousRouter, tenant);
 
