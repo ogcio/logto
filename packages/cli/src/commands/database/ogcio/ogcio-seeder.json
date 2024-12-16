@@ -190,6 +190,16 @@
         "related_applications": [
           { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
         ]
+      },
+      {
+        "id": "m2m-ps-payments",
+        "name": "M2M Public Servant Payments Role",
+        "description": "Role for M2M Applications that need to access payments api with public servant privilege",
+        "type": "MachineToMachine",
+        "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
+        "related_applications": [
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" }
+        ]
       }    
     ],
     "applications": [
@@ -354,7 +364,17 @@
         "secret": "<SEEDER_M2M_PS_INTEGRATOR_APP_SECRET>",
         "id": "cn49p0bq3ulq6ncodwwio",
         "is_third_party": false
-      }
+      },
+      {
+        "name": "M2M Public Servant Payments",
+        "description": "Machine 2 Machine application used to communicate between services and Payments API for public servant",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_PS_PAYMENTS_APP_SECRET>",
+        "id": "6g85tgm0k3ch1p2vjnnq2",
+        "is_third_party": false
+      } 
     ],
     "resources": [
       {
