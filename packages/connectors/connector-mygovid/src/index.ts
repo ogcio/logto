@@ -100,25 +100,24 @@ const getUserInfo =
 
     try {
       // OGCIO
+      const created = createRemoteJWKSet(new URL(parsedConfig.idTokenVerificationConfig.jwksUri));
       consoleLog.warn('Logging jwt verify params', {
-        idToken,
-        createRemoteJWKSet: createRemoteJWKSet(
-          new URL(parsedConfig.idTokenVerificationConfig.jwksUri)
-        ),
+        createRemoteJWKSet: {
+          coolingDown: created.coolingDown,
+          fresh: created.fresh,
+          reloading: created.reloading,
+          keys: created.jwks(),
+        },
         thirdParam: {
           ...parsedConfig.idTokenVerificationConfig,
           audience: parsedConfig.clientId,
         },
       });
 
-      const { payload } = await jwtVerify(
-        idToken,
-        createRemoteJWKSet(new URL(parsedConfig.idTokenVerificationConfig.jwksUri)),
-        {
-          ...parsedConfig.idTokenVerificationConfig,
-          audience: parsedConfig.clientId,
-        }
-      );
+      const { payload } = await jwtVerify(idToken, created, {
+        ...parsedConfig.idTokenVerificationConfig,
+        audience: parsedConfig.clientId,
+      });
 
       const result = myGovIdTokenProfileStandardClaimsGuard.safeParse(payload);
 
