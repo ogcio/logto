@@ -17,6 +17,7 @@ import {
   jsonGuard,
 } from '@logto/connector-kit';
 import { constructAuthorizationUri } from '@logto/connector-oauth';
+import { ConsoleLog } from '@logto/shared';
 import { generateStandardId } from '@logto/shared/universal';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { HTTPError } from 'ky';
@@ -24,6 +25,8 @@ import { HTTPError } from 'ky';
 import { defaultMetadata } from './constant.js';
 import { myGovIdTokenProfileStandardClaimsGuard, oidcConnectorConfigGuard } from './types.js';
 import { getIdToken } from './utils.js';
+
+export const consoleLog: ConsoleLog = new ConsoleLog();
 
 const generateNonce = () => generateStandardId();
 
@@ -96,6 +99,18 @@ const getUserInfo =
     }
 
     try {
+      // OGCIO
+      consoleLog.warn('Logging jwt verify params', {
+        idToken,
+        createRemoteJWKSet: createRemoteJWKSet(
+          new URL(parsedConfig.idTokenVerificationConfig.jwksUri)
+        ),
+        thirdParam: {
+          ...parsedConfig.idTokenVerificationConfig,
+          audience: parsedConfig.clientId,
+        },
+      });
+
       const { payload } = await jwtVerify(
         idToken,
         createRemoteJWKSet(new URL(parsedConfig.idTokenVerificationConfig.jwksUri)),
