@@ -194,6 +194,7 @@
           "messaging:citizen:*",
           "messaging:event:read",
           "profile:user:read",
+          "profile:user:*",
           "upload:file:*"
         ],
         "type": "MachineToMachine",
@@ -684,6 +685,22 @@
               "messaging:message.self:write",
               "messaging:citizen.self:read",
               "messaging:citizen.self:write"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["treftr21fgbvsdjwlol9"]
+      },
+      {
+        "id": "m2m-e2e-profile",
+        "name": "M2M E2E Profile Citizen",
+        "description": "Role used to make M2M applications able to login as profile citizen to perform E2E testing",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.self:read",
+              "profile:user.self:write"
             ]
           }
         ],
