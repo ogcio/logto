@@ -67,7 +67,8 @@
           "messaging:template:*",
           "messaging:citizen:*",
           "messaging:event:read",
-          "scheduler:jobs:write"
+          "scheduler:jobs:write",
+          "profile:user:read"
         ]
       },
       {
