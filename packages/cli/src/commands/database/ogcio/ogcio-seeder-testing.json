@@ -831,8 +831,8 @@
         "resource_role_ids": ["bb-citizen"],
         "ppsn": "E2E_TEST_USER_1",
         "related_organizations": [
-          { "roles": ["upload-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
         ]
       }
     ],

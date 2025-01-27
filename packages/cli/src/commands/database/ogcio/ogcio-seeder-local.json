@@ -108,7 +108,7 @@
         "id": "pro-public-servant",
         "name": "Profile Public Servant",
         "description": "Profile Public servant",
-        "specific_permissions": ["profile:user:*", "profile:address:*", "profile:entitlement:*"]
+        "specific_permissions": ["profile:user:*"]
       },
       {
         "id": "anl-admin",
@@ -857,8 +857,8 @@
         "resource_role_ids": ["bb-citizen"],
         "ppsn": "E2E_TEST_USER_1",
         "related_organizations": [
-          { "roles": ["upload-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
         ]
       }
     ],
