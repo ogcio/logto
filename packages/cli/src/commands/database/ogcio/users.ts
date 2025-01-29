@@ -189,6 +189,10 @@ const buildWebhookPayload = (user: UserSeeder) => {
     event: 'User.Created',
     data: {
       id: user.id,
+      primaryEmail: user.primary_email,
+      primaryPhone: user.primary_phone,
+      username: user.username,
+      customData: {},
       identities: {
         [MYGOVID_IDENTITY]: {
           details: {
@@ -197,9 +201,9 @@ const buildWebhookPayload = (user: UserSeeder) => {
               lastName,
               PublicServiceNumber: user.ppsn,
               BirthDate: undefined,
+              mobile: user.primary_phone,
             },
             email: user.primary_email,
-            phone: user.primary_phone,
           },
         },
       },
