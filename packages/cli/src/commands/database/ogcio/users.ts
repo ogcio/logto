@@ -189,6 +189,10 @@ const buildWebhookPayload = (user: UserSeeder) => {
     event: 'User.Created',
     data: {
       id: user.id,
+      primaryEmail: user.primary_email,
+      primaryPhone: user.primary_phone,
+      username: user.username,
+      customData: {},
       identities: {
         [MYGOVID_IDENTITY]: {
           details: {
@@ -197,15 +201,65 @@ const buildWebhookPayload = (user: UserSeeder) => {
               lastName,
               PublicServiceNumber: user.ppsn,
               BirthDate: undefined,
+              mobile: user.primary_phone,
             },
             email: user.primary_email,
-            phone: user.primary_phone,
           },
         },
       },
     },
   };
 };
+
+/* 
+{
+    hookId: Type.Optional(NullableString),
+    event: Type.Optional(NullableString),
+    sessionId: Type.Optional(NullableString),
+    userAgent: Type.Optional(NullableString),
+    ip: Type.Optional(NullableString),
+    path: Type.Optional(NullableString),
+    method: Type.Optional(NullableString),
+    status: Type.Optional(Type.Number()),
+    createdAt: Type.Optional(Type.String({ format: "date-time" })),
+    data: Type.Object({
+      id: Type.String(),
+      username: NullableString,
+      primaryEmail: Type.String({ format: "email" }),
+      primaryPhone: Type.Optional(NullableString),
+      name: Type.Optional(NullableString),
+      avatar: Type.Optional(NullableString),
+      customData: Type.Object({
+        profileImportId: Type.Optional(NullableString),
+        organizationId: Type.Optional(NullableString),
+      }),
+      identities: Type.Record(
+        Type.String(),
+        Type.Object({
+          details: Type.Object({
+            email: Type.Optional(NullableString),
+            rawData: Type.Record(
+              Type.String(),
+              Type.Union([
+                Type.String(),
+                Type.Null(),
+                Type.Number(),
+                Type.Boolean(),
+              ]),
+            ),
+          }),
+        }),
+      ),
+      lastSignInAt: Type.Optional(Type.Union([Type.Number(), Type.Null()])),
+      createdAt: Type.Optional(Type.Number()),
+      updatedAt: Type.Optional(Type.Number()),
+      profile: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+      applicationId: Type.Optional(NullableString),
+      isSuspended: Type.Optional(Type.Boolean()),
+      hasPassword: Type.Optional(Type.Boolean()),
+    }),
+  }
+*/
 
 const sign = (signingKey: string, payload: Record<string, unknown>) => {
   const hmac = createHmac('sha256', signingKey);
