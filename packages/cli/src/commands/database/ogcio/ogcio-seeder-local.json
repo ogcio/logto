@@ -156,14 +156,19 @@
         "related_applications": [
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "ogcio" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
-          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" }
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
         ]
       },
       {
         "id": "m2m-ps-profile-writer",
         "name": "M2M Public Servant Profile Writer",
         "description": "Role for M2M Applications that need to write Profile resources",
-        "specific_permissions": ["profile:user:write"],
+        "specific_permissions": [
+          "profile:user:write"
+        ],
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
@@ -396,12 +401,12 @@
         "is_third_party": false
       },
       {
-        "name": "M2M Profile Writer",
+        "name": "M2M Profile",
         "description": "Machine 2 Machine application used to communicate between services and Profile resource",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "profile_writer_local_secret",
+        "secret": "profile_local_secret",
         "id": "hx8ax92k0qyxl3vsdoj2l",
         "is_third_party": false
       },
@@ -726,12 +731,15 @@
       },
       {
         "id": "m2m-ps-profile",
-        "name": "M2M Public Servant Profile Writer role",
-        "description": "Role used to make M2M applications able to write profile resource",
+        "name": "M2M Public Servant Profile role",
+        "description": "Role used to make M2M applications able to read and write profile resource",
         "permissions": [
           {
             "resource_id": "profile-api",
-            "specific_permissions": ["profile:user:write"]
+            "specific_permissions": [
+              "profile:user:read",
+              "profile:user:write"
+            ]
           }
         ],
         "type": "MachineToMachine",
