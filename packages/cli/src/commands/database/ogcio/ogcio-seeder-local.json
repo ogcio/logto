@@ -257,7 +257,9 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" }
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" },
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "first-testing" },
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" }
         ]
       },
       {
@@ -609,7 +611,10 @@
           "messaging:message.self:read",
           "messaging:message.self:write",
           "messaging:citizen.self:read",
-          "messaging:citizen.self:write"
+          "messaging:citizen.self:write",
+          "messaging:message:*",
+          "messaging:template:*",
+          "messaging:citizen:*"
         ]
       },
       {
@@ -762,6 +767,23 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
+      },
+      {
+        "id": "m2m-messaging",
+        "name": "M2M Messaging Public Servant",
+        "description": "Role used to make M2M applications able to use Messaging service",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message:*",
+              "messaging:template:*",
+              "messaging:citizen:*"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ouhygzydwvrv67j4hpm9p"]
       },
       {
         "id": "m2m-e2e-profile",
