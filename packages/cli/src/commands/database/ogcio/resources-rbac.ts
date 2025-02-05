@@ -195,12 +195,11 @@ const createRelations = async (params: {
       relationsToCrete.push(...relations);
     }
   }
-
-  const queries = relationsToCrete.map(async (relation) =>
-    createRoleScopeRelation(params.transaction, params.tenantId, relation)
-  );
-
-  await Promise.all(queries);
+  // Need to be managed serially to avoid collisions
+  for (const relation of relationsToCrete) {
+    // eslint-disable-next-line no-await-in-loop
+    await createRoleScopeRelation(params.transaction, params.tenantId, relation);
+  }
 
   return relationsToCrete;
 };
@@ -261,28 +260,6 @@ export const seedResourceRbacData = async (params: {
   }
 };
 
-const assignRolesToM2MApplications = async (
-  transaction: DatabaseTransactionConnection,
-  tenantId: string,
-  roles: Array<{ id: string; related_application_ids: string[]; type: string }>
-) => {
-  const addedRoles: Array<Promise<{ role_id: string; application_id: string }>> = [];
-  for (const role of roles) {
-    if (role.type === 'MachineToMachine' && role.related_application_ids.length > 0) {
-      addedRoles.push(
-        ...role.related_application_ids.map(async (appId: string) =>
-          assignRoleToM2MApplication(transaction, tenantId, {
-            role_id: role.id,
-            application_id: appId,
-          })
-        )
-      );
-    }
-  }
-
-  await Promise.all(addedRoles);
-};
-
 const assignRoleToM2MApplication = async (
   transaction: DatabaseTransactionConnection,
   tenantId: string,
@@ -303,6 +280,25 @@ const assignRoleToM2MApplication = async (
     ],
     toInsert: relation,
   });
+
+const assignRolesToM2MApplications = async (
+  transaction: DatabaseTransactionConnection,
+  tenantId: string,
+  roles: Array<{ id: string; related_application_ids: string[]; type: string }>
+) => {
+  for (const role of roles) {
+    if (role.type === 'MachineToMachine' && role.related_application_ids.length > 0) {
+      // Need to be managed serially to avoid collisions
+      for (const appId of role.related_application_ids) {
+        // eslint-disable-next-line no-await-in-loop
+        await assignRoleToM2MApplication(transaction, tenantId, {
+          role_id: role.id,
+          application_id: appId,
+        });
+      }
+    }
+  }
+};
 
 export const applyManagementApiRole = async (
   transaction: DatabaseTransactionConnection,
