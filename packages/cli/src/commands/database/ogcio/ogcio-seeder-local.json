@@ -41,6 +41,7 @@
         "messaging:citizen:*",
         "messaging:event:read",
         "profile:user:read",
+        "profile:user:write",
         "profile:user:*",
         "profile:address:*",
         "profile:entitlement:*",
@@ -155,7 +156,24 @@
         "related_applications": [
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "ogcio" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
-          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" }
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-ps-profile-writer",
+        "name": "M2M Public Servant Profile Writer",
+        "description": "Role for M2M Applications that need to write Profile resources",
+        "specific_permissions": [
+          "profile:user:write"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
         ]
       },
       {
@@ -239,7 +257,9 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" }
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" },
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "first-testing" },
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" }
         ]
       },
       {
@@ -380,6 +400,16 @@
         "logout_redirect_uri": "",
         "secret": "profile_reader_local_secret",
         "id": "ddl4llp30risjwcjymqw3",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Profile",
+        "description": "Machine 2 Machine application used to communicate between services and Profile resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "profile_local_secret",
+        "id": "hx8ax92k0qyxl3vsdoj2l",
         "is_third_party": false
       },
       {
@@ -581,7 +611,10 @@
           "messaging:message.self:read",
           "messaging:message.self:write",
           "messaging:citizen.self:read",
-          "messaging:citizen.self:write"
+          "messaging:citizen.self:write",
+          "messaging:message:*",
+          "messaging:template:*",
+          "messaging:citizen:*"
         ]
       },
       {
@@ -597,7 +630,8 @@
           "profile:address.self:write",
           "profile:entitlement.self:read",
           "profile:entitlement.self:write",
-          "profile:user:read"
+          "profile:user:read",
+          "profile:user:write"
         ]
       },
       {
@@ -701,6 +735,22 @@
         "related_application_ids": ["ddl4llp30risjwcjymqw3"]
       },
       {
+        "id": "m2m-ps-profile",
+        "name": "M2M Public Servant Profile role",
+        "description": "Role used to make M2M applications able to read and write profile resource",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user:read",
+              "profile:user:write"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["hx8ax92k0qyxl3vsdoj2l"]
+      },
+      {
         "id": "m2m-e2e-messaging",
         "name": "M2M E2E Messaging Citizen",
         "description": "Role used to make M2M applications able to login as messaging citizen to perform E2E testing",
@@ -717,6 +767,23 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["qrtllp45fgbvsdjyasd5"]
+      },
+      {
+        "id": "m2m-messaging",
+        "name": "M2M Messaging Public Servant",
+        "description": "Role used to make M2M applications able to use Messaging service",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message:*",
+              "messaging:template:*",
+              "messaging:citizen:*"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ouhygzydwvrv67j4hpm9p"]
       },
       {
         "id": "m2m-e2e-profile",
