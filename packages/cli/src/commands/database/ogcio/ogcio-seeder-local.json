@@ -156,10 +156,7 @@
         "related_applications": [
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "ogcio" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
-          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" }
         ]
       },
       {
@@ -167,6 +164,7 @@
         "name": "M2M Public Servant Profile Writer",
         "description": "Role for M2M Applications that need to write Profile resources",
         "specific_permissions": [
+          "profile:user:read",
           "profile:user:write"
         ],
         "type": "MachineToMachine",
