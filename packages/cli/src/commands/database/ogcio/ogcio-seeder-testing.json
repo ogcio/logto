@@ -59,6 +59,7 @@
         "journey:step:*",
         "journey:run:*",
         "journey:run:read",
+        "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write"
       ]
@@ -139,7 +140,7 @@
         "id": "int-public-servant",
         "name": "Journey Public Servant",
         "description": "Journey Public servant",
-        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read"]
+        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
       },
       {
         "id": "bb-inactive-ps",
@@ -658,7 +659,8 @@
           "journey:journey.public:read",
           "journey:journey:read",
           "journey:run.self:read",
-          "journey:run.self:write"
+          "journey:run.self:write",
+          "journey:run:write"
         ]
       },
       {
