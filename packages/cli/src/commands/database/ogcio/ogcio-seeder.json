@@ -33,8 +33,7 @@
         "profile:user:read",
         "profile:user:write",
         "profile:user:*",
-        "profile:address:*",
-        "profile:entitlement:*",
+        "profile:user.admin:*",
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
@@ -91,7 +90,7 @@
         "id": "pro-public-servant",
         "name": "Profile Public Servant",
         "description": "Profile Public servant",
-        "specific_permissions": ["profile:user:*", "profile:address:*", "profile:entitlement:*"]
+        "specific_permissions": ["profile:user:*"]
       },
       {
         "id": "anl-admin",
@@ -503,10 +502,6 @@
         "specific_permissions": [
           "profile:user.self:read",
           "profile:user.self:write",
-          "profile:address.self:read",
-          "profile:address.self:write",
-          "profile:entitlement.self:read",
-          "profile:entitlement.self:write",
           "profile:user:read",
           "profile:user:write"
         ]
@@ -564,11 +559,7 @@
             "resource_id": "profile-api",
             "specific_permissions": [
               "profile:user.self:read",
-              "profile:user.self:write",
-              "profile:address.self:read",
-              "profile:address.self:write",
-              "profile:entitlement.self:read",
-              "profile:entitlement.self:write"
+              "profile:user.self:write"
             ]
           },
           {
