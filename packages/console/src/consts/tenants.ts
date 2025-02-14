@@ -109,6 +109,7 @@ export const defaultSubscriptionQuota: NewSubscriptionQuota = {
   subjectTokenEnabled: false,
   bringYourUiEnabled: false,
   idpInitiatedSsoEnabled: false,
+  samlApplicationsLimit: 0,
 };
 
 export const defaultSubscriptionUsage: NewSubscriptionCountBasedUsage = {
@@ -130,6 +131,7 @@ export const defaultSubscriptionUsage: NewSubscriptionCountBasedUsage = {
   subjectTokenEnabled: false,
   bringYourUiEnabled: false,
   idpInitiatedSsoEnabled: false,
+  samlApplicationsLimit: 0,
 };
 
 const getAdminTenantEndpoint = () => {
@@ -146,3 +148,10 @@ const getAdminTenantEndpoint = () => {
 export const adminTenantEndpoint = getAdminTenantEndpoint();
 
 export const mainTitle = isCloud ? 'Logto Cloud' : 'Logto Console';
+
+// Manually maintaining the list of regions to avoid unexpected changes. We may consider using an API in the future.
+export const availableRegions = Object.freeze([
+  RegionName.EU,
+  RegionName.US,
+  RegionName.AU,
+] as const);

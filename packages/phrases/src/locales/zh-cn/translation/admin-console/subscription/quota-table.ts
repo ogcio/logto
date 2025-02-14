@@ -9,7 +9,8 @@ const quota_table = {
     title: '应用',
     total: '总应用数',
     m2m: '机器对机器',
-    third_party: '第三方应用',
+    third_party: 'OIDC/OAuth 第三方应用',
+    saml_app: 'SAML 应用',
   },
   resource: {
     title: 'API 资源',
@@ -98,6 +99,7 @@ const quota_table = {
   included: '已包含{{value, number}}',
   included_mao: '已包含 {{value, number}} MAO',
   extra_quota_price: '然后每月 ${{value, number}} / 每个之后',
+  extra_token_price: '然后每月 ${{value, number}} / 每 {{amount, number}} 之后',
   per_month_each: '每月 ${{value, number}} / 每个',
   extra_mao_price: '然后每 MAO ${{value, number}}',
   per_month: '每月 ${{value, number}}',

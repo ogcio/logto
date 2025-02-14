@@ -9,7 +9,8 @@ const quota_table = {
     title: 'التطبيقات',
     total: 'إجمالي التطبيقات',
     m2m: 'تطبيقات من الجهاز إلى الجهاز',
-    third_party: 'تطبيقات الطرف الثالث',
+    third_party: 'تطبيقات OIDC/OAuth للطرف الثالث',
+    saml_app: 'تطبيقات SAML',
   },
   resource: {
     title: 'موارد واجهة برمجة التطبيقات',
@@ -101,6 +102,7 @@ const quota_table = {
   included: '{{value, number}} مضمن',
   included_mao: '{{value, number}} MAO مضمنة',
   extra_quota_price: 'ثم ${{value, number}} شهريًا / لكل واحد بعد ذلك',
+  extra_token_price: 'ثم ${{value, number}} شهريًا / {{amount, number}} بعد ذلك',
   per_month_each: '${{value, number}} شهريًا / لكل واحد',
   extra_mao_price: 'ثم ${{value, number}} شهريًا لكل MAO',
   per_month: '${{value, number}} شهريًا',

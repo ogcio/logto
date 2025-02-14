@@ -9,7 +9,8 @@ const quota_table = {
     title: 'Applicazioni',
     total: 'Totale applicazioni',
     m2m: 'Machine-to-machine',
-    third_party: 'App di terze parti',
+    third_party: 'App di terze parti OIDC/OAuth',
+    saml_app: 'App SAML',
   },
   resource: {
     title: 'Risorse API',
@@ -102,6 +103,7 @@ const quota_table = {
   included: '{{value, number}} incluso',
   included_mao: '{{value, number}} MAO inclusi',
   extra_quota_price: 'Quindi ${{value, number}} al mese / ognuno dopo',
+  extra_token_price: 'Quindi ${{value, number}} al mese / {{amount, number}} dopo',
   per_month_each: '${{value, number}} al mese / ognuno',
   extra_mao_price: 'Quindi ${{value, number}} per MAO',
   per_month: '${{value, number}} al mese',

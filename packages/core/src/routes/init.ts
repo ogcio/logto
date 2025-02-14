@@ -40,6 +40,8 @@ import resourceRoutes from './resource.js';
 import resourceScopeRoutes from './resource.scope.js';
 import roleRoutes from './role.js';
 import roleScopeRoutes from './role.scope.js';
+import samlApplicationAnonymousRoutes from './saml-application/anonymous.js';
+import samlApplicationRoutes from './saml-application/index.js';
 import signInExperiencesRoutes from './sign-in-experience/index.js';
 import ssoConnectors from './sso-connector/index.js';
 import statusRoutes from './status.js';
@@ -99,6 +101,7 @@ const createRouters = (tenant: TenantContext) => {
   systemRoutes(managementRouter, tenant);
   subjectTokenRoutes(managementRouter, tenant);
   accountCentersRoutes(managementRouter, tenant);
+  samlApplicationRoutes(managementRouter, tenant);
 
   const anonymousRouter: AnonymousRouter = new Router();
 
@@ -112,6 +115,7 @@ const createRouters = (tenant: TenantContext) => {
   wellKnownRoutes(anonymousRouter, tenant);
   statusRoutes(anonymousRouter, tenant);
   authnRoutes(anonymousRouter, tenant);
+  samlApplicationAnonymousRoutes(anonymousRouter, tenant);
 
   wellKnownOpenApiRoutes(anonymousRouter, {
     experienceRouters: [experienceRouter, interactionRouter],

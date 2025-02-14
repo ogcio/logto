@@ -18,11 +18,11 @@ import {
 } from '@logto/schemas';
 import { removeUndefinedKeys, trySafe, tryThat } from '@silverhand/essentials';
 import i18next from 'i18next';
-import Provider, { errors } from 'oidc-provider';
+import { Provider, errors } from 'oidc-provider';
 import getRawBody from 'raw-body';
 import snakecaseKeys from 'snakecase-keys';
 
-import { type EnvSet } from '#src/env-set/index.js';
+import { EnvSet } from '#src/env-set/index.js';
 import { addOidcEventListeners } from '#src/event-listeners/index.js';
 import { type CloudConnectionLibrary } from '#src/libraries/cloud-connection.js';
 import { type LogtoConfigLibrary } from '#src/libraries/logto-config.js';
@@ -38,6 +38,9 @@ import {
 } from '#src/oidc/utils.js';
 import type Libraries from '#src/tenants/Libraries.js';
 import type Queries from '#src/tenants/Queries.js';
+
+import { type SubscriptionLibrary } from '../libraries/subscription.js';
+import koaTokenUsageGuard from '../middleware/koa-token-usage-guard.js';
 
 import defaults from './defaults.js';
 import {
@@ -63,7 +66,8 @@ export default function initOidc(
   queries: Queries,
   libraries: Libraries,
   logtoConfigs: LogtoConfigLibrary,
-  cloudConnection: CloudConnectionLibrary
+  cloudConnection: CloudConnectionLibrary,
+  subscription: SubscriptionLibrary
 ): Provider {
   const {
     resources: { findDefaultResource },
@@ -77,6 +81,7 @@ export default function initOidc(
     sameSite: 'lax',
     path: '/',
     signed: true,
+    overwrite: true,
   } as const);
 
   // Do NOT deconstruct variables from `envSet` earlier, since we might reload `envSet` on the fly,
@@ -412,6 +417,10 @@ export default function initOidc(
 
   oidc.use(koaAppSecretTranspilation(queries));
   oidc.use(koaBodyEtag());
+
+  if (EnvSet.values.isCloud) {
+    oidc.use(koaTokenUsageGuard(subscription));
+  }
 
   return oidc;
 }

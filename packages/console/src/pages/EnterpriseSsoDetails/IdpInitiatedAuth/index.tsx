@@ -31,6 +31,11 @@ function IdpInitiatedAuth({ ssoConnector }: Props) {
     [applicationError, applications, idpInitiatedAuthConfig, idpInitiatedAuthConfigError]
   );
 
+  const filteredApplications = useMemo(
+    () => applications?.filter(({ isThirdParty }) => !isThirdParty),
+    [applications]
+  );
+
   if (isLoading) {
     return (
       <FormCard
@@ -45,7 +50,7 @@ function IdpInitiatedAuth({ ssoConnector }: Props) {
   return (
     <ConfigForm
       ssoConnector={ssoConnector}
-      applications={applications ?? []}
+      applications={filteredApplications ?? []}
       idpInitiatedAuthConfig={idpInitiatedAuthConfig}
       mutateIdpInitiatedConfig={mutate}
     />

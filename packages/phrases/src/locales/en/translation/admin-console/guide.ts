@@ -9,6 +9,7 @@ const guide = {
     MachineToMachine: 'Machine-to-machine',
     Protected: 'Non-SDK Integration',
     ThirdParty: 'Third-party app',
+    SAML: 'SAML app',
   },
   filter: {
     title: 'Filter framework',

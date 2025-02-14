@@ -11,6 +11,7 @@ import { createPhraseLibrary } from '#src/libraries/phrase.js';
 import { createProtectedAppLibrary } from '#src/libraries/protected-app.js';
 import { createQuotaLibrary } from '#src/libraries/quota.js';
 import { createRoleScopeLibrary } from '#src/libraries/role-scope.js';
+import { createSamlApplicationsLibrary } from '#src/libraries/saml-application/saml-applications.js';
 import { createScopeLibrary } from '#src/libraries/scope.js';
 import { createSignInExperienceLibrary } from '#src/libraries/sign-in-experience/index.js';
 import { createSocialLibrary } from '#src/libraries/social.js';
@@ -37,6 +38,7 @@ export default class Libraries {
   passcodes = createPasscodeLibrary(this.queries, this.connectors);
   applications = createApplicationLibrary(this.queries);
   verificationStatuses = createVerificationStatusLibrary(this.queries);
+  samlApplications = createSamlApplicationsLibrary(this.queries);
   roleScopes = createRoleScopeLibrary(this.queries);
   domains = createDomainLibrary(this.queries);
   protectedApps = createProtectedAppLibrary(this.queries);

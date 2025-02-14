@@ -1,6 +1,6 @@
 // TODO: @darcyYe refactor this file later to remove disable max line comment
 /* eslint-disable max-lines */
-import type { Role } from '@logto/schemas';
+import type { Role, Application } from '@logto/schemas';
 import {
   Applications,
   ApplicationType,
@@ -35,6 +35,21 @@ const parseIsThirdPartQueryParam = (isThirdPartyQuery: 'true' | 'false' | undefi
   }
 
   return isThirdPartyQuery === 'true';
+};
+
+const hideOidcClientMetadataForSamlApp = (application: Application) => {
+  return {
+    ...application,
+    ...conditional(
+      application.type === ApplicationType.SAML && {
+        oidcClientMetadata: buildOidcClientMetadata(),
+      }
+    ),
+  };
+};
+
+const hideOidcClientMetadataForSamlApps = (applications: readonly Application[]) => {
+  return applications.map((application) => hideOidcClientMetadataForSamlApp(application));
 };
 
 const applicationTypeGuard = z.nativeEnum(ApplicationType);
@@ -101,13 +116,14 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       );
 
       if (paginationDisabled) {
-        ctx.body = await queries.applications.findApplications({
+        const rawApplications = await queries.applications.findApplications({
           search,
           excludeApplicationIds,
           excludeOrganizationId,
           types,
           isThirdParty,
         });
+        ctx.body = hideOidcClientMetadataForSamlApps(rawApplications);
 
         return next();
       }
@@ -134,7 +150,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
 
       // Return totalCount to pagination middleware
       ctx.pagination.totalCount = count;
-      ctx.body = applications;
+      ctx.body = hideOidcClientMetadataForSamlApps(applications);
 
       return next();
     }
@@ -152,7 +168,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       const { oidcClientMetadata, protectedAppMetadata, ...rest } = ctx.guard.body;
 
       if (rest.type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       await Promise.all([
@@ -238,7 +254,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
         await queries.applicationsRoles.findApplicationsRolesByApplicationId(id);
 
       ctx.body = {
-        ...application,
+        ...hideOidcClientMetadataForSamlApp(application),
         isAdmin: includesInternalAdminRole(applicationsRoles),
       };
 
@@ -256,7 +272,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
         })
       ),
       response: Applications.guard,
-      status: [200, 404, 422, 500],
+      status: [200, 400, 404, 422, 500],
     }),
     async (ctx, next) => {
       const {
@@ -268,7 +284,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
 
       const pendingUpdateApplication = await queries.applications.findApplicationById(id);
       if (pendingUpdateApplication.type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       // @deprecated
@@ -341,14 +357,14 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
     koaGuard({
       params: object({ id: string().min(1) }),
       response: z.undefined(),
-      status: [204, 404, 422],
+      status: [204, 400, 404, 422],
     }),
     async (ctx, next) => {
       const { id } = ctx.guard.params;
       const { type, protectedAppMetadata } = await queries.applications.findApplicationById(id);
 
       if (type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       if (type === ApplicationType.Protected && protectedAppMetadata) {
