@@ -8,8 +8,6 @@
   </a>
 </p>
 
-<br />
-
 [![discord](https://img.shields.io/discord/965845662535147551?color=5865f2&label=discord)](https://discord.gg/vRvwuwgpVX)
 [![checks](https://img.shields.io/github/checks-status/logto-io/logto/master)](https://github.com/logto-io/logto/actions?query=branch%3Amaster)
 [![release](https://img.shields.io/github/v/release/logto-io/logto?color=3a3c3f)](https://github.com/logto-io/logto/releases)
@@ -40,7 +38,6 @@ Logto[^info] is an open-source Identity and Access Management (IAM) platform des
 - Enables OpenID Connect (OIDC) based authentication with Logto SDKs.
 - Supports passwordless sign-in, along with various options like email, phone number, username, Google, Facebook, and other social sign-in methods.
 - Offers beautiful UI components with customizable CSS to suit your business needs.
-- Has an open community with many warm-hearted contributors and users. Check out our [awesome list](./AWESOME.md) of community-contributed resources.
 
 ### 📦 Out-of-the-box infrastructure
 
