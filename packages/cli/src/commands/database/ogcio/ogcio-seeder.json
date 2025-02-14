@@ -21,6 +21,7 @@
         "analytics:website:read",
         "analytics:website:write",
         "analytics:website:tracking",
+        "analytics:audit_log:read",
         "payments:provider:*",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
@@ -163,6 +164,18 @@
           "analytics:website:read",
           "analytics:website:write",
           "analytics:website:tracking"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "m2m-analytics-sdk-log",
+        "name": "M2M Analytics SDK Auditor Role",
+        "description": "Role for M2M Applications that need to read from Analytics audit log",
+        "specific_permissions": [
+          "analytics:audit_log:read"
         ],
         "type": "MachineToMachine",
         "related_applications": [
@@ -515,7 +528,8 @@
         "specific_permissions": [
           "analytics:website:read",
           "analytics:website:write",
-          "analytics:website:tracking"
+          "analytics:website:tracking",
+          "analytics:audit_log:read"
         ]
       },
       {
