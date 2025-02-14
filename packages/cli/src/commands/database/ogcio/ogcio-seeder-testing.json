@@ -41,9 +41,9 @@
         "messaging:citizen:*",
         "messaging:event:read",
         "profile:user:read",
+        "profile:user:write",
         "profile:user:*",
-        "profile:address:*",
-        "profile:entitlement:*",
+        "profile:user.admin:*",
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
@@ -52,12 +52,13 @@
         "o11y:dashboard:read",
         "o11y:dashboard:write",
         "o11y:dashboard:admin",
-        "integrator:journey.public:read",
-        "integrator:journey:read",
-        "integrator:journey:*",
-        "integrator:step:*",
-        "integrator:run:*",
-        "integrator:run:read",
+        "journey:journey.public:read",
+        "journey:journey:read",
+        "journey:journey:*",
+        "journey:step:*",
+        "journey:run:*",
+        "journey:run:read",
+        "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write"
       ]
@@ -85,7 +86,8 @@
           "messaging:template:*",
           "messaging:citizen:*",
           "messaging:event:read",
-          "scheduler:jobs:write"
+          "scheduler:jobs:write",
+          "profile:user:read"
         ]
       },
       {
@@ -107,7 +109,7 @@
         "id": "pro-public-servant",
         "name": "Profile Public Servant",
         "description": "Profile Public servant",
-        "specific_permissions": ["profile:user:*", "profile:address:*", "profile:entitlement:*"]
+        "specific_permissions": ["profile:user:*"]
       },
       {
         "id": "anl-admin",
@@ -135,9 +137,9 @@
       },
       {
         "id": "int-public-servant",
-        "name": "Integrator Public Servant",
-        "description": "Integrator Public servant",
-        "specific_permissions": ["integrator:journey:*", "integrator:step:*", "integrator:run:read"]
+        "name": "Journey Public Servant",
+        "description": "Journey Public servant",
+        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
       },
       {
         "id": "bb-inactive-ps",
@@ -154,7 +156,24 @@
         "related_applications": [
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "first-testing" },
-          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "second-testing" }
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "second-testing" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "first-testing" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-ps-profile-writer",
+        "name": "M2M Public Servant Profile Writer",
+        "description": "Role for M2M Applications that need to write Profile resources",
+        "specific_permissions": [
+          "profile:user:write"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "first-testing" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "second-testing" }
         ]
       },
       {
@@ -193,7 +212,8 @@
           "messaging:template:*",
           "messaging:citizen:*",
           "messaging:event:read",
-          "profile:user:read",
+          "profile:user:*",
+          "profile:user.admin:*",
           "upload:file:*"
         ],
         "type": "MachineToMachine",
@@ -203,10 +223,10 @@
         ]
       },
       {
-        "id": "m2m-citiz-integrator",
-        "name": "M2M Citizen Integrator Reader",
-        "description": "Role for M2M Applications that need to read from Integrator resources",
-        "specific_permissions": ["integrator:journey.public:read"],
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader",
+        "description": "Role for M2M Applications that need to read from Journey resources",
+        "specific_permissions": ["journey:journey.public:read"],
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
@@ -251,14 +271,42 @@
       },
       {
         "id": "m2m-ps-int-reader",
-        "name": "M2M Public Servant Integrator Reader",
-        "description": "Role to access integrator reader api with public servant privilege",
+        "name": "M2M Public Servant Journey Reader",
+        "description": "Role to access journey reader api with public servant privilege",
         "type": "MachineToMachine",
-        "specific_permissions": ["integrator:journey:read"],
+        "specific_permissions": ["journey:journey:read"],
         "related_applications": [
           { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
         ]
-      }  
+      },
+      {
+        "id": "m2m-ps-payments",
+        "name": "M2M Public Servant Payments Role",
+        "description": "Role for M2M Applications that need to access payments api with public servant privilege",
+        "type": "MachineToMachine",
+        "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
+        "related_applications": [
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "first-testing" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-messaging",
+        "name": "M2M Messaging",
+        "description": "Role for M2M Applications that need to interact with the Messaging API",
+        "specific_permissions": [
+          "messaging:message:*",
+          "messaging:template:*",
+          "messaging:citizen:*"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "ogcio" },
+          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "first-testing" },
+          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "second-testing" }
+        ]
+      }
     ],
     "applications": [
       {
@@ -353,6 +401,16 @@
         "is_third_party": false
       },
       {
+        "name": "M2M Profile",
+        "description": "Machine 2 Machine application used to communicate between services and Profile resource",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_PROFILE_PS_APP_SECRET>",
+        "id": "okzj8uam29yhj4zdj21xm",
+        "is_third_party": false
+      },
+      {
         "name": "M2M Scheduler Writer",
         "description": "Machine 2 Machine application used to communicate between services and Scheduler resource",
         "type": "MachineToMachine",
@@ -394,22 +452,22 @@
         "is_third_party": false
       },
       {
-        "name": "Integrator Building Block",
-        "description": "Integrator App for Building Block",
+        "name": "Journey Builder Building Block",
+        "description": "Journey Builder App for Building Block",
         "type": "Traditional",
-        "redirect_uri": "<SEEDER_INTEGRATOR_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_INTEGRATOR_APP_LOGOUT_REDIRECT_URI>",
-        "secret": "<SEEDER_INTEGRATOR_APP_SECRET>",
+        "redirect_uri": "<SEEDER_JOURNEY_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_JOURNEY_APP_SECRET>",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
       },
       {
-        "name": "M2M Integrator Reader",
-        "description": "Machine 2 Machine application used to communicate between services and Integrator resources",
+        "name": "M2M Journey Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Journey resources",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_INTEGRATOR_APP_SECRET>",
+        "secret": "<SEEDER_M2M_JOURNEY_APP_SECRET>",
         "id": "ca0c4izoo6dli4vko06g3"
       },
       {
@@ -453,13 +511,33 @@
         "is_third_party": false
       },
       {
-        "name": "M2M Public Servant Integrator Reader",
-        "description": "Machine 2 Machine application used to communicate between services and Integrator resources for public servant",
+        "name": "M2M Public Servant Journey Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Journey resources for public servant",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_PS_INTEGRATOR_APP_SECRET>",
+        "secret": "<SEEDER_M2M_PS_JOURNEY_APP_SECRET>",
         "id": "cn49p0bq3ulq6ncodwwio",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Public Servant Payments",
+        "description": "Machine 2 Machine application used to communicate between services and Payments API for public servant",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_PS_PAYMENTS_APP_SECRET>",
+        "id": "6g85tgm0k3ch1p2vjnnq2",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Messaging",
+        "description": "Machine 2 Machine application used to communicate between services and Messaging API",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_MESSAGING_APP_SECRET>",
+        "id": "k3wblfnr6h8b8x8l8nigt",
         "is_third_party": false
       }
     ],
@@ -495,9 +573,9 @@
         "indicator": "<SEEDER_ANALYTICS_API_INDICATOR>"
       },
       {
-        "id": "integrator-api",
-        "name": "Integrator Building Block API",
-        "indicator": "<SEEDER_INTEGRATOR_API_INDICATOR>"
+        "id": "journey-api",
+        "name": "Journey Building Block API",
+        "indicator": "<SEEDER_JOURNEY_API_INDICATOR>"
       },
       {
         "id": "otel-collector-http",
@@ -531,7 +609,10 @@
           "messaging:message.self:read",
           "messaging:message.self:write",
           "messaging:citizen.self:read",
-          "messaging:citizen.self:write"
+          "messaging:citizen.self:write",
+          "messaging:message:*",
+          "messaging:template:*",
+          "messaging:citizen:*"
         ]
       },
       {
@@ -543,11 +624,8 @@
         "specific_permissions": [
           "profile:user.self:read",
           "profile:user.self:write",
-          "profile:address.self:read",
-          "profile:address.self:write",
-          "profile:entitlement.self:read",
-          "profile:entitlement.self:write",
-          "profile:user:read"
+          "profile:user:read",
+          "profile:user:write"
         ]
       },
       {
@@ -571,12 +649,13 @@
         "specific_permissions": ["o11y:metrics:*"]
       },
       {
-        "resource_id": "integrator-api",
+        "resource_id": "journey-api",
         "specific_permissions": [
-          "integrator:journey.public:read",
-          "integrator:journey:read",
-          "integrator:run.self:read",
-          "integrator:run.self:write"
+          "journey:journey.public:read",
+          "journey:journey:read",
+          "journey:run.self:read",
+          "journey:run.self:write",
+          "journey:run:write"
         ]
       },
       {
@@ -616,11 +695,7 @@
             "resource_id": "profile-api",
             "specific_permissions": [
               "profile:user.self:read",
-              "profile:user.self:write",
-              "profile:address.self:read",
-              "profile:address.self:write",
-              "profile:entitlement.self:read",
-              "profile:entitlement.self:write"
+              "profile:user.self:write"
             ]
           },
           {
@@ -628,11 +703,11 @@
             "specific_permissions": ["upload:file.self:read"]
           },
           {
-            "resource_id": "integrator-api",
+            "resource_id": "journey-api",
             "specific_permissions": [
-              "integrator:journey.public:read",
-              "integrator:run.self:read",
-              "integrator:run.self:write"
+              "journey:journey.public:read",
+              "journey:run.self:read",
+              "journey:run.self:write"
             ]
           }
         ]
@@ -649,6 +724,22 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["tty6llp30risjwcjhbvc9"]
+      },
+      {
+        "id": "m2m-ps-profile",
+        "name": "M2M Public Servant Profile role",
+        "description": "Role used to make M2M applications able to read and write profile resource",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user:read",
+              "profile:user:write"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["okzj8uam29yhj4zdj21xm"]
       },
       {
         "id": "m2m-e2e-messaging",
@@ -669,13 +760,46 @@
         "related_application_ids": ["treftr21fgbvsdjwlol9"]
       },
       {
-        "id": "m2m-citiz-integrator",
-        "name": "M2M Citizen Integrator Reader role",
-        "description": "Role used to make M2M applications able to read from integrator resources",
+        "id": "m2m-messaging",
+        "name": "M2M Messaging Public Servant",
+        "description": "Role used to make M2M applications able to use Messaging service",
         "permissions": [
           {
-            "resource_id": "integrator-api",
-            "specific_permissions": ["integrator:journey.public:read"]
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message:*",
+              "messaging:template:*",
+              "messaging:citizen:*"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["k3wblfnr6h8b8x8l8nigt"]
+      },
+      {
+        "id": "m2m-e2e-profile",
+        "name": "M2M E2E Profile Citizen",
+        "description": "Role used to make M2M applications able to login as profile citizen to perform E2E testing",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.self:read",
+              "profile:user.self:write"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["treftr21fgbvsdjwlol9"]
+      },
+      {
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources",
+        "permissions": [
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey.public:read"]
           }
         ],
         "type": "MachineToMachine",
@@ -683,12 +807,12 @@
       },
       {
         "id": "m2m-ps-int-reader",
-        "name": "M2M Public Servant Integrator Reader role",
-        "description": "Role used to make M2M applications able to read from integrator resources with public servant privilege",
+        "name": "M2M Public Servant Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources with public servant privilege",
         "permissions": [
           {
-            "resource_id": "integrator-api",
-            "specific_permissions": ["integrator:journey:read"]
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey:read"]
           }
         ],
         "type": "MachineToMachine",
@@ -791,8 +915,8 @@
         "resource_role_ids": ["bb-citizen"],
         "ppsn": "E2E_TEST_USER_1",
         "related_organizations": [
-          { "roles": ["upload-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
         ]
       }
     ],

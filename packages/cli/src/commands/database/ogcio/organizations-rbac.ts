@@ -1,6 +1,6 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @silverhand/fp/no-mutating-methods */
+
 /* eslint-disable @silverhand/fp/no-mutation */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
@@ -224,25 +224,20 @@ const assignOrganizationsToM2MApplications = async (
     type: string;
   }>
 ) => {
-  const addedRoles: Array<
-    Promise<{ organization_role_id: string; application_id: string; organization_id: string }>
-  > = [];
   for (const role of roles) {
     if (role.type === 'MachineToMachine' && role.related_applications.length > 0) {
-      addedRoles.push(
-        ...role.related_applications.map(
-          async (relation: { application_id: string; organization_id: string }) =>
-            assignOrganizationToM2MApplication(transaction, tenantId, {
-              organization_role_id: role.id,
-              application_id: relation.application_id,
-              organization_id: relation.organization_id,
-            })
-        )
-      );
+      // Need to be managed serially because of collision on application/organization
+      // relations
+      for (const relation of role.related_applications) {
+        // eslint-disable-next-line no-await-in-loop
+        await assignOrganizationToM2MApplication(transaction, tenantId, {
+          organization_role_id: role.id,
+          application_id: relation.application_id,
+          organization_id: relation.organization_id,
+        });
+      }
     }
   }
-
-  await Promise.all(addedRoles);
 };
 
 const assignOrganizationToM2MApplication = async (
