@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import { PasswordPolicyChecker } from '@logto/core-kit';
 import { InteractionEvent, MfaFactor, MfaPolicy } from '@logto/schemas';
 import { createMockUtils } from '@logto/shared/esm';
-import type Provider from 'oidc-provider';
+import type { Provider } from 'oidc-provider';
 
 import { mockBackupCodeBind, mockTotpBind } from '#src/__mocks__/mfa-verification.js';
 import { mockSignInExperience } from '#src/__mocks__/sign-in-experience.js';
@@ -54,7 +54,7 @@ const baseCtx = {
     ...mockSignInExperience,
     mfa: {
       factors: [MfaFactor.TOTP],
-      policy: MfaPolicy.UserControlled,
+      policy: MfaPolicy.PromptAtSignInAndSignUp,
     },
   },
   passwordPolicyChecker: new PasswordPolicyChecker(

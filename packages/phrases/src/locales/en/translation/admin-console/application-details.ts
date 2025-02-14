@@ -40,6 +40,8 @@ const application_details = {
   redirect_uri_placeholder_native: 'io.logto://callback',
   redirect_uri_tip:
     'The URI redirects after a user sign-in (whether successful or not). See OpenID Connect <a>AuthRequest</a> for more info.',
+  mixed_redirect_uri_warning:
+    'Your application type is not compatible with at least one of the redirect URIs. It does not follow best practices and we strongly recommend keeping the redirect URIs consistent.',
   post_sign_out_redirect_uri: 'Post sign-out redirect URI',
   post_sign_out_redirect_uris: 'Post sign-out redirect URIs',
   post_sign_out_redirect_uri_placeholder: 'https://your.website.com/home',
@@ -195,6 +197,22 @@ const application_details = {
       title: 'Edit application secret',
       edited: 'The secret {{name}} has been successfully edited.',
     },
+  },
+  saml_idp_config: {
+    title: 'SAML IdP metadata',
+    description:
+      'Use the following metadata and certificate to configure the SAML IdP in your application.',
+    metadata_url_label: 'IdP metadata URL',
+    single_sign_on_service_url_label: 'Single sign-on service URL',
+    idp_entity_id_label: 'IdP entity ID',
+  },
+  saml_idp_certificates: {
+    title: 'SAML signing certificate',
+    expires_at: 'Expires at',
+    finger_print: 'Fingerprint',
+    status: 'Status',
+    active: 'Active',
+    inactive: 'Inactive',
   },
 };
 

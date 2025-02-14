@@ -63,7 +63,9 @@ function PlanComparisonTable() {
     const mauLimitTip = t('mau_tip');
     const includedTokens = t('quota.included_tokens');
     const includedTokensTip = t('tokens_tip');
-    const proPlanIncludedTokens = t('million', { value: 1 });
+    const proPlanIncludedTokens = '100,000';
+    const freePlanIncludedTokens = '100,000';
+    const proPlanTokenPrice = t('extra_token_price', { value: 0.08, amount: 100 });
 
     // Applications
     const totalApplications = t('application.total');
@@ -152,7 +154,11 @@ function PlanComparisonTable() {
           },
           {
             name: `${includedTokens}|${includedTokensTip}`,
-            data: ['500,000', `${proPlanIncludedTokens}`, contact],
+            data: [
+              `${freePlanIncludedTokens}`,
+              `${proPlanIncludedTokens}||${proPlanTokenPrice}`,
+              contact,
+            ],
           },
         ],
       },

@@ -37,7 +37,7 @@ describe('application APIs', () => {
 
   it('should throw error when creating a SAML application', async () => {
     await expectRejects(createApplication('test-create-saml-app', ApplicationType.SAML), {
-      code: 'application.use_saml_app_api',
+      code: 'application.saml.use_saml_app_api',
       status: 400,
     });
   });
@@ -54,6 +54,7 @@ describe('application APIs', () => {
     expect(application.name).toBe(applicationName);
     expect(application.type).toBe(ApplicationType.Traditional);
     expect(application.isThirdParty).toBe(true);
+
     await deleteApplication(application.id);
   });
 
@@ -131,6 +132,43 @@ describe('application APIs', () => {
       rotateRefreshToken: true,
       refreshTokenTtlInDays: 10,
     });
+  });
+
+  it('should be able to add a native redirect uri to a web application, and vice versa', async () => {
+    const [application1, application2] = await Promise.all([
+      createApplication('test-update-app-1', ApplicationType.Native),
+      createApplication('test-update-app-2', ApplicationType.SPA),
+    ]);
+
+    const nativeRedirectUri = 'io.logto://my-app/callback';
+    const webRedirectUri = 'https://example.com/callback';
+
+    await Promise.all([
+      updateApplication(application1.id, {
+        oidcClientMetadata: {
+          ...application1.oidcClientMetadata,
+          redirectUris: [nativeRedirectUri],
+          postLogoutRedirectUris: [nativeRedirectUri],
+        },
+      }),
+      updateApplication(application2.id, {
+        oidcClientMetadata: {
+          ...application2.oidcClientMetadata,
+          redirectUris: [webRedirectUri],
+          postLogoutRedirectUris: [webRedirectUri],
+        },
+      }),
+    ]);
+
+    const [updated1, updated2] = await Promise.all([
+      getApplication(application1.id),
+      getApplication(application2.id),
+    ]);
+
+    expect(updated1.oidcClientMetadata.redirectUris).toEqual([nativeRedirectUri]);
+    expect(updated1.oidcClientMetadata.postLogoutRedirectUris).toEqual([nativeRedirectUri]);
+    expect(updated2.oidcClientMetadata.redirectUris).toEqual([webRedirectUri]);
+    expect(updated2.oidcClientMetadata.postLogoutRedirectUris).toEqual([webRedirectUri]);
   });
 
   it('should update application details for protected app successfully', async () => {

@@ -152,7 +152,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       const { oidcClientMetadata, protectedAppMetadata, ...rest } = ctx.guard.body;
 
       if (rest.type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       await Promise.all([
@@ -256,7 +256,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
         })
       ),
       response: Applications.guard,
-      status: [200, 404, 422, 500],
+      status: [200, 400, 404, 422, 500],
     }),
     async (ctx, next) => {
       const {
@@ -268,7 +268,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
 
       const pendingUpdateApplication = await queries.applications.findApplicationById(id);
       if (pendingUpdateApplication.type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       // @deprecated
@@ -341,14 +341,14 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
     koaGuard({
       params: object({ id: string().min(1) }),
       response: z.undefined(),
-      status: [204, 404, 422],
+      status: [204, 400, 404, 422],
     }),
     async (ctx, next) => {
       const { id } = ctx.guard.params;
       const { type, protectedAppMetadata } = await queries.applications.findApplicationById(id);
 
       if (type === ApplicationType.SAML) {
-        throw new RequestError('application.use_saml_app_api');
+        throw new RequestError('application.saml.use_saml_app_api');
       }
 
       if (type === ApplicationType.Protected && protectedAppMetadata) {

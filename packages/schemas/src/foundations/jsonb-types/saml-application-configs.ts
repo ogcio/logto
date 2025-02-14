@@ -8,16 +8,16 @@ export const samlAttributeMappingGuard = z.record(
 ) satisfies z.ZodType<SamlAttributeMapping>;
 
 export enum BindingType {
-  POST = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-  REDIRECT = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+  Post = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+  Redirect = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
 }
 
 export type SamlAcsUrl = {
-  binding?: BindingType;
+  binding: BindingType;
   url: string;
 };
 
 export const samlAcsUrlGuard = z.object({
   binding: z.nativeEnum(BindingType),
-  url: z.string(),
+  url: z.string().url(),
 }) satisfies ToZodObject<SamlAcsUrl>;

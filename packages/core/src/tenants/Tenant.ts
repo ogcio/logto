@@ -5,7 +5,7 @@ import Koa from 'koa';
 import compose from 'koa-compose';
 import koaCompress from 'koa-compress';
 import mount from 'koa-mount';
-import type Provider from 'oidc-provider';
+import type { Provider } from 'oidc-provider';
 
 import { type CacheStore } from '#src/caches/types.js';
 import { WellKnownCache } from '#src/caches/well-known.js';
@@ -29,6 +29,9 @@ import { mountCallbackRouter } from '#src/routes/callback.js';
 import initApis from '#src/routes/init.js';
 import initMeApis from '#src/routes-me/init.js';
 import BasicSentinel from '#src/sentinel/basic-sentinel.js';
+
+import { redisCache } from '../caches/index.js';
+import { SubscriptionLibrary } from '../libraries/subscription.js';
 
 import Libraries from './Libraries.js';
 import Queries from './Queries.js';
@@ -89,7 +92,8 @@ export default class Tenant implements TenantContext {
       cloudConnection,
       logtoConfigs
     ),
-    public readonly sentinel = new BasicSentinel(envSet.pool)
+    public readonly sentinel = new BasicSentinel(envSet.pool),
+    public readonly subscription = new SubscriptionLibrary(id, queries, cloudConnection, redisCache)
   ) {
     const isAdminTenant = id === adminTenantId;
     const mountedApps = [
@@ -111,7 +115,14 @@ export default class Tenant implements TenantContext {
     app.use(koaSecurityHeaders(mountedApps, id));
 
     // Mount OIDC
-    const provider = initOidc(envSet, queries, libraries, logtoConfigs, cloudConnection);
+    const provider = initOidc(
+      envSet,
+      queries,
+      libraries,
+      logtoConfigs,
+      cloudConnection,
+      subscription
+    );
     app.use(mount('/oidc', provider.app));
 
     const tenantContext: TenantContext = {
