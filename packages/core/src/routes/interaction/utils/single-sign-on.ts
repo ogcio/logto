@@ -25,8 +25,6 @@ import { safeParseUnknownJson } from '#src/utils/json.js';
 
 import { type WithInteractionHooksContext } from '../middleware/koa-interaction-hooks.js';
 
-import { type WithInteractionHooksContext } from '../middleware/koa-interaction-hooks.js';
-
 import {
   assignSingleSignOnAuthenticationResult,
   assignSingleSignOnSessionResult,
