@@ -157,8 +157,8 @@
         ]
       },
       {
-        "id": "m2m-analytics-sdk",
-        "name": "M2M Analytics SDK Role",
+        "id": "m2m-analytics",
+        "name": "M2M Analytics Role",
         "description": "Role for M2M Applications that need to read from Analytics resources",
         "specific_permissions": [
           "analytics:website:read",
@@ -171,8 +171,8 @@
         ]
       },
       {
-        "id": "m2m-analytics-sdk-log",
-        "name": "M2M Analytics SDK Auditor Role",
+        "id": "m2m-analytics-auditor",
+        "name": "M2M Analytics Auditor Role",
         "description": "Role for M2M Applications that need to read from Analytics audit log",
         "specific_permissions": [
           "analytics:audit_log:read"
