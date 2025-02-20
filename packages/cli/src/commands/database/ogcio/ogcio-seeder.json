@@ -427,9 +427,9 @@
         "name": "Observability Dashboard",
         "description": "Observability dashboard application",
         "type": "Traditional",
-        "redirect_uri": "<SEEDER_O11Y_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_O11Y_APP_LOGOUT_REDIRECT_URI>",
-        "secret": "<SEEDER_O11Y_APP_SECRET>",
+        "redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_O11Y_DASHBOARD_APP_SECRET>",
         "id": "yiuxr16z76vw4ssb2tjpg",
         "is_third_party": false
       },
