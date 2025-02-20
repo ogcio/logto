@@ -203,6 +203,33 @@
         ]
       },
       {
+        "id": "o11y-dashboard-admin",
+        "name": "Observability Dashboard Administrator Role",
+        "description": "Role to access as administrator observability dashboard applications",
+        "specific_permissions": ["o11y:dashboard:admin"],
+        "related_applications": [
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "o11y-dashboard-edit",
+        "name": "Observability Dashboard Edit Role",
+        "description": "Role to access and edit observability dashboard applications",
+        "specific_permissions": ["o11y:dashboard:write"],
+        "related_applications": [
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+        ]
+      },
+      {
+        "id": "o11y-dashboard-view",
+        "name": "Observability Dashboard Viewer Role",
+        "description": "Role to access  as viewer observability dashboard applications",
+        "specific_permissions": ["o11y:dashboard:read"],
+        "related_applications": [
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+        ]
+      },
+      {
         "id": "ff-public-servant",
         "name": "Feature Flags Unleash Role",
         "description": "Role for Applications that need access to the Feature Flags service",
@@ -394,6 +421,16 @@
         "logout_redirect_uri": "",
         "secret": "<SEEDER_OTEL_COLLECTOR_APP_SECRET>",
         "id": "628ud3kj186xzpid7zo5n",
+        "is_third_party": false
+      },
+      {
+        "name": "Observability Dashboard",
+        "description": "Observability dashboard application",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_O11Y_DASHBOARD_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_O11Y_DASHBOARD_APP_SECRET>",
+        "id": "yiuxr16z76vw4ssb2tjpg",
         "is_third_party": false
       },
       {
