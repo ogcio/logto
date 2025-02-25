@@ -95,6 +95,30 @@ const SignIn = () => {
   const { signInMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
 
+  // OGIO - to define where to put this code (UI layer or enywhere else)
+  const getCookieValue = (cookieName: string) => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [name, value] = cookie.split("=");
+      if(!value) return 
+      if (name === cookieName) {
+        return decodeURIComponent(value);
+      }
+    }
+    return null;
+  };
+  
+  const connectorsToShowCookie = getCookieValue("connectorsToShow");
+
+  let filteredSocialConnectors = [];
+  if (connectorsToShowCookie) {
+    const connectorsToShow = connectorsToShowCookie.split(",");
+    filteredSocialConnectors = socialConnectors.filter(connector => connectorsToShow.includes(connector.id));
+  } else {
+    filteredSocialConnectors = socialConnectors;
+  }
+ 
+
   if (!signInMode) {
     return <ErrorPage />;
   }
@@ -107,7 +131,7 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
-        <Main signInMethods={signInMethods} socialConnectors={socialConnectors} />
+        <Main signInMethods={signInMethods} socialConnectors={filteredSocialConnectors} />
         <SignInFooters />
       </SingleSignOnFormModeContextProvider>
       {
