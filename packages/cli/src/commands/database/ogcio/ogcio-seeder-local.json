@@ -394,6 +394,16 @@
         "is_third_party": false
       },
       {
+        "name": "Profile Admin Building Block",
+        "description": "Profile Admin App of Life Events",
+        "type": "Traditional",
+        "redirect_uri": "http://localhost:3033/callback",
+        "logout_redirect_uri": "http://localhost:3033",
+        "secret": "profile_admin_app_local_secret",
+        "id": "a68QJ2qWU9MFfLm57epsB",
+        "is_third_party": false
+      },
+      {
         "name": "Analytics Building Block",
         "description": "Shared platform for Analytics",
         "type": "Traditional",

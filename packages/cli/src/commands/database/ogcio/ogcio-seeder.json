@@ -353,6 +353,16 @@
         "is_third_party": false
       },
       {
+        "name": "Profile Admin Building Block",
+        "description": "Profile Admin App of Life Events",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_PROFILE_ADMIN_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_PROFILE_ADMIN_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_PROFILE_ADMIN_APP_SECRET>",
+        "id": "a68QJ2qWU9MFfLm57epsB",
+        "is_third_party": false
+      },
+      {
         "name": "M2M Profile Reader",
         "description": "Machine 2 Machine application used to communicate between services and Profile resource",
         "type": "MachineToMachine",
