@@ -31,6 +31,9 @@
         "messaging:template:*",
         "messaging:citizen:*",
         "messaging:event:read",
+        "o11y:dashboard:read",
+        "o11y:dashboard:write",
+        "o11y:dashboard:admin",
         "profile:user:read",
         "profile:user:write",
         "profile:user:*",
@@ -529,6 +532,11 @@
         "id": "integrator-api",
         "name": "Integrator Building Block API",
         "indicator": "<SEEDER_INTEGRATOR_API_INDICATOR>"
+      },
+      {
+        "id": "o11y-dashboard",
+        "name": "Observability Dashboard Application",
+        "indicator": "<SEEDER_O11Y_DASHBOARD_APP_INDICATOR>"
       }
     ],
     "resource_permissions": [
@@ -590,6 +598,14 @@
       {
         "resource_id": "integrator-api",
         "specific_permissions": ["integrator:journey:read"]
+      },
+      {
+        "resource_id": "o11y-dashboard",
+        "specific_permissions": [
+            "o11y:dashboard:read",
+            "o11y:dashboard:write",
+            "o11y:dashboard:admin"
+        ]
       }
     ],
     "resource_roles": [
