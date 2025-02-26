@@ -142,6 +142,7 @@ stages:
     - template: deploy/gitops.yml@pipeline-templates
       parameters:
         serviceName: mygovid-mock
+        clusterName: ${{ variables.clusterName }}
         newName: ${{ variables.ecrEndpoint }}/bb-mygovid-mock
         newTag: $(Build.BuildId)
         environment: dev
