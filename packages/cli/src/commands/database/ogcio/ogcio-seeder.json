@@ -43,7 +43,13 @@
         "scheduler:jobs:write",
         "upload:file:*",
         "o11y:metrics:*",
-        "integrator:journey:read",
+        "journey:journey.public:read",
+        "journey:journey:read",
+        "journey:journey:*",
+        "journey:step:*",
+        "journey:run:*",
+        "journey:run:read",
+        "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write"
       ]
@@ -121,6 +127,12 @@
         "specific_permissions": ["upload:file:*", "profile:user:read"]
       },
       {
+        "id": "int-public-servant",
+        "name": "Journey Public Servant",
+        "description": "Journey Public servant",
+        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
+      },
+      {
         "id": "bb-inactive-ps",
         "name": "Inactive Public Servant",
         "description": "Inactive Public Servant",
@@ -186,6 +198,16 @@
         ]
       },
       {
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader",
+        "description": "Role for M2M Applications that need to read from Journey resources",
+        "specific_permissions": ["journey:journey.public:read"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
+        ]
+      },
+      {
         "id": "m2m-ps-uploader",
         "name": "M2M Public Servant Uploader",
         "description": "Role for M2M Applications that need to interact with the Upload API",
@@ -240,10 +262,10 @@
       },
       {
         "id": "m2m-ps-int-reader",
-        "name": "M2M Public Servant Integrator Reader",
-        "description": "Role to access integrator reader api with public servant privilege",
+        "name": "M2M Public Servant Journey Reader",
+        "description": "Role to access journey reader api with public servant privilege",
         "type": "MachineToMachine",
-        "specific_permissions": ["integrator:journey:read"],
+        "specific_permissions": ["journey:journey:read"],
         "related_applications": [
           { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
         ]
@@ -407,6 +429,25 @@
         "apply_management_api_role": true
       },
       {
+        "name": "Journey Builder Building Block",
+        "description": "Journey Builder App for Building Block",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_JOURNEY_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_JOURNEY_APP_SECRET>",
+        "id": "1qpp7cfssbb4mcrvmfe0c",
+        "is_third_party": false
+      },
+      {
+        "name": "M2M Journey Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Journey resources",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_JOURNEY_APP_SECRET>",
+        "id": "ca0c4izoo6dli4vko06g3"
+      },
+      {
         "name": "M2M Analytics API",
         "description": "Machine 2 Machine application used to communicate with the Analytics APIs",
         "type": "MachineToMachine",
@@ -457,12 +498,12 @@
         "is_third_party": false
       },
       {
-        "name": "M2M Public Servant Integrator Reader",
-        "description": "Machine 2 Machine application used to communicate between services and Integrator resources for public servant",
+        "name": "M2M Public Servant Journey Reader",
+        "description": "Machine 2 Machine application used to communicate between services and Journey Builder resources for public servant",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_PS_INTEGRATOR_APP_SECRET>",
+        "secret": "<SEEDER_M2M_PS_JOURNEY_APP_SECRET>",
         "id": "cn49p0bq3ulq6ncodwwio",
         "is_third_party": false
       },
@@ -529,9 +570,9 @@
         "indicator": "<SEEDER_OTEL_COLLECTOR_GRPC_INDICATOR>"
       },
       {
-        "id": "integrator-api",
-        "name": "Integrator Building Block API",
-        "indicator": "<SEEDER_INTEGRATOR_API_INDICATOR>"
+        "id": "journey-api",
+        "name": "Journey Building Block API",
+        "indicator": "<SEEDER_JOURNEY_API_INDICATOR>"
       },
       {
         "id": "o11y-dashboard",
@@ -596,8 +637,14 @@
         "specific_permissions": ["o11y:metrics:*"]
       },
       {
-        "resource_id": "integrator-api",
-        "specific_permissions": ["integrator:journey:read"]
+        "resource_id": "journey-api",
+        "specific_permissions": [
+          "journey:journey.public:read",
+          "journey:journey:read",
+          "journey:run.self:read",
+          "journey:run.self:write",
+          "journey:run:write"
+        ]
       },
       {
         "resource_id": "o11y-dashboard",
@@ -642,6 +689,14 @@
           {
             "resource_id": "upload-api",
             "specific_permissions": ["upload:file.self:read"]
+          },
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": [
+              "journey:journey.public:read",
+              "journey:run.self:read",
+              "journey:run.self:write"
+            ]
           }
         ]
       },
