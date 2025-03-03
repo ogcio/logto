@@ -4,6 +4,8 @@
 import { Applications } from '@logto/schemas';
 import { sql, type DatabaseTransactionConnection } from '@silverhand/slonik';
 
+import { consoleLog } from '../../../utils.js';
+
 import { type ApplicationSeeder } from './ogcio-seeder.js';
 import { createOrUpdateItem } from './queries.js';
 import { applyManagementApiRole } from './resources-rbac.js';
@@ -87,6 +89,8 @@ export const seedApplications = async (params: {
   const appsToCreate = fillApplications(params.applications);
   const queries: Array<Promise<void>> = [];
   for (const element of Object.values(appsToCreate)) {
+    const { secret, ...rest } = element;
+    consoleLog.info(rest);
     queries.push(setApplicationId(element, params.transaction, params.tenantId));
   }
 
