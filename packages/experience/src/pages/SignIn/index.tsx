@@ -20,6 +20,21 @@ import ErrorPage from '../ErrorPage';
 import Main from './Main';
 import styles from './index.module.scss';
 
+// OGIO
+const getCookieValue = (cookieName: string) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split('=');
+    if (!value) {
+      return;
+    }
+    if (name === cookieName) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
 const SignInFooters = () => {
   const { t } = useTranslation();
   const { termsValidation, agreeToTermsPolicy } = useTerms();
@@ -95,6 +110,21 @@ const SignIn = () => {
   const { signInMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
 
+  // OGCIO - used to filter the social connectors to show in the UI
+  const connectorsToShowCookie = getCookieValue('connectorsToShow');
+
+  const filteredSocialConnectors = [];
+  if (connectorsToShowCookie) {
+    const connectorsToShow = connectorsToShowCookie.split(',');
+    // eslint-disable-next-line @silverhand/fp/no-mutating-methods
+    filteredSocialConnectors.push(
+      ...socialConnectors.filter((connector) => connectorsToShow.includes(connector.id))
+    );
+  } else {
+    // eslint-disable-next-line @silverhand/fp/no-mutating-methods
+    filteredSocialConnectors.push(...socialConnectors);
+  }
+
   if (!signInMode) {
     return <ErrorPage />;
   }
@@ -107,7 +137,7 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
-        <Main signInMethods={signInMethods} socialConnectors={socialConnectors} />
+        <Main signInMethods={signInMethods} socialConnectors={filteredSocialConnectors} />
         <SignInFooters />
       </SingleSignOnFormModeContextProvider>
       {
