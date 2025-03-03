@@ -112,10 +112,13 @@ const SignIn = () => {
 
   // OGCIO - used to filter the social connectors to show in the UI
   const connectorsToShowCookie = getCookieValue('connectorsToShow');
+  console.log(connectorsToShowCookie);
 
   const filteredSocialConnectors = [];
   if (connectorsToShowCookie) {
     const connectorsToShow = connectorsToShowCookie.split(',');
+    console.log('connectorsToShow', connectorsToShow);
+
     // eslint-disable-next-line @silverhand/fp/no-mutating-methods
     filteredSocialConnectors.push(
       ...socialConnectors.filter((connector) => connectorsToShow.includes(connector.id))
@@ -124,6 +127,8 @@ const SignIn = () => {
     // eslint-disable-next-line @silverhand/fp/no-mutating-methods
     filteredSocialConnectors.push(...socialConnectors);
   }
+
+  console.log('filteredSocialConnectors', filteredSocialConnectors);
 
   if (!signInMode) {
     return <ErrorPage />;
@@ -137,6 +142,7 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
+        <h1>This is a test commit</h1>
         <Main signInMethods={signInMethods} socialConnectors={filteredSocialConnectors} />
         <SignInFooters />
       </SingleSignOnFormModeContextProvider>
