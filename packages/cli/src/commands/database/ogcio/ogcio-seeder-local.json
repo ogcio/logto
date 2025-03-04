@@ -7,6 +7,11 @@
         "id": "ogcio"
       },
       {
+        "name": "An Bord Pleanála",
+        "description": "An Bord Pleanála",
+        "id": "abp"
+      },
+      {
         "name": "Inactive Public Servants Org",
         "description": "Temporary organization for inactive Public Servants",
         "id": "inactive-ps-org"
@@ -156,9 +161,11 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "ogcio" },
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "abp" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
         ]
@@ -173,6 +180,7 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
         ]
@@ -185,6 +193,7 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "ogcio" },
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "abp" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" }
         ]
@@ -200,7 +209,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -212,7 +222,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -244,6 +255,7 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "abp" },
           { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "first-testing" },
           { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "second-testing" }
         ]
@@ -256,6 +268,7 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "ogcio" },
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "abp" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" }
         ]
@@ -272,6 +285,7 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" },
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "abp" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "first-testing" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" }
         ]
@@ -283,7 +297,8 @@
         "specific_permissions": ["o11y:metrics:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" },
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "abp" }
         ]
       },
       {
@@ -292,7 +307,8 @@
         "description": "Role to access as administrator observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:admin"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -301,7 +317,8 @@
         "description": "Role to access and edit observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:write"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -310,7 +327,8 @@
         "description": "Role to access  as viewer observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:read"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -326,7 +344,8 @@
         "type": "MachineToMachine",
         "specific_permissions": ["journey:journey:read"],
         "related_applications": [
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" },
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" }
         ]
       },
       {
@@ -337,6 +356,7 @@
         "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
         "related_applications": [
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" },
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "first-testing" },
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "second-testing" }
         ]
