@@ -111,24 +111,27 @@ const SignIn = () => {
   const { agreeToTermsPolicy } = useTerms();
 
   // OGCIO - used to filter the social connectors to show in the UI
-  const connectorsToShowCookie = getCookieValue('connectorsToShow');
-  console.log(connectorsToShowCookie);
+  // The main idea around this code is that we want to show by default only the MyGovId connector (therefore, hide the EntraID one)
+  // If we want to show the EntraID connector - or both connectors, we will leverage the connectorsToShow cookie
+  // E.g. connectorsToShow = "mygovid,ogcio-entraid" shows both connectors
+  // connectorsToShow = "ogcio-entraid" shows only the EntraID connector
 
-  const filteredSocialConnectors = [];
+  // IMPORTANT: In dev mode, the package "experience" is used, while in prod mode, the package "experience-legacy" is used
+  // Therefore, we have to copy the content of this file in both packages
+
+  const connectorsToShowCookie = getCookieValue('connectorsToShow');
+
+  // By default we hide the EntraID connector (the ID is defined in the seeder)
+  // eslint-disable-next-line @silverhand/fp/no-let
+  let filteredSocialConnectors = socialConnectors.filter((conn) => conn.id !== 'ogcio-entraid');
+
   if (connectorsToShowCookie) {
     const connectorsToShow = connectorsToShowCookie.split(',');
-    console.log('connectorsToShow', connectorsToShow);
-
-    // eslint-disable-next-line @silverhand/fp/no-mutating-methods
-    filteredSocialConnectors.push(
-      ...socialConnectors.filter((connector) => connectorsToShow.includes(connector.id))
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    filteredSocialConnectors = socialConnectors.filter((connector) =>
+      connectorsToShow.includes(connector.id)
     );
-  } else {
-    // eslint-disable-next-line @silverhand/fp/no-mutating-methods
-    filteredSocialConnectors.push(...socialConnectors);
   }
-
-  console.log('filteredSocialConnectors', filteredSocialConnectors);
 
   if (!signInMode) {
     return <ErrorPage />;
@@ -142,7 +145,6 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
-        <h1>This is a test commit</h1>
         <Main signInMethods={signInMethods} socialConnectors={filteredSocialConnectors} />
         <SignInFooters />
       </SingleSignOnFormModeContextProvider>
