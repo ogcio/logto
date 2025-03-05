@@ -7,6 +7,11 @@
         "id": "ogcio"
       },
       {
+        "name": "An Bord Pleanála",
+        "description": "An Bord Pleanála",
+        "id": "abp"
+      },
+      {
         "name": "Inactive Public Servants Org",
         "description": "Temporary organization for inactive Public Servants",
         "id": "inactive-ps-org"
@@ -146,7 +151,9 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" }
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
         ]
       },
       {
@@ -158,7 +165,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" }
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
         ]
       },
       {
@@ -168,7 +176,8 @@
         "specific_permissions": ["scheduler:jobs:write"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" }
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" },
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" }
         ]
       },
       {
@@ -182,7 +191,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -194,7 +204,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -204,7 +215,8 @@
         "specific_permissions": ["journey:journey.public:read"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "abp" }
         ]
       },
       {
@@ -214,7 +226,8 @@
         "specific_permissions": ["upload:file:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" }
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" }
         ]
       },
       {
@@ -224,7 +237,8 @@
         "specific_permissions": ["o11y:metrics:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" },
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "abp" }
         ]
       },
       {
@@ -233,7 +247,8 @@
         "description": "Role to access as administrator observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:admin"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -242,7 +257,8 @@
         "description": "Role to access and edit observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:write"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -251,7 +267,8 @@
         "description": "Role to access  as viewer observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:read"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -267,7 +284,8 @@
         "type": "MachineToMachine",
         "specific_permissions": ["journey:journey:read"],
         "related_applications": [
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" },
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" }
         ]
       },
       {
@@ -277,7 +295,8 @@
         "type": "MachineToMachine",
         "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
         "related_applications": [
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" }
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" }
         ]
       },
       {
@@ -291,7 +310,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" }
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" }
         ]
       }
     ],
