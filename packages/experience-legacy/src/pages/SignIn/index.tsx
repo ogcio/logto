@@ -123,7 +123,7 @@ const SignIn = () => {
 
   // By default we hide the EntraID connector (the ID is defined in the seeder)
   // eslint-disable-next-line @silverhand/fp/no-let
-  let filteredSocialConnectors = socialConnectors.filter((conn) => conn.id !== 'ogcio-entraid');
+  let filteredSocialConnectors = socialConnectors;
 
   if (connectorsToShowCookie) {
     const connectorsToShow = connectorsToShowCookie.split(',');
