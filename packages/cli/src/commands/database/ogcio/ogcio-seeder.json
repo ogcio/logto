@@ -220,6 +220,16 @@
         ]
       },
       {
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader",
+        "description": "Role for M2M Applications that need to read from Journey resources",
+        "specific_permissions": ["journey:journey.public:read"],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
+        ]
+      },
+      {
         "id": "m2m-ps-uploader",
         "name": "M2M Public Servant Uploader",
         "description": "Role for M2M Applications that need to interact with the Upload API",
