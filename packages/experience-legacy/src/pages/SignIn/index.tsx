@@ -111,9 +111,9 @@ const SignIn = () => {
   const { agreeToTermsPolicy } = useTerms();
 
   // OGCIO - used to filter the social connectors to show in the UI
-  // The main idea around this code is that we want to show by default only the MyGovId connector (therefore, hide the EntraID one)
-  // If we want to show the EntraID connector - or both connectors, we will leverage the connectorsToShow cookie
-  // E.g. connectorsToShow = "mygovid,ogcio-entraid" shows both connectors
+  // The main idea around this code is that we want to show by default both the MyGovId connector and the EntraID one
+  // If we want to show only the EntraID connector - or the MyGovId connector, we will leverage the connectorsToShow cookie
+  // E.g. connectorsToShow = "mygovid" shows only the MyGovId connector
   // connectorsToShow = "ogcio-entraid" shows only the EntraID connector
 
   // IMPORTANT: In dev mode, the package "experience" is used, while in prod mode, the package "experience-legacy" is used
@@ -121,7 +121,7 @@ const SignIn = () => {
 
   const connectorsToShowCookie = getCookieValue('connectorsToShow');
 
-  // By default we hide the EntraID connector (the ID is defined in the seeder)
+  // By default we show both providers
   // eslint-disable-next-line @silverhand/fp/no-let
   let filteredSocialConnectors = socialConnectors;
 
