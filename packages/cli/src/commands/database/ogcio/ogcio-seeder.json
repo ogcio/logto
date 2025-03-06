@@ -220,16 +220,6 @@
         ]
       },
       {
-        "id": "m2m-citiz-journey",
-        "name": "M2M Citizen Journey Reader",
-        "description": "Role for M2M Applications that need to read from Journey resources",
-        "specific_permissions": ["journey:journey.public:read"],
-        "type": "MachineToMachine",
-        "related_applications": [
-          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
-        ]
-      },
-      {
         "id": "m2m-ps-uploader",
         "name": "M2M Public Servant Uploader",
         "description": "Role for M2M Applications that need to interact with the Upload API",
@@ -775,6 +765,32 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["03jn5vm2pfh3a0433p4fp"]
+      },
+      {
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources",
+        "permissions": [
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey.public:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
+      },
+      {
+        "id": "m2m-ps-int-reader",
+        "name": "M2M Public Servant Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources with public servant privilege",
+        "permissions": [
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
       }
     ],
     "connectors": [
