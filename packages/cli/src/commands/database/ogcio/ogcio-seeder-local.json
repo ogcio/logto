@@ -66,7 +66,8 @@
         "journey:run:read",
         "journey:run:write",
         "dashboard:admin:read",
-        "dashboard:admin:write"
+        "dashboard:admin:write",
+        "formsie:submission:read"
       ]
     },
     "organization_roles": [
@@ -360,6 +361,14 @@
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "first-testing" },
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "second-testing" }
         ]
+      },
+      {
+        "id": "frm-public-servant",
+        "name": "FormsIE Admin Role",
+        "description": "Role for Applications that need access to the FormsIE service",
+        "specific_permissions": [
+          "formsie:submission:read"
+        ]
       }
     ],
     "applications": [
@@ -613,6 +622,16 @@
         "secret": "m2m_public_servant_payments_secret",
         "id": "6g85tgm0k3ch1p2vjnnq2",
         "is_third_party": false
+      },
+      {
+        "name": "FormsIE Admin",
+        "description": "The form manager admin App",
+        "type": "SPA",
+        "redirect_uri": "http://localhost:4000/admin/auth/callback",
+        "logout_redirect_uri": "http://localhost:4000",
+        "secret": "formsie_app_local_secret",
+        "id": "66q9ecmkup9najnzajium",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -665,6 +684,11 @@
         "id": "o11y-dashboard",
         "name": "Observability Dashboard Application",
         "indicator": "http://localhost:3010/"
+      },
+      {
+        "id": "submissions-api",
+        "name": "Forms Submissions API",
+        "indicator": "http://localhost:4000/"
       }
     ],
     "resource_permissions": [
@@ -740,6 +764,12 @@
             "o11y:dashboard:write",
             "o11y:dashboard:admin"
         ]
+      },
+      {
+        "resource_id": "submissions-api",
+        "specific_permissions": [
+          "formsie:submission:read"
+        ]
       }
     ],
     "resource_roles": [
@@ -785,6 +815,17 @@
               "journey:run.self:write"
             ]
           }
+        ]
+      },
+      {
+        "id": "frm-admin",
+        "name": "Forms Admin",
+        "description": "A forms Admin user",
+        "permissions": [
+          {
+            "resource_id": "submissions-api",
+            "specific_permissions": ["formsie:submission:read"]
+          }          
         ]
       },
       {
