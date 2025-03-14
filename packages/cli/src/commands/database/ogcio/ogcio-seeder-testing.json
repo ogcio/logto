@@ -391,6 +391,16 @@
         "is_third_party": false
       },
       {
+        "name": "Dashboard Admin",
+        "description": "Dashboard Admin for public servants",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_DASHBOARD_ADMIN_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_DASHBOARD_ADMIN_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_DASHBOARD_ADMIN_APP_SECRET>",
+        "id": "NXcalsHThisIIlxvnsWpY",
+        "is_third_party": false
+      },
+      {
         "name": "Life Events",
         "description": "Life Events App",
         "type": "Traditional",
