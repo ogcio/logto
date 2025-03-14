@@ -7,5 +7,5 @@ export const initLocalization = () =>
   configureLocalization({
     sourceLocale,
     targetLocales,
-    loadLocale: async (locale) => import(`/locales/${locale}.js`),
+    loadLocale: async (locale) => import(/* @vite-ignore */ `/locales/${locale}.js`),
   });
