@@ -363,7 +363,7 @@
         ]
       },
       {
-        "id": "frm-public-servant",
+        "id": "formsie-ps",
         "name": "FormsIE Admin Role",
         "description": "Role for Applications that need access to the FormsIE service",
         "specific_permissions": [
@@ -686,8 +686,8 @@
         "indicator": "http://localhost:3010/"
       },
       {
-        "id": "submissions-api",
-        "name": "Forms Submissions API",
+        "id": "formsie-sub-api",
+        "name": "FormsIE Submissions API",
         "indicator": "http://localhost:4000/"
       }
     ],
@@ -766,7 +766,7 @@
         ]
       },
       {
-        "resource_id": "submissions-api",
+        "resource_id": "formsie-sub-api",
         "specific_permissions": [
           "formsie:submission:read"
         ]
@@ -818,12 +818,12 @@
         ]
       },
       {
-        "id": "frm-admin",
-        "name": "Forms Admin",
-        "description": "A forms Admin user",
+        "id": "formsie-admin",
+        "name": "FormsIE Admin",
+        "description": "A FormsIE Admin user",
         "permissions": [
           {
-            "resource_id": "submissions-api",
+            "resource_id": "formsie-sub-api",
             "specific_permissions": ["formsie:submission:read"]
           }          
         ]
