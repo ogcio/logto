@@ -387,7 +387,7 @@
         "description": "Messaging App of Life Events",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3002/callback",
-        "logout_redirect_uri": "http://localhost:3002",
+        "logout_redirect_uri": ["http://localhost:3002", "http://localhost:3002/admin"],
         "secret": "messaging_app_local_secret",
         "id": "4695d8onfb9f3bv18phtq",
         "is_third_party": false
