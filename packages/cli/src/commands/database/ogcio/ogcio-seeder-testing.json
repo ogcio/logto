@@ -375,7 +375,7 @@
         "description": "Messaging App of Life Events",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_MESSAGING_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_MESSAGING_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": ["<SEEDER_MESSAGING_APP_LOGOUT_REDIRECT_URI>", "<SEEDER_MESSAGING_APP_ADMIN_LOGOUT_REDIRECT_URI>"],
         "secret": "<SEEDER_MESSAGING_APP_SECRET>",
         "id": "1lvmteh2ao3xrswyq7j3e",
         "is_third_party": false
