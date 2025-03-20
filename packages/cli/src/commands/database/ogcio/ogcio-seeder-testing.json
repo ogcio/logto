@@ -66,7 +66,8 @@
         "journey:run:read",
         "journey:run:write",
         "dashboard:admin:read",
-        "dashboard:admin:write"
+        "dashboard:admin:write",
+        "formsie:submission:read"
       ]
     },
     "organization_roles": [
@@ -357,6 +358,14 @@
           { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "first-testing" },
           { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "second-testing" }
         ]
+      },
+      {
+        "id": "formsie-ps",
+        "name": "FormsIE Admin Role",
+        "description": "Role for Applications that need access to the FormsIE service",
+        "specific_permissions": [
+          "formsie:submission:read"
+        ]
       }
     ],
     "applications": [
@@ -610,6 +619,16 @@
         "secret": "<SEEDER_M2M_MESSAGING_APP_SECRET>",
         "id": "k3wblfnr6h8b8x8l8nigt",
         "is_third_party": false
+      },
+      {
+        "name": "FormsIE Admin",
+        "description": "The form manager admin App",
+        "type": "SPA",
+        "redirect_uri": "http://localhost:4000/admin/auth/callback",
+        "logout_redirect_uri": "http://localhost:4000",
+        "secret": "<SEEDER_FORMSIE_APP_SECRET>",
+        "id": "66q9ecmkup9najnzajium",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -662,6 +681,11 @@
         "id": "o11y-dashboard",
         "name": "Observability Dashboard Application",
         "indicator": "https://grafana.observability.dev.blocks.gov.ie/"
+      },
+      {
+        "id": "formsie-sub-api",
+        "name": "FormsIE Submissions API",
+        "indicator": "<SEEDER_FORMSIE_SUBMISSIONS_API_INDICATOR>"
       }
     ],
     "resource_permissions": [
@@ -737,6 +761,12 @@
             "o11y:dashboard:write",
             "o11y:dashboard:admin"
         ]
+      },
+      {
+        "resource_id": "formsie-sub-api",
+        "specific_permissions": [
+          "formsie:submission:read"
+        ]
       }
     ],
     "resource_roles": [
@@ -782,6 +812,17 @@
               "journey:run.self:write"
             ]
           }
+        ]
+      },
+      {
+        "id": "formsie-admin",
+        "name": "FormsIE Admin",
+        "description": "A FormsIE Admin user",
+        "permissions": [
+          {
+            "resource_id": "formsie-sub-api",
+            "specific_permissions": ["formsie:submission:read"]
+          }          
         ]
       },
       {
