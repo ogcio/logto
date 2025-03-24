@@ -17,7 +17,7 @@ const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
 export const streamToString = (stream: fs.ReadStream): Promise<string> => {
   return new Promise((resolve, reject) => {
     let data = "";
-    
+
     stream.setEncoding("utf8");
     stream.on("data", (chunk) => data += chunk);
     stream.on("error", reject);
@@ -52,8 +52,8 @@ export const createMockSignedJwt = async (
     PublicServiceNumber: user.email,
     LastJourney: "Login",
     mobile: getRandomPhoneNumber(),
-    DSPOnlineLevel: "0",
-    DSPOnlineLevelStatic: "0",
+    DSPOnlineLevel: "2",
+    DSPOnlineLevelStatic: "2",
     givenName: user.firstName,
     surname: user.lastName,
     CustomerId: "532",
