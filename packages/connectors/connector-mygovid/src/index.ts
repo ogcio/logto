@@ -111,6 +111,12 @@ const getUserInfo =
         throw new ConnectorError(ConnectorErrorCodes.SocialIdTokenInvalid, result.error);
       }
 
+      if (result.data.DSPOnlineLevel < 2) {
+        throw new ConnectorError(ConnectorErrorCodes.AuthorizationFailed, {
+          reason: `SAFE was ${result.data.DSPOnlineLevel}, expected 2 or higher`,
+        });
+      }
+
       const {
         sub: id,
         firstName,
