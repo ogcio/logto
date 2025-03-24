@@ -111,9 +111,10 @@ const getUserInfo =
         throw new ConnectorError(ConnectorErrorCodes.SocialIdTokenInvalid, result.error);
       }
 
-      if ((result.data.DSPOnlineLevel ?? 0) < 2) {
+      const dspOnlineLevel = result.data.DSPOnlineLevel ?? 0;
+      if (dspOnlineLevel < 2) {
         throw new ConnectorError(ConnectorErrorCodes.AuthorizationFailed, {
-          reason: `SAFE was ${result.data.DSPOnlineLevel}, expected 2 or higher`,
+          reason: `SAFE (DSPOnlineLevel) was ${dspOnlineLevel}, expected 2 or higher`,
         });
       }
 
