@@ -632,6 +632,16 @@
         "secret": "formsie_app_local_secret",
         "id": "66q9ecmkup9najnzajium",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Messaging Partial",
+        "description": "Machine 2 Machine application used to retrieve a subset from a message, excluding sensitive information",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_messaging_partial_secret",
+        "id": "r6hl8xfn4vsumk5bj5xtu",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -710,7 +720,8 @@
           "messaging:citizen.self:write",
           "messaging:message:*",
           "messaging:template:*",
-          "messaging:citizen:*"
+          "messaging:citizen:*",
+          "messaging:message.partial:read"
         ]
       },
       {
@@ -933,6 +944,19 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
+      },
+      {
+        "id": "m2m-messaging-partial",
+        "name": "M2M Partial messaging",
+        "description": "Role used to make M2M applications get a partial subset of messages - used exlusively for secure messages in a profile link step",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": ["messaging:message.partial:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["r6hl8xfn4vsumk5bj5xtu"]
       }
     ],
     "connectors": [
