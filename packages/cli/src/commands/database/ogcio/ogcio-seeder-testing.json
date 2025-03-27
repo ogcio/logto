@@ -617,6 +617,16 @@
         "is_third_party": false
       },
       {
+        "name": "M2M Messaging Onboarding",
+        "description": "Machine 2 Machine application used to manage the Messaging link accounts flow",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_MESSAGING_ONBOARDING_APP_SECRET>",
+        "id": "hghygzydwvrv67j4hpmon",
+        "is_third_party": false
+      },
+      {
         "name": "FormsIE Admin",
         "description": "The form manager admin App",
         "type": "SPA",
@@ -700,7 +710,8 @@
           "messaging:message.self:read",
           "messaging:message.self:write",
           "messaging:message:*",
-          "messaging:template:*"
+          "messaging:template:*",
+          "messaging:message.onboarding:read"
         ]
       },
       {
@@ -876,6 +887,21 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["k3wblfnr6h8b8x8l8nigt"]
+      },
+      {
+        "id": "m2m-mes-onboarding",
+        "name": "M2M Messaging Onboarding",
+        "description": "Role used to be able to link accounts",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message.onboarding:read"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["hghygzydwvrv67j4hpmon"]
       },
       {
         "id": "m2m-e2e-profile",
