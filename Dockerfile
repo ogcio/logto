@@ -62,4 +62,4 @@ RUN apk add --no-cache jq && \
 USER 1000
 
 # OGCIO
-CMD [ "sh", "-c", "export ENCODED_PASSWORD=$(jq --slurp --raw-input --raw-output @uri <(printf \"%s\" $POSTGRES_PASSWORD)) && export DB_URL=\"postgres://$POSTGRES_USER:$ENCODED_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB_NAME\" && export REDIS_URL=\"redis://$REDIS_HOST:$REDIS_PORT\" && npm run ogcio:start"]
+CMD [ "sh", "-c", "export ENCODED_PASSWORD=$(jq --slurp --raw-input --raw-output @uri <(printf \"%s\" $POSTGRES_PASSWORD)) && export DB_URL=\"postgres://$POSTGRES_USER:$ENCODED_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB_NAME\" && npm run ogcio:start"]
