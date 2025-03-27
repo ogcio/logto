@@ -570,6 +570,16 @@
         "is_third_party": false
       },
       {
+        "name": "M2M Messaging Onboarding",
+        "description": "Machine 2 Machine application used to manage the Messaging link accounts flow",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "messaging_onboarding_local_secret",
+        "id": "hghygzydwvrv67j4hpmon",
+        "is_third_party": false
+      },
+      {
         "name": "M2M Open Telemetry Collector",
         "description": "Machine 2 Machine application used to communicate with the Otel Collector",
         "type": "MachineToMachine",
@@ -703,7 +713,8 @@
           "messaging:message.self:read",
           "messaging:message.self:write",
           "messaging:message:*",
-          "messaging:template:*"
+          "messaging:template:*",
+          "messaging:message.onboarding:read"
         ]
       },
       {
@@ -879,6 +890,21 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["ouhygzydwvrv67j4hpm9p"]
+      },
+      {
+        "id": "m2m-mes-onboarding",
+        "name": "M2M Messaging Onboarding",
+        "description": "Role used to be able to link accounts",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message.onboarding:read"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["hghygzydwvrv67j4hpmon"]
       },
       {
         "id": "m2m-e2e-profile",
