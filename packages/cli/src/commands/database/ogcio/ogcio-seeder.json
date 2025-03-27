@@ -34,7 +34,6 @@
         "messaging:message:*",
         "messaging:provider:*",
         "messaging:template:*",
-        "messaging:citizen:*",
         "messaging:event:read",
         "o11y:dashboard:read",
         "o11y:dashboard:write",
@@ -81,7 +80,6 @@
           "messaging:message:*",
           "messaging:provider:*",
           "messaging:template:*",
-          "messaging:citizen:*",
           "messaging:event:read",
           "scheduler:jobs:write",
           "profile:user:read"
@@ -306,8 +304,7 @@
         "description": "Role for M2M Applications that need to interact with the Messaging API",
         "specific_permissions": [
           "messaging:message:*",
-          "messaging:template:*",
-          "messaging:citizen:*"
+          "messaging:template:*"
         ],
         "type": "MachineToMachine",
         "related_applications": [
@@ -649,11 +646,8 @@
         "specific_permissions": [
           "messaging:message.self:read",
           "messaging:message.self:write",
-          "messaging:citizen.self:read",
-          "messaging:citizen.self:write",
           "messaging:message:*",
-          "messaging:template:*",
-          "messaging:citizen:*"
+          "messaging:template:*"
         ]
       },
       {
@@ -734,9 +728,7 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message.self:read",
-              "messaging:message.self:write",
-              "messaging:citizen.self:read",
-              "messaging:citizen.self:write"
+              "messaging:message.self:write"
             ]
           },
           {
@@ -809,8 +801,7 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message:*",
-              "messaging:template:*",
-              "messaging:citizen:*"
+              "messaging:template:*"
             ]
           }
         ],
