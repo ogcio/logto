@@ -17,7 +17,7 @@ const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
 export const streamToString = (stream: fs.ReadStream): Promise<string> => {
   return new Promise((resolve, reject) => {
     let data = "";
-
+    
     stream.setEncoding("utf8");
     stream.on("data", (chunk) => data += chunk);
     stream.on("error", reject);
