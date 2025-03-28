@@ -570,12 +570,12 @@
         "is_third_party": false
       },
       {
-        "name": "M2M Messaging Onboarding",
-        "description": "Machine 2 Machine application used to manage the Messaging link accounts flow",
+        "name": "M2M Onboarding",
+        "description": "Machine 2 Machine application used to manage the link accounts flow",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "messaging_onboarding_local_secret",
+        "secret": "onboarding_local_secret",
         "id": "hghygzydwvrv67j4hpmon",
         "is_third_party": false
       },
@@ -727,7 +727,8 @@
           "profile:user.self:read",
           "profile:user.self:write",
           "profile:user:read",
-          "profile:user:write"
+          "profile:user:write",
+          "profile:user.onboarding:read"
         ]
       },
       {
@@ -892,14 +893,20 @@
         "related_application_ids": ["ouhygzydwvrv67j4hpm9p"]
       },
       {
-        "id": "m2m-mes-onboarding",
-        "name": "M2M Messaging Onboarding",
+        "id": "m2m-onboarding",
+        "name": "M2M Onboarding",
         "description": "Role used to be able to link accounts",
         "permissions": [
           {
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message.onboarding:read"
+            ]
+          },
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.onboarding:read"
             ]
           }
         ],
