@@ -3,7 +3,6 @@
 trigger:
   - dev
   - uat
-  - sta
 
 pr:
   autoCancel: true
@@ -14,12 +13,12 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat"]
+    default: ["dev", "uat", 'prd']
 
   - name: validEnvironments
     type: object
     displayName: List of valid environments to deploy (do not change)
-    default: ['dev','sta', 'uat', 'prd']
+    default: ['dev', 'uat', 'prd']
 
 variables:
   - name: pushArtefacts
