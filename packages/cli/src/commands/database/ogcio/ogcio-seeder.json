@@ -658,7 +658,8 @@
           "messaging:message.self:write",
           "messaging:message:*",
           "messaging:template:*",
-          "messaging:message.onboarding:read"
+          "messaging:message.onboarding:read",
+          "profile:user.self:read"
         ]
       },
       {
@@ -740,7 +741,8 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message.self:read",
-              "messaging:message.self:write"
+              "messaging:message.self:write",
+              "profile:user.self:read"
             ]
           },
           {
