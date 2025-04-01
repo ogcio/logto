@@ -20,6 +20,21 @@ import ErrorPage from '../ErrorPage';
 import Main from './Main';
 import styles from './index.module.scss';
 
+// OGIO
+const getCookieValue = (cookieName: string) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split('=');
+    if (!value) {
+      return;
+    }
+    if (name === cookieName) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
 const SignInFooters = () => {
   const { t } = useTranslation();
   const { termsValidation, agreeToTermsPolicy } = useTerms();
@@ -95,6 +110,29 @@ const SignIn = () => {
   const { signInMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
 
+  // OGCIO - used to filter the social connectors to show in the UI
+  // The main idea around this code is that we want to show by default both the MyGovId connector and the EntraID one
+  // If we want to show only the EntraID connector - or the MyGovId connector, we will leverage the connectorsToShow cookie
+  // E.g. connectorsToShow = "mygovid" shows only the MyGovId connector
+  // connectorsToShow = "ogcio-entraid" shows only the EntraID connector
+
+  // IMPORTANT: In dev mode, the package "experience" is used, while in prod mode, the package "experience-legacy" is used
+  // Therefore, we have to copy the content of this file in both packages
+
+  const connectorsToShowCookie = getCookieValue('connectorsToShow');
+
+  // By default we show both providers
+  // eslint-disable-next-line @silverhand/fp/no-let
+  let filteredSocialConnectors = socialConnectors;
+
+  if (connectorsToShowCookie) {
+    const connectorsToShow = connectorsToShowCookie.split(',');
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    filteredSocialConnectors = socialConnectors.filter((connector) =>
+      connectorsToShow.includes(connector.id)
+    );
+  }
+
   if (!signInMode) {
     return <ErrorPage />;
   }
@@ -107,7 +145,7 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
-        <Main signInMethods={signInMethods} socialConnectors={socialConnectors} />
+        <Main signInMethods={signInMethods} socialConnectors={filteredSocialConnectors} />
         <SignInFooters />
       </SingleSignOnFormModeContextProvider>
       {

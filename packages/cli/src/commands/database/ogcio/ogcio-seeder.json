@@ -7,6 +7,11 @@
         "id": "ogcio"
       },
       {
+        "name": "An Bord Pleanála",
+        "description": "An Bord Pleanála",
+        "id": "abp"
+      },
+      {
         "name": "Inactive Public Servants Org",
         "description": "Temporary organization for inactive Public Servants",
         "id": "inactive-ps-org"
@@ -29,7 +34,6 @@
         "messaging:message:*",
         "messaging:provider:*",
         "messaging:template:*",
-        "messaging:citizen:*",
         "messaging:event:read",
         "o11y:dashboard:read",
         "o11y:dashboard:write",
@@ -51,7 +55,8 @@
         "journey:run:read",
         "journey:run:write",
         "dashboard:admin:read",
-        "dashboard:admin:write"
+        "dashboard:admin:write",
+        "formsie:submission:read"
       ]
     },
     "organization_roles": [
@@ -75,7 +80,6 @@
           "messaging:message:*",
           "messaging:provider:*",
           "messaging:template:*",
-          "messaging:citizen:*",
           "messaging:event:read",
           "scheduler:jobs:write",
           "profile:user:read"
@@ -146,7 +150,9 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" }
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
         ]
       },
       {
@@ -158,7 +164,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" }
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
         ]
       },
       {
@@ -168,7 +175,8 @@
         "specific_permissions": ["scheduler:jobs:write"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" }
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" },
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" }
         ]
       },
       {
@@ -182,7 +190,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -194,7 +203,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
         ]
       },
       {
@@ -204,7 +214,8 @@
         "specific_permissions": ["journey:journey.public:read"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" }
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "abp" }
         ]
       },
       {
@@ -214,7 +225,8 @@
         "specific_permissions": ["upload:file:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" }
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" }
         ]
       },
       {
@@ -224,7 +236,8 @@
         "specific_permissions": ["o11y:metrics:*"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" }
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" },
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "abp" }
         ]
       },
       {
@@ -233,7 +246,8 @@
         "description": "Role to access as administrator observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:admin"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -242,7 +256,8 @@
         "description": "Role to access and edit observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:write"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -251,7 +266,8 @@
         "description": "Role to access  as viewer observability dashboard applications",
         "specific_permissions": ["o11y:dashboard:read"],
         "related_applications": [
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
         ]
       },
       {
@@ -267,7 +283,8 @@
         "type": "MachineToMachine",
         "specific_permissions": ["journey:journey:read"],
         "related_applications": [
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" }
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" },
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" }
         ]
       },
       {
@@ -277,7 +294,8 @@
         "type": "MachineToMachine",
         "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
         "related_applications": [
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" }
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" }
         ]
       },
       {
@@ -286,12 +304,20 @@
         "description": "Role for M2M Applications that need to interact with the Messaging API",
         "specific_permissions": [
           "messaging:message:*",
-          "messaging:template:*",
-          "messaging:citizen:*"
+          "messaging:template:*"
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" }
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" }
+        ]
+      },
+      {
+        "id": "formsie-ps",
+        "name": "FormsIE Admin Role",
+        "description": "Role for Applications that need access to the FormsIE service",
+        "specific_permissions": [
+          "formsie:submission:read"
         ]
       }
     ],
@@ -311,7 +337,7 @@
         "description": "Messaging App of Life Events",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_MESSAGING_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_MESSAGING_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": ["<SEEDER_MESSAGING_APP_LOGOUT_REDIRECT_URI>", "<SEEDER_MESSAGING_APP_ADMIN_LOGOUT_REDIRECT_URI>"],
         "secret": "<SEEDER_MESSAGING_APP_SECRET>",
         "id": "1lvmteh2ao3xrswyq7j3e",
         "is_third_party": false
@@ -324,6 +350,16 @@
         "logout_redirect_uri": "<SEEDER_DASHBOARD_APP_LOGOUT_REDIRECT_URI>",
         "secret": "<SEEDER_DASHBOARD_APP_SECRET>",
         "id": "kti441l5vjcjyenbn8f6f",
+        "is_third_party": false
+      },
+      {
+        "name": "Dashboard Admin",
+        "description": "Dashboard Admin for public servants",
+        "type": "Traditional",
+        "redirect_uri": "<SEEDER_DASHBOARD_ADMIN_APP_REDIRECT_URI>",
+        "logout_redirect_uri": "<SEEDER_DASHBOARD_ADMIN_APP_LOGOUT_REDIRECT_URI>",
+        "secret": "<SEEDER_DASHBOARD_ADMIN_APP_SECRET>",
+        "id": "NXcalsHThisIIlxvnsWpY",
         "is_third_party": false
       },
       {
@@ -526,6 +562,26 @@
         "secret": "<SEEDER_M2M_MESSAGING_APP_SECRET>",
         "id": "03jn5vm2pfh3a0433p4fp",
         "is_third_party": false
+      },
+      {
+        "name": "M2M Onboarding",
+        "description": "Machine 2 Machine application used to manage the link accounts flow",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_MESSAGING_ONBOARDING_APP_SECRET>",
+        "id": "hghygzydwvrv67j4hpmon",
+        "is_third_party": false
+      },
+      {
+        "name": "FormsIE Admin",
+        "description": "The form manager admin App",
+        "type": "SPA",
+        "redirect_uri": "http://localhost:4000/admin/auth/callback",
+        "logout_redirect_uri": "http://localhost:4000",
+        "secret": "<SEEDER_FORMSIE_APP_SECRET>",
+        "id": "66q9ecmkup9najnzajium",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -578,6 +634,11 @@
         "id": "o11y-dashboard",
         "name": "Observability Dashboard Application",
         "indicator": "<SEEDER_O11Y_DASHBOARD_APP_INDICATOR>"
+      },
+      {
+        "id": "formsie-sub-api",
+        "name": "FormsIE Submissions API",
+        "indicator": "<SEEDER_FORMSIE_SUBMISSIONS_API_INDICATOR>"
       }
     ],
     "resource_permissions": [
@@ -595,11 +656,10 @@
         "specific_permissions": [
           "messaging:message.self:read",
           "messaging:message.self:write",
-          "messaging:citizen.self:read",
-          "messaging:citizen.self:write",
           "messaging:message:*",
           "messaging:template:*",
-          "messaging:citizen:*"
+          "messaging:message.onboarding:read",
+          "profile:user.self:read"
         ]
       },
       {
@@ -612,7 +672,8 @@
           "profile:user.self:read",
           "profile:user.self:write",
           "profile:user:read",
-          "profile:user:write"
+          "profile:user:write",
+          "profile:user.onboarding:read"
         ]
       },
       {
@@ -653,6 +714,12 @@
             "o11y:dashboard:write",
             "o11y:dashboard:admin"
         ]
+      },
+      {
+        "resource_id": "formsie-sub-api",
+        "specific_permissions": [
+          "formsie:submission:read"
+        ]
       }
     ],
     "resource_roles": [
@@ -675,8 +742,7 @@
             "specific_permissions": [
               "messaging:message.self:read",
               "messaging:message.self:write",
-              "messaging:citizen.self:read",
-              "messaging:citizen.self:write"
+              "profile:user.self:read"
             ]
           },
           {
@@ -698,6 +764,17 @@
               "journey:run.self:write"
             ]
           }
+        ]
+      },
+      {
+        "id": "formsie-admin",
+        "name": "FormsIE Admin",
+        "description": "A FormsIE Admin user",
+        "permissions": [
+          {
+            "resource_id": "formsie-sub-api",
+            "specific_permissions": ["formsie:submission:read"]
+          }          
         ]
       },
       {
@@ -738,13 +815,59 @@
             "resource_id": "messaging-api",
             "specific_permissions": [
               "messaging:message:*",
-              "messaging:template:*",
-              "messaging:citizen:*"
+              "messaging:template:*"
             ]
           }
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["03jn5vm2pfh3a0433p4fp"]
+      },
+      {
+        "id": "m2m-onboarding",
+        "name": "M2M Onboarding",
+        "description": "Role used to be able to link accounts",
+        "permissions": [
+          {
+            "resource_id": "messaging-api",
+            "specific_permissions": [
+              "messaging:message.onboarding:read"
+            ]
+          },
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": [
+              "profile:user.onboarding:read"
+            ]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["hghygzydwvrv67j4hpmon"]
+      },
+      {
+        "id": "m2m-citiz-journey",
+        "name": "M2M Citizen Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources",
+        "permissions": [
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey.public:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
+      },
+      {
+        "id": "m2m-ps-int-reader",
+        "name": "M2M Public Servant Journey Reader role",
+        "description": "Role used to make M2M applications able to read from journey resources with public servant privilege",
+        "permissions": [
+          {
+            "resource_id": "journey-api",
+            "specific_permissions": ["journey:journey:read"]
+          }
+        ],
+        "type": "MachineToMachine",
+        "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
       }
     ],
     "connectors": [
@@ -812,7 +935,10 @@
           "identifiers": []
         },
         "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)", "OGCIO EntraID"],
-        "sign_in_mode": "SignInAndRegister"
+        "sign_in_mode": "SignInAndRegister",
+        "agree_to_terms_policy": "Automatic",
+        "privacy_policy_url": "<SEEDER_PROFILE_PRIVACY_POLICY_URL>",
+        "terms_of_use_url": "<SEEDER_PROFILE_TERMS_OF_USE_URL>"
       }
     ],
     "webhooks": [

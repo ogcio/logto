@@ -27,6 +27,7 @@ export const myGovIdTokenProfileStandardClaimsGuard = z.object({
   nonce: z.string().nullish(),
   surname: z.string().nullish(),
   givenName: z.string().nullish(),
+  DSPOnlineLevel: z.string().nullish(),
 });
 
 export const userProfileGuard = z.object({
