@@ -106,6 +106,9 @@ export type SignInExperienceSeeder = {
   };
   social_sign_in_connector_targets: string[];
   sign_in_mode: string;
+  agree_to_terms_policy: string;
+  privacy_policy_url: string;
+  terms_of_use_url: string;
 };
 
 export type ResourcePermissionSeeder = {

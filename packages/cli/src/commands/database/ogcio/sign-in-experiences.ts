@@ -23,6 +23,7 @@ type SeedingExperience = {
   sign_in_mode: string;
   terms_of_use_url?: string;
   privacy_policy_url?: string;
+  agree_to_terms_policy?: string;
   custom_css?: string;
   custom_content?: string;
   password_policy?: string;
@@ -84,6 +85,9 @@ const fillExperiences = (inputExperiences: SignInExperienceSeeder[]): SeedingExp
     sign_up: JSON.stringify(experience.sign_up),
     social_sign_in_connector_targets: JSON.stringify(experience.social_sign_in_connector_targets),
     sign_in_mode: experience.sign_in_mode,
+    privacy_policy_url: experience.privacy_policy_url,
+    terms_of_use_url: experience.terms_of_use_url,
+    agree_to_terms_policy: experience.agree_to_terms_policy,
   }));
 };
 
