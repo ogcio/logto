@@ -13,12 +13,12 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "uat", 'prd']
+    default: ["dev", "uat", 'prod']
 
   - name: validEnvironments
     type: object
     displayName: List of valid environments to deploy (do not change)
-    default: ['dev', 'uat', 'prd']
+    default: ['dev', 'uat', 'prod']
 
 variables:
   - name: pushArtefacts
