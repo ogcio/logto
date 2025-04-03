@@ -49,6 +49,8 @@
         "profile:user:write",
         "profile:user:*",
         "profile:user.admin:*",
+        "profile:user.self:read",
+        "profile:user.self:write",
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
@@ -79,7 +81,9 @@
           "payments:payment_request:*",
           "payments:payment_request.public:read",
           "payments:transaction:*",
-          "scheduler:jobs:write"
+          "scheduler:jobs:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
@@ -92,7 +96,9 @@
           "messaging:template:*",
           "messaging:event:read",
           "scheduler:jobs:write",
-          "profile:user:read"
+          "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
@@ -101,14 +107,20 @@
         "description": "Dashboard Public servant",
         "specific_permissions": [
           "dashboard:admin:read",
-          "dashboard:admin:write"
+          "dashboard:admin:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
         "id": "le-public-servant",
         "name": "Life Events Public Servant",
         "description": "Life Events Public servant",
-        "specific_permissions": ["life-events:digital-wallet-flow:*"]
+        "specific_permissions": [
+          "life-events:digital-wallet-flow:*",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "pro-public-servant",
@@ -138,13 +150,24 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*", "profile:user:read"]
+        "specific_permissions": [
+          "upload:file:*", "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "int-public-servant",
         "name": "Journey Public Servant",
         "description": "Journey Public servant",
-        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
+        "specific_permissions": [
+          "journey:journey:*",
+          "journey:step:*",
+          "journey:run:read",
+          "journey:run:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "bb-inactive-ps",
