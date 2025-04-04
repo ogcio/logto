@@ -104,6 +104,8 @@ PORT=3301
 # OGCIO Config
 MOCK_TOKEN_ENDPOINT=http://localhost:4005/logto/mock/token
 MOCK_KEYS_ENDPOINT=http://localhost:4005/logto/mock/keys
+ALLOWED_ENTRAID_TIDS=ogcio-tid
+
 ```
 2. Run the makefile command
 ```

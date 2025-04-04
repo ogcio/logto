@@ -27,6 +27,7 @@ services:
       - ADMIN_PORT=3302
       - MOCK_TOKEN_ENDPOINT=http://mygovid-mock-service:4005/logto/mock/token
       - MOCK_KEYS_ENDPOINT=http://mygovid-mock-service:4005/logto/mock/keys
+      - ALLOWED_ENTRAID_TIDS=ogcio-tid
       
   postgres:
     image: postgres:14-alpine
