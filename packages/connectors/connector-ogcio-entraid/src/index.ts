@@ -86,7 +86,8 @@ const getAccessToken = async (config: AzureADConfig, code: string, redirectUri: 
   if (!process.env.ALLOWED_ENTRAID_TIDS) {
     throw new ConnectorError(ConnectorErrorCodes.General, 'allowed entraid tids not set');
   }
-  if (!process.env.ALLOWED_ENTRAID_TIDS.includes(authResult.tenantId)) {
+  const allowedTIds = process.env.ALLOWED_ENTRAID_TIDS.split(',');
+  if (!allowedTIds.includes(authResult.tenantId)) {
     throw new ConnectorError(ConnectorErrorCodes.AuthorizationFailed, 'tenant id not allowed');
   }
 
