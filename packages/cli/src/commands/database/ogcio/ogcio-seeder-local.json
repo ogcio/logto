@@ -1084,6 +1084,31 @@
           { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
           { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
         ]
+      },
+      {
+        "id": "e2e-cit-1",
+        "username": "e2e_citizen_user_1",
+        "primary_email": "e2e_citizen_1@user.com",
+        "primary_phone": "+21312666199",
+        "name": "E2E Citizen User",
+        "application_id": "4695d8onfb9f3bv18phtq",
+        "resource_role_ids": ["bb-citizen"],
+        "ppsn": "E2E_CITIZEN_USER_1",
+        "related_organizations": []
+      },
+      {
+        "id": "e2e-ps-1",
+        "username": "e2e_ps_user_1",
+        "primary_email": "e2e_ps_1@user.com",
+        "primary_phone": "+21432666999",
+        "name": "E2E PublicServant User",
+        "application_id": "4695d8onfb9f3bv18phtq",
+        "ppsn": "E2E_PS_USER_1",
+        "resource_role_ids": [],
+        "related_organizations": [
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "second-testing" }
+        ]
       }
     ],
     "raw_queries": [
