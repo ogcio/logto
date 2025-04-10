@@ -27,10 +27,14 @@
         "analytics:website:write",
         "analytics:website:tracking",
         "analytics:audit_log:read",
+        "payments:provider:read",
         "payments:provider:*",
+        "payments:payment_request:read",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
+        "payments:transaction:read",
         "payments:transaction:*",
+        "payments:auditLog:read",
         "messaging:message:*",
         "messaging:provider:*",
         "messaging:template:*",
@@ -73,7 +77,21 @@
           "payments:transaction:*",
           "scheduler:jobs:write",
           "profile:user.self:read",
-          "profile:user.self:write"
+          "profile:user.self:write",
+          "payments:auditLog:read"
+        ]
+      },
+      {
+        "id": "pay-read-only",
+        "name": "Payments Read-Only",
+        "description": "Payments Read-Only",
+        "specific_permissions": [
+          "payments:provider:read",
+          "payments:payment_request:read",
+          "payments:payment_request.public:read",
+          "payments:transaction:read",
+          "profile:user.self:read",
+          "payments:auditLog:read"
         ]
       },
       {
