@@ -25,6 +25,31 @@
         "name": "Second Testing Organisation",
         "description": "Organisation used to do E2E testing",
         "id": "second-testing"
+      },
+      {
+        "name": "Health Service Executive",
+        "description": "Health Service Executive - Imported from Digital Postbox",
+        "id": "hse"
+      },
+      {
+        "name": "Department of Social Protection",
+        "description": "Department of Social Protection - Imported from Digital Postbox",
+        "id": "dsp"
+      },
+      {
+        "name": "Dept. of Education/An Roinn Oideachais",
+        "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
+        "id": "doe"
+      },
+      {
+        "name": "Limerick City and County Council",
+        "description": "Limerick City and County Council - Imported from Digital Postbox",
+        "id": "lcc"
+      },
+      {
+        "name": "Messaging Test",
+        "description": "Messaging Test - Imported from Digital Postbox",
+        "id": "msg-dp"
       }
     ],
     "organization_permissions": {
@@ -190,7 +215,12 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -205,7 +235,12 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -292,7 +327,12 @@
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "ogcio" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "abp" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
-          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" }
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -308,7 +348,12 @@
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "abp" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "first-testing" },
-          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" }
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -661,6 +706,16 @@
         "logout_redirect_uri": "http://localhost:4000",
         "secret": "formsie_app_local_secret",
         "id": "66q9ecmkup9najnzajium",
+        "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Proxy",
+        "description": "Machine 2 Machine application used by the digital postbox proxy",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_digital_postbox_secret",
+        "id": "r58qdwh2da6qtsqb2u5u3",
         "is_third_party": false
       }
     ],
