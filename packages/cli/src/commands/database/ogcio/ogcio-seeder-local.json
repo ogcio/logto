@@ -397,7 +397,10 @@
         "description": "Payments App of Life Events",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3001/callback",
-        "logout_redirect_uri": "http://localhost:3001",
+        "logout_redirect_uri": [
+          "http://localhost:3001",
+          "http://localhost:3001/login/admin"
+        ],
         "secret": "payments_app_local_secret",
         "id": "2xz6sbi8ch01uhjt1oq8r",
         "is_third_party": false
@@ -549,7 +552,10 @@
         "description": "Journey App for Building Block",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3009/callback",
-        "logout_redirect_uri": "http://localhost:3009",
+        "logout_redirect_uri": [
+          "http://localhost:3009",
+          "http://localhost:3009/login/admin"
+        ],
         "secret": "journey_app_local_secret",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
