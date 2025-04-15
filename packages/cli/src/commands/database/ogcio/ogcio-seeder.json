@@ -351,7 +351,10 @@
         "description": "Payments App of Life Events",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_PAYMENTS_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": [
+          "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>",
+          "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>/login/admin"
+        ],
         "secret": "<SEEDER_PAYMENTS_APP_SECRET>",
         "id": "r5f56tpkytpqyyshiutd2",
         "is_third_party": false
@@ -493,7 +496,10 @@
         "description": "Journey Builder App for Building Block",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_JOURNEY_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": [
+          "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+          "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>/login/admin"
+        ],
         "secret": "<SEEDER_JOURNEY_APP_SECRET>",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
