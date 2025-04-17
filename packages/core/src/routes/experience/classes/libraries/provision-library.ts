@@ -19,6 +19,7 @@ import { generateStandardId } from '@logto/shared';
 import { conditional, conditionalArray, trySafe } from '@silverhand/essentials';
 
 import { EnvSet } from '#src/env-set/index.js';
+import { manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
 import type TenantContext from '#src/tenants/TenantContext.js';
 import { getConsoleLogFromContext } from '#src/utils/console.js';
 import { buildAppInsightsTelemetry } from '#src/utils/request.js';
@@ -55,7 +56,15 @@ export class ProvisionLibrary {
       libraries: {
         users: { generateUserId, insertUser },
       },
-      queries: { userSsoIdentities: userSsoIdentitiesQueries },
+      queries: {
+        userSsoIdentities: userSsoIdentitiesQueries,
+        // OGCIO,
+        organizations,
+        // OGCIO
+        roles,
+        // OGCIO
+        usersRoles,
+      },
     } = this.tenantContext;
 
     const { socialIdentity, enterpriseSsoIdentity, ...rest } = profile;
@@ -91,6 +100,14 @@ export class ProvisionLibrary {
     // TODO: log
 
     this.triggerAnalyticReports(user);
+
+    // OGCIO
+    await manageDefaultUserRole(
+      user,
+      roles.findRoleById,
+      usersRoles.insertUsersRoles,
+      organizations
+    );
 
     return user;
   }
