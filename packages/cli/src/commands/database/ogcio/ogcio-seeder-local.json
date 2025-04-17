@@ -215,12 +215,7 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
         ]
       },
       {
@@ -235,7 +230,18 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "m2m-ps-profile-admin",
+        "name": "M2M Public Servant Profile Admin",
+        "description": "Role for M2M Applications that need to act as a profile admin",
+        "specific_permissions": [
+          "profile:user.admin:*"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
