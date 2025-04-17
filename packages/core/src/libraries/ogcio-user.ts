@@ -13,7 +13,7 @@ import { type QueryResult, type QueryResultRow } from '@silverhand/slonik';
 import type OrganizationQueries from '#src/queries/organization/index.js';
 
 import {
-  OGCIO_ENTRA_ID_ENTITY,
+  OGCIO_ENTRA_ID_IDENTITY,
   OGCIO_MY_GOV_ID_IDENTITY,
   OGCIO_ORGANIZATION_ROLES,
   OGCIO_ORGANIZATIONS,
@@ -99,7 +99,7 @@ export const manageDefaultUserRole = async (
 
   const identities = getUserIdentities(user);
 
-  if (identities.includes(OGCIO_ENTRA_ID_ENTITY)) {
+  if (identities.includes(OGCIO_ENTRA_ID_IDENTITY)) {
     return assignInactivePublicServantRole(user, organizationQueries);
   }
   if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY)) {
