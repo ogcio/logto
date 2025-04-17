@@ -289,7 +289,8 @@
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "ogcio" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "abp" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
-          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" }
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -304,7 +305,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -479,12 +481,7 @@
         "specific_permissions": ["profile:user.admin:write", "profile:user.admin:read"],
         "related_applications": [
           { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "ogcio" },
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "abp" },
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "hse"},
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "dsp"},
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"},
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "lcc"},
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "msg-dp"}
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       }
     ],
@@ -1105,19 +1102,6 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
-      },
-      {
-        "id": "m2m-prf-import",
-        "name": "M2M Profile Import",
-        "description": "Role used to make M2M applications able to import profiles",
-        "permissions": [
-          {
-            "resource_id": "profile-api",
-            "specific_permissions": ["profile:user.admin:write", "profile:user.admin:read"]
-          }
-        ],
-        "type": "MachineToMachine",
-        "related_application_ids": ["v32qmzp9x7lh5f8kwe6ut"]
       }
     ],
     "connectors": [
