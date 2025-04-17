@@ -14,4 +14,4 @@ export const OGCIO_ROLES = {
 };
 
 export const OGCIO_MY_GOV_ID_IDENTITY = 'MyGovId (MyGovId connector)';
-export const OGCIO_ENTRA_ID_ENTITY = 'OGCIO EntraID';
+export const OGCIO_ENTRA_ID_IDENTITY = 'OGCIO EntraID';
