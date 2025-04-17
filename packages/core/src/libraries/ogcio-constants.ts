@@ -12,3 +12,6 @@ export const OGCIO_ORGANIZATION_ROLES = {
 export const OGCIO_ROLES = {
   BB_CITIZEN: 'bb-citizen',
 };
+
+export const OGCIO_MY_GOV_ID_IDENTITY = 'MyGovId (MyGovId connector)';
+export const OGCIO_ENTRA_ID_ENTITY = 'OGCIO EntraID';
