@@ -31,6 +31,24 @@ import {
 // eslint-disable-next-line @silverhand/fp/no-let
 let authCodeRequest: AuthorizationCodeRequest;
 
+const decodeJwtPayload = (accessToken: string): Record<string, string> => {
+  const payloadB64 = accessToken.split('.')[1];
+  if (!payloadB64) {
+    throw new ConnectorError(ConnectorErrorCodes.SocialAccessTokenInvalid, 'Invalid JWT format');
+  }
+
+  const json = Buffer.from(payloadB64, 'base64').toString('utf8');
+  const parsed: unknown = JSON.parse(json);
+  if (typeof parsed !== 'object' || parsed === null) {
+    throw new ConnectorError(
+      ConnectorErrorCodes.SocialAccessTokenInvalid,
+      'JWT payload is not a JSON object'
+    );
+  }
+
+  return { ...parsed };
+};
+
 const getAuthorizationUri =
   (getConfig: GetConnectorConfig): GetAuthorizationUri =>
   async ({ state, redirectUri }) => {
@@ -121,7 +139,10 @@ const getUserInfo =
         },
         timeout: { request: defaultTimeout },
       });
-      const rawData = parseJson(httpResponse.body);
+
+      const payload = decodeJwtPayload(accessToken);
+      const extendedBodyWithTId = httpResponse.body.split('}')[0] + `,"tid":"${payload.tid}"}`;
+      const rawData = parseJson(extendedBodyWithTId);
       const result = userInfoResponseGuard.safeParse(rawData);
 
       if (!result.success) {
