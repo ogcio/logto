@@ -1,4 +1,3 @@
-import { consoleLog } from '@logto/cli/lib/utils.js';
 import phrases from '@logto/phrases';
 import {
   type CreateUsersRole,
@@ -11,6 +10,9 @@ import { generateStandardId } from '@logto/shared';
 import { type QueryResult, type QueryResultRow } from '@silverhand/slonik';
 
 import type OrganizationQueries from '#src/queries/organization/index.js';
+
+import { type WithHooksAndLogsContext } from '../routes/experience/types.js';
+import { getConsoleLogFromContext } from '../utils/console.js';
 
 import {
   OGCIO_ENTRA_ID_IDENTITY,
@@ -25,21 +27,33 @@ const assignCitizenRole = async (
   getRoles: (id: string) => Promise<Role>,
   insertUsersRoles: (
     usersRoles: CreateUsersRole[]
-  ) => Promise<QueryResult<QueryResultRow> | undefined>
+  ) => Promise<QueryResult<QueryResultRow> | undefined>,
+  ctx: WithHooksAndLogsContext
 ) => {
-  const userRole = await getRoles(OGCIO_ROLES.BB_CITIZEN);
+  try {
+    const userRole = await getRoles(OGCIO_ROLES.BB_CITIZEN);
 
-  return insertUsersRoles([
-    {
-      tenantId: user.tenantId,
-      id: generateStandardId(),
-      userId: user.id,
-      roleId: userRole.id,
-    },
-  ]);
+    return await insertUsersRoles([
+      {
+        tenantId: user.tenantId,
+        id: generateStandardId(),
+        userId: user.id,
+        roleId: userRole.id,
+      },
+    ]);
+  } catch (error) {
+    getConsoleLogFromContext(ctx).error(
+      `OGCIO: User registration - Citizen role with ID ${OGCIO_ROLES.BB_CITIZEN} couldn't be assigned to the user`,
+      error
+    );
+  }
 };
 
-const assignUserToOrganization = async (user: User, organizationQueries: OrganizationQueries) => {
+const assignUserToOrganization = async (
+  user: User,
+  organizationQueries: OrganizationQueries,
+  ctx: WithHooksAndLogsContext
+) => {
   try {
     const organization = await organizationQueries.findById(OGCIO_ORGANIZATIONS.INACTIVE_PS);
     await organizationQueries.relations.users.insert({
@@ -47,38 +61,53 @@ const assignUserToOrganization = async (user: User, organizationQueries: Organiz
       userId: user.id,
     });
     return organization;
-  } catch {
-    consoleLog.error(phrases.en.errors.entity.not_exists_with_id);
+  } catch (error) {
+    getConsoleLogFromContext(ctx).error(
+      `OGCIO: User registration - ${phrases.en.errors.entity.not_exists_with_id}`,
+      error
+    );
   }
 };
 
 const assignOrganizationRoleToUser = async (
   user: User,
   organization: Organization,
-  organizationQueries: OrganizationQueries
+  organizationQueries: OrganizationQueries,
+  ctx: WithHooksAndLogsContext
 ) => {
-  const publicServantRole = await organizationQueries.roles.findById(
-    OGCIO_ORGANIZATION_ROLES.INACTIVE_PUBLIC_SERVANT
-  );
+  try {
+    const publicServantRole = await organizationQueries.roles.findById(
+      OGCIO_ORGANIZATION_ROLES.INACTIVE_PUBLIC_SERVANT
+    );
 
-  await organizationQueries.relations.usersRoles.insert({
-    organizationId: organization.id,
-    organizationRoleId: publicServantRole.id,
-    userId: user.id,
-  });
+    await organizationQueries.relations.usersRoles.insert({
+      organizationId: organization.id,
+      organizationRoleId: publicServantRole.id,
+      userId: user.id,
+    });
+  } catch (error) {
+    getConsoleLogFromContext(ctx).error(
+      `OGCIO: User registration - Inactive Public Servant role with ID ${OGCIO_ORGANIZATION_ROLES.INACTIVE_PUBLIC_SERVANT} couldn't be assigned to the user`,
+      error
+    );
+  }
 };
 
 const assignInactivePublicServantRole = async (
   user: User,
-  organizationQueries: OrganizationQueries
+  organizationQueries: OrganizationQueries,
+  ctx: WithHooksAndLogsContext
 ) => {
-  const organization = await assignUserToOrganization(user, organizationQueries);
+  const organization = await assignUserToOrganization(user, organizationQueries, ctx);
 
   if (!organization) {
+    getConsoleLogFromContext(ctx).error(
+      `OGCIO: User registration - user couldn't be assigned to organization with ID ${OGCIO_ORGANIZATIONS.INACTIVE_PS}`
+    );
     return;
   }
 
-  await assignOrganizationRoleToUser(user, organization, organizationQueries);
+  await assignOrganizationRoleToUser(user, organization, organizationQueries, ctx);
 };
 
 const getUserIdentities = (user: User) => {
@@ -91,18 +120,33 @@ export const manageDefaultUserRole = async (
   insertUsersRoles: (
     usersRoles: CreateUsersRole[]
   ) => Promise<QueryResult<QueryResultRow> | undefined>,
-  organizationQueries: OrganizationQueries
+  organizationQueries: OrganizationQueries,
+  ctx: WithHooksAndLogsContext
 ) => {
+  getConsoleLogFromContext(ctx).info(
+    `OGCIO: New user registration with tenantID: ${user.tenantId}`
+  );
+
   if (user.tenantId === adminTenantId) {
     return;
   }
 
   const identities = getUserIdentities(user);
 
+  getConsoleLogFromContext(ctx).info(
+    `OGCIO: User registration - user identities: ${identities.join(', ')}`
+  );
+
   if (identities.includes(OGCIO_ENTRA_ID_IDENTITY)) {
-    return assignInactivePublicServantRole(user, organizationQueries);
+    getConsoleLogFromContext(ctx).info(
+      `OGCIO: User registration - EntraID identity found, assigning inactive public servant role to the user.`
+    );
+    return assignInactivePublicServantRole(user, organizationQueries, ctx);
   }
   if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY)) {
-    return assignCitizenRole(user, getRoles, insertUsersRoles);
+    getConsoleLogFromContext(ctx).info(
+      `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
+    );
+    return assignCitizenRole(user, getRoles, insertUsersRoles, ctx);
   }
 };

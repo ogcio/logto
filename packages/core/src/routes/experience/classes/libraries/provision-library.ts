@@ -106,7 +106,8 @@ export class ProvisionLibrary {
       user,
       roles.findRoleById,
       usersRoles.insertUsersRoles,
-      organizations
+      organizations,
+      this.ctx
     );
 
     return user;
