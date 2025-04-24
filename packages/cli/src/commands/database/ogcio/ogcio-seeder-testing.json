@@ -770,12 +770,12 @@
         "is_third_party": false
       },
       {
-        "name": "Digital Postbox M2M Profile Importer",
-        "description": "Machine 2 Machine application used by the digital postbox profile importer",
+        "name": "Digital Postbox M2M Profiles Exporter",
+        "description": "Machine 2 Machine application used by the digital postbox profiles exporter",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
-        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_PROFILE_IMPORTER_APP_SECRET>",
+        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_PROFILE_EXPORTER_APP_SECRET>",
         "id": "v32qmzp9x7lh5f8kwe6ut",
         "is_third_party": false
       }
