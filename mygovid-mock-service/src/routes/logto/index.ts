@@ -190,4 +190,23 @@ export default async function login(app: FastifyInstance) {
       };
     },
   );
+
+  app.get<{
+    Querystring: {
+      post_logout_redirect_uri: string;
+    };
+  }>(
+    "/logout",
+    {
+      schema: {
+        querystring: {
+          post_logout_redirect_uri: Type.String(),
+        },
+        response: { 200: Type.String(), 500: HttpError },
+      },
+    },
+    async (request, reply) => {
+      return reply.redirect(request.query.post_logout_redirect_uri);
+    },
+  );
 }
