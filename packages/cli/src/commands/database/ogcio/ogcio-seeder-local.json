@@ -97,7 +97,9 @@
         "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write",
-        "formsie:submission:read"
+        "formsie:submission:read",
+        "profile:user.admin:write",
+        "profile:user.admin:read"
       ]
     },
     "organization_roles": [
@@ -287,7 +289,8 @@
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "ogcio" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "abp" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
-          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" }
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -302,7 +305,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -467,6 +471,17 @@
         "description": "Role for Applications that need access to the FormsIE service",
         "specific_permissions": [
           "formsie:submission:read"
+        ]
+      },
+      {
+        "id": "m2m-prf-import",
+        "type": "MachineToMachine",
+        "name": "M2M Profile Import",
+        "description": "Role used to make M2M applications able to import profiles",
+        "specific_permissions": ["profile:user.admin:write", "profile:user.admin:read"],
+        "related_applications": [
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "ogcio" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       }
     ],
@@ -757,6 +772,16 @@
         "secret": "m2m_digital_postbox_secret",
         "id": "r58qdwh2da6qtsqb2u5u3",
         "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Profiles Exporter",
+        "description": "Machine 2 Machine application used by the digital postbox profiles exporter",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_digital_postbox_profile_importer_secret",
+        "id": "v32qmzp9x7lh5f8kwe6ut",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -848,7 +873,9 @@
           "profile:user.self:write",
           "profile:user:read",
           "profile:user:write",
-          "profile:user.onboarding:read"
+          "profile:user.onboarding:read",
+          "profile:user.admin:write",
+          "profile:user.admin:read"
         ]
       },
       {
