@@ -874,6 +874,7 @@
           "profile:user:read",
           "profile:user:write",
           "profile:user.onboarding:read",
+          "profile:user:onboarded",
           "profile:user.admin:write",
           "profile:user.admin:read"
         ]
@@ -1102,6 +1103,17 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
+      },
+      {
+        "id": "onboarded-citizen",
+        "name": "Onboarded citizen",
+        "description": "Role used to indicate if a citizen user is onboarded to the services suite",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": ["profile:user:onboarded"]
+          }
+        ]
       }
     ],
     "connectors": [
