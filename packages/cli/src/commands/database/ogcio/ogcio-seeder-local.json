@@ -25,6 +25,31 @@
         "name": "Second Testing Organisation",
         "description": "Organisation used to do E2E testing",
         "id": "second-testing"
+      },
+      {
+        "name": "Health Service Executive",
+        "description": "Health Service Executive - Imported from Digital Postbox",
+        "id": "hse"
+      },
+      {
+        "name": "Department of Social Protection",
+        "description": "Department of Social Protection - Imported from Digital Postbox",
+        "id": "dsp"
+      },
+      {
+        "name": "Dept. of Education/An Roinn Oideachais",
+        "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
+        "id": "doe"
+      },
+      {
+        "name": "Limerick City and County Council",
+        "description": "Limerick City and County Council - Imported from Digital Postbox",
+        "id": "lcc"
+      },
+      {
+        "name": "Messaging Test",
+        "description": "Messaging Test - Imported from Digital Postbox",
+        "id": "msg-dp"
       }
     ],
     "organization_permissions": {
@@ -37,16 +62,22 @@
         "analytics:website:write",
         "analytics:website:tracking",
         "analytics:audit_log:read",
+        "payments:provider:read",
         "payments:provider:*",
+        "payments:payment_request:read",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
+        "payments:transaction:read",
         "payments:transaction:*",
+        "payments:auditLog:read",
         "messaging:message:*",
         "messaging:provider:*",
         "messaging:template:*",
         "messaging:event:read",
         "profile:user:read",
         "profile:user:write",
+        "profile:user.self:read",
+        "profile:user.self:write",
         "profile:user:*",
         "profile:user.admin:*",
         "life-events:digital-wallet-flow:*",
@@ -66,7 +97,9 @@
         "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write",
-        "formsie:submission:read"
+        "formsie:submission:read",
+        "profile:user.admin:write",
+        "profile:user.admin:read"
       ]
     },
     "organization_roles": [
@@ -79,7 +112,23 @@
           "payments:payment_request:*",
           "payments:payment_request.public:read",
           "payments:transaction:*",
-          "scheduler:jobs:write"
+          "scheduler:jobs:write",
+          "profile:user.self:read",
+          "profile:user.self:write",
+          "payments:auditLog:read"
+        ]
+      },
+      {
+        "id": "pay-read-only",
+        "name": "Payments Read-Only",
+        "description": "Payments Read-Only",
+        "specific_permissions": [
+          "payments:provider:read",
+          "payments:payment_request:read",
+          "payments:payment_request.public:read",
+          "payments:transaction:read",
+          "profile:user.self:read",
+          "payments:auditLog:read"
         ]
       },
       {
@@ -92,7 +141,9 @@
           "messaging:template:*",
           "messaging:event:read",
           "scheduler:jobs:write",
-          "profile:user:read"
+          "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
@@ -101,14 +152,20 @@
         "description": "Dashboard Public servant",
         "specific_permissions": [
           "dashboard:admin:read",
-          "dashboard:admin:write"
+          "dashboard:admin:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
         "id": "le-public-servant",
         "name": "Life Events Public Servant",
         "description": "Life Events Public servant",
-        "specific_permissions": ["life-events:digital-wallet-flow:*"]
+        "specific_permissions": [
+          "life-events:digital-wallet-flow:*",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "pro-public-servant",
@@ -138,13 +195,25 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*", "profile:user:read"]
+        "specific_permissions": [
+          "upload:file:*", 
+          "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "int-public-servant",
         "name": "Journey Public Servant",
         "description": "Journey Public servant",
-        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
+        "specific_permissions": [
+          "journey:journey:*",
+          "journey:step:*",
+          "journey:run:read",
+          "journey:run:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "bb-inactive-ps",
@@ -166,7 +235,12 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -181,7 +255,28 @@
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
-          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" }
+          { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+        ]
+      },
+      {
+        "id": "m2m-ps-profile-admin",
+        "name": "M2M Public Servant Profile Admin",
+        "description": "Role for M2M Applications that need to act as a profile admin",
+        "specific_permissions": [
+          "profile:user.admin:*"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -194,7 +289,8 @@
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "ogcio" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "abp" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
-          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" }
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" },
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "doe"}
         ]
       },
       {
@@ -209,7 +305,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -268,7 +365,12 @@
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "ogcio" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "abp" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
-          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" }
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -284,7 +386,12 @@
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "ogcio" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "abp" },
           { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "first-testing" },
-          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" }
+          { "application_id": "ouhygzydwvrv67j4hpm9p", "organization_id": "second-testing" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -365,6 +472,17 @@
         "specific_permissions": [
           "formsie:submission:read"
         ]
+      },
+      {
+        "id": "m2m-prf-import",
+        "type": "MachineToMachine",
+        "name": "M2M Profile Import",
+        "description": "Role used to make M2M applications able to import profiles",
+        "specific_permissions": ["profile:user.admin:write", "profile:user.admin:read"],
+        "related_applications": [
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "ogcio" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
+        ]
       }
     ],
     "applications": [
@@ -373,7 +491,10 @@
         "description": "Payments App of Life Events",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3001/callback",
-        "logout_redirect_uri": "http://localhost:3001",
+        "logout_redirect_uri": [
+          "http://localhost:3001",
+          "http://localhost:3001/login/admin"
+        ],
         "secret": "payments_app_local_secret",
         "id": "2xz6sbi8ch01uhjt1oq8r",
         "is_third_party": false
@@ -525,7 +646,10 @@
         "description": "Journey App for Building Block",
         "type": "Traditional",
         "redirect_uri": "http://localhost:3009/callback",
-        "logout_redirect_uri": "http://localhost:3009",
+        "logout_redirect_uri": [
+          "http://localhost:3009",
+          "http://localhost:3009/login/admin"
+        ],
         "secret": "journey_app_local_secret",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
@@ -638,6 +762,26 @@
         "secret": "formsie_app_local_secret",
         "id": "66q9ecmkup9najnzajium",
         "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Proxy",
+        "description": "Machine 2 Machine application used by the digital postbox proxy",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_digital_postbox_secret",
+        "id": "r58qdwh2da6qtsqb2u5u3",
+        "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Profiles Exporter",
+        "description": "Machine 2 Machine application used by the digital postbox profiles exporter",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "m2m_digital_postbox_profile_importer_secret",
+        "id": "v32qmzp9x7lh5f8kwe6ut",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -729,7 +873,10 @@
           "profile:user.self:write",
           "profile:user:read",
           "profile:user:write",
-          "profile:user.onboarding:read"
+          "profile:user.onboarding:read",
+          "profile:user:onboarded",
+          "profile:user.admin:write",
+          "profile:user.admin:read"
         ]
       },
       {
@@ -956,6 +1103,17 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
+      },
+      {
+        "id": "onboarded-citizen",
+        "name": "Onboarded citizen",
+        "description": "Role used to indicate if a citizen user is onboarded to the services suite",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": ["profile:user:onboarded"]
+          }
+        ]
       }
     ],
     "connectors": [
@@ -1059,6 +1217,31 @@
         "related_organizations": [
           { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
           { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
+        ]
+      },
+      {
+        "id": "e2e-cit-1",
+        "username": "e2e_citizen_user_1",
+        "primary_email": "e2e_citizen_1@user.com",
+        "primary_phone": "+21312666199",
+        "name": "E2E Citizen User",
+        "application_id": "4695d8onfb9f3bv18phtq",
+        "resource_role_ids": ["bb-citizen"],
+        "ppsn": "E2E_CITIZEN_USER_1",
+        "related_organizations": []
+      },
+      {
+        "id": "e2e-ps-1",
+        "username": "e2e_ps_user_1",
+        "primary_email": "e2e_ps_1@user.com",
+        "primary_phone": "+21432666999",
+        "name": "E2E PublicServant User",
+        "application_id": "4695d8onfb9f3bv18phtq",
+        "ppsn": "E2E_PS_USER_1",
+        "resource_role_ids": [],
+        "related_organizations": [
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "second-testing" }
         ]
       }
     ],

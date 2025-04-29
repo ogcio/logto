@@ -20,8 +20,6 @@ import { generateStandardId } from '@logto/shared';
 import { conditional, conditionalArray, trySafe } from '@silverhand/essentials';
 
 import { EnvSet } from '#src/env-set/index.js';
-// OGCIO
-import { manageDefaultUserRole } from '#src/libraries/ogcio-user.js';
 import { assignInteractionResults } from '#src/libraries/session.js';
 import { encryptUserPassword } from '#src/libraries/user.utils.js';
 import type { LogEntry, WithLogContext } from '#src/middleware/koa-audit-log.js';
@@ -31,6 +29,7 @@ import { getConsoleLogFromContext } from '#src/utils/console.js';
 import { buildAppInsightsTelemetry } from '#src/utils/request.js';
 import { getTenantId } from '#src/utils/tenant.js';
 
+import { manageDefaultUserRole } from '../../../libraries/ogcio-user.js';
 import { type WithInteractionHooksContext } from '../middleware/koa-interaction-hooks.js';
 import type {
   VerifiedInteractionResult,
@@ -192,7 +191,13 @@ async function handleSubmitRegister(
   }
 
   // OGCIO
-  await manageDefaultUserRole(user, roles.findRoleById, usersRoles.insertUsersRoles, organizations);
+  await manageDefaultUserRole(
+    user,
+    roles.findRoleById,
+    usersRoles.insertUsersRoles,
+    organizations,
+    ctx
+  );
   await assignInteractionResults(ctx, provider, { login: { accountId: id } });
 
   ctx.assignInteractionHookResult({ userId: id });

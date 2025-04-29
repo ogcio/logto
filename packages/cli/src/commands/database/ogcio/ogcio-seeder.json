@@ -15,6 +15,11 @@
         "name": "Inactive Public Servants Org",
         "description": "Temporary organization for inactive Public Servants",
         "id": "inactive-ps-org"
+      },
+      {
+        "name": "Dept. of Education/An Roinn Oideachais",
+        "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
+        "id": "doe"
       }
     ],
     "organization_permissions": {
@@ -27,10 +32,14 @@
         "analytics:website:write",
         "analytics:website:tracking",
         "analytics:audit_log:read",
+        "payments:provider:read",
         "payments:provider:*",
+        "payments:payment_request:read",
         "payments:payment_request:*",
         "payments:payment_request.public:read",
+        "payments:transaction:read",
         "payments:transaction:*",
+        "payments:auditLog:read",
         "messaging:message:*",
         "messaging:provider:*",
         "messaging:template:*",
@@ -41,6 +50,8 @@
         "profile:user:read",
         "profile:user:write",
         "profile:user:*",
+        "profile:user.self:read",
+        "profile:user.self:write",
         "profile:user.admin:*",
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
@@ -56,7 +67,9 @@
         "journey:run:write",
         "dashboard:admin:read",
         "dashboard:admin:write",
-        "formsie:submission:read"
+        "formsie:submission:read",
+        "profile:user.admin:write",
+        "profile:user.admin:read"
       ]
     },
     "organization_roles": [
@@ -69,7 +82,23 @@
           "payments:payment_request:*",
           "payments:payment_request.public:read",
           "payments:transaction:*",
-          "scheduler:jobs:write"
+          "scheduler:jobs:write",
+          "profile:user.self:read",
+          "profile:user.self:write",
+          "payments:auditLog:read"
+        ]
+      },
+      {
+        "id": "pay-read-only",
+        "name": "Payments Read-Only",
+        "description": "Payments Read-Only",
+        "specific_permissions": [
+          "payments:provider:read",
+          "payments:payment_request:read",
+          "payments:payment_request.public:read",
+          "payments:transaction:read",
+          "profile:user.self:read",
+          "payments:auditLog:read"
         ]
       },
       {
@@ -82,7 +111,9 @@
           "messaging:template:*",
           "messaging:event:read",
           "scheduler:jobs:write",
-          "profile:user:read"
+          "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
@@ -91,14 +122,20 @@
         "description": "Dashboard Public servant",
         "specific_permissions": [
           "dashboard:admin:read",
-          "dashboard:admin:write"
+          "dashboard:admin:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
         ]
       },
       {
         "id": "le-public-servant",
         "name": "Life Events Public Servant",
         "description": "Life Events Public servant",
-        "specific_permissions": ["life-events:digital-wallet-flow:*"]
+        "specific_permissions": [
+          "life-events:digital-wallet-flow:*",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "pro-public-servant",
@@ -128,13 +165,25 @@
         "id": "upload-public-servant",
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
-        "specific_permissions": ["upload:file:*", "profile:user:read"]
+        "specific_permissions": [
+          "upload:file:*",
+          "profile:user:read",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "int-public-servant",
         "name": "Journey Public Servant",
         "description": "Journey Public servant",
-        "specific_permissions": ["journey:journey:*", "journey:step:*", "journey:run:read", "journey:run:write"]
+        "specific_permissions": [
+          "journey:journey:*",
+          "journey:step:*",
+          "journey:run:read",
+          "journey:run:write",
+          "profile:user.self:read",
+          "profile:user.self:write"
+        ]
       },
       {
         "id": "bb-inactive-ps",
@@ -176,7 +225,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" },
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" }
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" },
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"}
         ]
       },
       {
@@ -191,7 +241,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
         ]
       },
       {
@@ -319,6 +370,17 @@
         "specific_permissions": [
           "formsie:submission:read"
         ]
+      },
+      {
+        "id": "m2m-prf-import",
+        "type": "MachineToMachine",
+        "name": "M2M Profile Import",
+        "description": "Role used to make M2M applications able to import profiles",
+        "specific_permissions": ["profile:user.admin:write", "profile:user.admin:read"],
+        "related_applications": [
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "ogcio" },
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
+        ]
       }
     ],
     "applications": [
@@ -327,7 +389,10 @@
         "description": "Payments App of Life Events",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_PAYMENTS_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": [
+          "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>",
+          "<SEEDER_PAYMENTS_APP_LOGOUT_REDIRECT_URI>/login/admin"
+        ],
         "secret": "<SEEDER_PAYMENTS_APP_SECRET>",
         "id": "r5f56tpkytpqyyshiutd2",
         "is_third_party": false
@@ -469,7 +534,10 @@
         "description": "Journey Builder App for Building Block",
         "type": "Traditional",
         "redirect_uri": "<SEEDER_JOURNEY_APP_REDIRECT_URI>",
-        "logout_redirect_uri": "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+        "logout_redirect_uri": [
+          "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>",
+          "<SEEDER_JOURNEY_APP_LOGOUT_REDIRECT_URI>/login/admin"
+        ],
         "secret": "<SEEDER_JOURNEY_APP_SECRET>",
         "id": "1qpp7cfssbb4mcrvmfe0c",
         "is_third_party": false
@@ -582,6 +650,16 @@
         "secret": "<SEEDER_FORMSIE_APP_SECRET>",
         "id": "66q9ecmkup9najnzajium",
         "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Profiles Exporter",
+        "description": "Machine 2 Machine application used by the digital postbox profiles exporter",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_PROFILE_EXPORTER_APP_SECRET>",
+        "id": "v32qmzp9x7lh5f8kwe6ut",
+        "is_third_party": false
       }
     ],
     "resources": [
@@ -673,7 +751,8 @@
           "profile:user.self:write",
           "profile:user:read",
           "profile:user:write",
-          "profile:user.onboarding:read"
+          "profile:user.onboarding:read",
+          "profile:user:onboarded"
         ]
       },
       {
@@ -868,6 +947,17 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
+      },
+      {
+        "id": "onboarded-citizen",
+        "name": "Onboarded citizen",
+        "description": "Role used to indicate if a citizen user is onboarded to the services suite",
+        "permissions": [
+          {
+            "resource_id": "profile-api",
+            "specific_permissions": ["profile:user:onboarded"]
+          }
+        ]
       }
     ],
     "connectors": [
