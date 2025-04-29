@@ -855,7 +855,8 @@
           "messaging:message:*",
           "messaging:template:*",
           "messaging:message.onboarding:read",
-          "profile:user.self:read"
+          "profile:user.self:read",
+          "profile:user:onboarded"
         ]
       },
       {
@@ -1105,6 +1106,10 @@
         "permissions": [
           {
             "resource_id": "profile-api",
+            "specific_permissions": ["profile:user:onboarded"]
+          },
+          {
+            "resource_id": "messaging-api",
             "specific_permissions": ["profile:user:onboarded"]
           }
         ]
