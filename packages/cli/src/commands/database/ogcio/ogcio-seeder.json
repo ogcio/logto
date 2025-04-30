@@ -25,6 +25,26 @@
         "name": "Dept. of Education/An Roinn Oideachais",
         "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
         "id": "doe"
+      },
+      {
+        "name": "Health Service Executive",
+        "description": "Health Service Executive - Imported from Digital Postbox",
+        "id": "hse"
+      },
+      {
+        "name": "Department of Social Protection",
+        "description": "Department of Social Protection - Imported from Digital Postbox",
+        "id": "dsp"
+      },
+      {
+        "name": "Limerick City and County Council",
+        "description": "Limerick City and County Council - Imported from Digital Postbox",
+        "id": "lcc"
+      },
+      {
+        "name": "Messaging Test",
+        "description": "Messaging Test - Imported from Digital Postbox",
+        "id": "msg-dp"
       }
     ],
     "organization_permissions": {
