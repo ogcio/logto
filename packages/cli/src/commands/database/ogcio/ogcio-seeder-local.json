@@ -546,7 +546,7 @@
         "redirect_uri": "http://localhost:3003/callback",
         "logout_redirect_uri": [
           "http://localhost:3003",
-          "http://localhost:3003/postGlobalSignout"
+          "http://localhost:3003/post-global-signout"
         ],
         "secret": "profile_app_local_secret",
         "id": "RZmVtZUnrv01YzUYEIwYW",

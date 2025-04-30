@@ -475,7 +475,7 @@
         "redirect_uri": "<SEEDER_PROFILE_APP_REDIRECT_URI>",
         "logout_redirect_uri": [
           "<SEEDER_PROFILE_APP_LOGOUT_REDIRECT_URI>",
-          "<SEEDER_PROFILE_APP_LOGOUT_REDIRECT_URI>/postGlobalSignout"
+          "<SEEDER_PROFILE_APP_LOGOUT_REDIRECT_URI>/post-global-signout"
         ],
         "secret": "<SEEDER_PROFILE_APP_SECRET>",
         "id": "0921d8onfb9f3bv75trgf",
