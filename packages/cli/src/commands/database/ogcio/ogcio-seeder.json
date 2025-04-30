@@ -206,7 +206,12 @@
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -219,7 +224,28 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" }
+          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+        ]
+      },
+      {
+        "id": "m2m-ps-profile-admin",
+        "name": "M2M Public Servant Profile Admin",
+        "description": "Role for M2M Applications that need to act as a profile admin",
+        "specific_permissions": [
+          "profile:user.admin:*"
+        ],
+        "type": "MachineToMachine",
+        "related_applications": [
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -282,7 +308,12 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" }
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -365,7 +396,12 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
-          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" }
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" },
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -664,6 +700,16 @@
         "logout_redirect_uri": "",
         "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_PROFILE_EXPORTER_APP_SECRET>",
         "id": "v32qmzp9x7lh5f8kwe6ut",
+        "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Proxy",
+        "description": "Machine 2 Machine application used by the digital postbox proxy",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_APP_SECRET>",
+        "id": "r58qdwh2da6qtsqb2u5u3",
         "is_third_party": false
       }
     ],
