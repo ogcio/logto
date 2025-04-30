@@ -7,6 +7,11 @@
         "id": "ogcio"
       },
       {
+        "name": "Nearform Testing Org",
+        "description": "Testing organization created through seeder",
+        "id": "nearform-testing"
+      },
+      {
         "name": "An Bord Pleanála",
         "description": "An Bord Pleanála",
         "id": "abp"
