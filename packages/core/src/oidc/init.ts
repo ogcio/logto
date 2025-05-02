@@ -336,8 +336,15 @@ export default function initOidc(
         return 60 * 60; // 1 hour in seconds
       },
       Interaction: 3600 /* 1 hour in seconds */,
-      Session: 1_209_600 /* 14 days in seconds */,
-      Grant: 1_209_600 /* 14 days in seconds */,
+      // OGCIO => Instead of 14 days, we set it to 1 day
+      // since we need the user to re-login after 1 day
+      // Original - Session: 1_209_600 /* 14 days in seconds */,
+      Session: inSeconds.oneDay,
+
+      // OGCIO => Instead of 14 days, we set it to 1 day
+      // since we need the user to re-login after 1 day
+      // Original - Grant: 1_209_600 /* 14 days in seconds */,
+      Grant: inSeconds.oneDay,
     },
     rotateRefreshToken: (ctx) => {
       const { Client: client } = ctx.oidc.entities;
