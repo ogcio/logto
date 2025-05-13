@@ -232,6 +232,11 @@
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "abp" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "first-testing" },
           { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "second-testing" },
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "hse"},
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "dsp"},
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "doe"},
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "lcc"},
+          { "application_id": "ddl4llp30risjwcjymqw3", "organization_id": "msg-dp"},
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "ogcio" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "abp" },
           { "application_id": "hx8ax92k0qyxl3vsdoj2l", "organization_id": "first-testing" },
@@ -290,7 +295,11 @@
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "abp" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "first-testing" },
           { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "second-testing" },
-          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "doe"}
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "hse"},
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "dsp"},
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "doe"},
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "lcc"},
+          { "application_id": "bjd8knt92hxslvrfyezp7", "organization_id": "msg-dp"}
         ]
       },
       {
@@ -366,6 +375,11 @@
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "abp" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "first-testing" },
           { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "second-testing" },
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "hse"},
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "dsp"},
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "doe"},
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "lcc"},
+          { "application_id": "upl1wqp66oisjwcjyder9", "organization_id": "msg-dp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
