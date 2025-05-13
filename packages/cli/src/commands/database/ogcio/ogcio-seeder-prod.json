@@ -7,6 +7,11 @@
         "id": "ogcio"
       },
       {
+        "name": "Nearform Testing Org",
+        "description": "Testing organization created through seeder",
+        "id": "nearform-testing"
+      },
+      {
         "name": "An Bord Pleanála",
         "description": "An Bord Pleanála",
         "id": "abp"
@@ -17,14 +22,9 @@
         "id": "inactive-ps-org"
       },
       {
-        "name": "First Testing Organisation",
-        "description": "Organisation used to do E2E testing",
-        "id": "first-testing"
-      },
-      {
-        "name": "Second Testing Organisation",
-        "description": "Organisation used to do E2E testing",
-        "id": "second-testing"
+        "name": "Dept. of Education/An Roinn Oideachais",
+        "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
+        "id": "doe"
       },
       {
         "name": "Health Service Executive",
@@ -35,11 +35,6 @@
         "name": "Department of Social Protection",
         "description": "Department of Social Protection - Imported from Digital Postbox",
         "id": "dsp"
-      },
-      {
-        "name": "Dept. of Education/An Roinn Oideachais",
-        "description": "Dept. of Education/An Roinn Oideachais - Imported from Digital Postbox",
-        "id": "doe"
       },
       {
         "name": "Limerick City and County Council",
@@ -74,20 +69,20 @@
         "messaging:provider:*",
         "messaging:template:*",
         "messaging:event:read",
+        "o11y:dashboard:read",
+        "o11y:dashboard:write",
+        "o11y:dashboard:admin",
         "profile:user:read",
         "profile:user:write",
         "profile:user:*",
-        "profile:user.admin:*",
         "profile:user.self:read",
         "profile:user.self:write",
+        "profile:user.admin:*",
         "life-events:digital-wallet-flow:*",
         "bb:public-servant.inactive:*",
         "scheduler:jobs:write",
         "upload:file:*",
         "o11y:metrics:*",
-        "o11y:dashboard:read",
-        "o11y:dashboard:write",
-        "o11y:dashboard:admin",
         "journey:journey.public:read",
         "journey:journey:read",
         "journey:journey:*",
@@ -196,7 +191,7 @@
         "name": "File Upload Public Servant",
         "description": "File Upload Public servant",
         "specific_permissions": [
-          "upload:file:*", 
+          "upload:file:*",
           "profile:user:read",
           "profile:user.self:read",
           "profile:user.self:write"
@@ -230,12 +225,8 @@
         "related_applications": [
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
-          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "first-testing" },
-          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "second-testing" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "first-testing" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "second-testing" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
@@ -254,8 +245,6 @@
         "related_applications": [
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "first-testing" },
-          { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "second-testing" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
@@ -286,11 +275,9 @@
         "specific_permissions": ["scheduler:jobs:write"],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "f7p2k8w5jv4c1rm6xn3q9", "organization_id": "ogcio" },
-          { "application_id": "f7p2k8w5jv4c1rm6xn3q9", "organization_id": "abp" },
-          { "application_id": "f7p2k8w5jv4c1rm6xn3q9", "organization_id": "first-testing" },
-          { "application_id": "f7p2k8w5jv4c1rm6xn3q9", "organization_id": "second-testing" },
-          { "application_id": "f7p2k8w5jv4c1rm6xn3q9", "organization_id": "doe"}
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" },
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" },
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"}
         ]
       },
       {
@@ -323,25 +310,6 @@
         ]
       },
       {
-        "id": "m2m-e2e-tester",
-        "name": "M2M E2E Tester Role",
-        "description": "Role for M2M Applications that need to perform E2E testing",
-        "specific_permissions": [
-          "messaging:message:*",
-          "messaging:provider:*",
-          "messaging:template:*",
-          "messaging:event:read",
-          "profile:user:*",
-          "profile:user.admin:*",
-          "upload:file:*"
-        ],
-        "type": "MachineToMachine",
-        "related_applications": [
-          { "application_id": "treftr21fgbvsdjwlol9", "organization_id": "first-testing" },
-          { "application_id": "treftr21fgbvsdjwlol9", "organization_id": "second-testing" }
-        ]
-      },
-      {
         "id": "m2m-citiz-journey",
         "name": "M2M Citizen Journey Reader",
         "description": "Role for M2M Applications that need to read from Journey resources",
@@ -361,8 +329,6 @@
         "related_applications": [
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" },
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "first-testing" },
-          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "second-testing" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
@@ -436,9 +402,7 @@
         "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
         "related_applications": [
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" },
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "first-testing" },
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "second-testing" }
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" }
         ]
       },
       {
@@ -451,10 +415,8 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "ogcio" },
-          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "abp" },
-          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "first-testing" },
-          { "application_id": "k3wblfnr6h8b8x8l8nigt", "organization_id": "second-testing" },
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
@@ -617,17 +579,7 @@
         "redirect_uri": "",
         "logout_redirect_uri": "",
         "secret": "<SEEDER_M2M_SCHEDULER_APP_SECRET>",
-        "id": "f7p2k8w5jv4c1rm6xn3q9",
-        "is_third_party": false
-      },
-      {
-        "name": "M2M E2E Tester",
-        "description": "Machine 2 Machine application used to do E2E testing",
-        "type": "MachineToMachine",
-        "redirect_uri": "",
-        "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_E2E_TESTER_APP_SECRET>",
-        "id": "treftr21fgbvsdjwlol9",
+        "id": "d5q7l2m9r3w1x6bp8cv0j",
         "is_third_party": false
       },
       {
@@ -640,16 +592,6 @@
         "id": "46ewhh940rn1e29cmecxs",
         "is_third_party": false,
         "apply_management_api_role": true
-      },
-      {
-        "name": "M2M Analytics API",
-        "description": "Machine 2 Machine application used to communicate with the Analytics APIs",
-        "type": "MachineToMachine",
-        "redirect_uri": "",
-        "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_ANALYTICS_API_APP_SECRET>",
-        "id": "03emabp0dwznxw414mxme",
-        "is_third_party": false
       },
       {
         "name": "Journey Builder Building Block",
@@ -672,6 +614,16 @@
         "logout_redirect_uri": "",
         "secret": "<SEEDER_M2M_JOURNEY_APP_SECRET>",
         "id": "ca0c4izoo6dli4vko06g3"
+      },
+      {
+        "name": "M2M Analytics API",
+        "description": "Machine 2 Machine application used to communicate with the Analytics APIs",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_M2M_ANALYTICS_API_APP_SECRET>",
+        "id": "03emabp0dwznxw414mxme",
+        "is_third_party": false
       },
       {
         "name": "M2M Uploader",
@@ -710,12 +662,12 @@
         "redirect_uri": "<FEATURE_FLAGS_UNLEASH_APP_REDIRECT_URI>",
         "logout_redirect_uri": "<FEATURE_FLAGS_UNLEASH_APP_LOGOUT_REDIRECT_URI>",
         "secret": "<FEATURE_FLAGS_UNLEASH_APP_SECRET>",
-        "id": "43geanp0dwznxw412mxme",
+        "id": "13weafp5dcznqc436mxko",
         "is_third_party": false
       },
       {
         "name": "M2M Public Servant Journey Reader",
-        "description": "Machine 2 Machine application used to communicate between services and Journey resources for public servant",
+        "description": "Machine 2 Machine application used to communicate between services and Journey Builder resources for public servant",
         "type": "MachineToMachine",
         "redirect_uri": "",
         "logout_redirect_uri": "",
@@ -740,7 +692,7 @@
         "redirect_uri": "",
         "logout_redirect_uri": "",
         "secret": "<SEEDER_M2M_MESSAGING_APP_SECRET>",
-        "id": "k3wblfnr6h8b8x8l8nigt",
+        "id": "03jn5vm2pfh3a0433p4fp",
         "is_third_party": false
       },
       {
@@ -764,16 +716,6 @@
         "is_third_party": false
       },
       {
-        "name": "Digital Postbox M2M Proxy",
-        "description": "Machine 2 Machine application used by the digital postbox proxy",
-        "type": "MachineToMachine",
-        "redirect_uri": "",
-        "logout_redirect_uri": "",
-        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_APP_SECRET>",
-        "id": "r58qdwh2da6qtsqb2u5u3",
-        "is_third_party": false
-      },
-      {
         "name": "Digital Postbox M2M Profiles Exporter",
         "description": "Machine 2 Machine application used by the digital postbox profiles exporter",
         "type": "MachineToMachine",
@@ -781,6 +723,16 @@
         "logout_redirect_uri": "",
         "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_PROFILE_EXPORTER_APP_SECRET>",
         "id": "v32qmzp9x7lh5f8kwe6ut",
+        "is_third_party": false
+      },
+      {
+        "name": "Digital Postbox M2M Proxy",
+        "description": "Machine 2 Machine application used by the digital postbox proxy",
+        "type": "MachineToMachine",
+        "redirect_uri": "",
+        "logout_redirect_uri": "",
+        "secret": "<SEEDER_DIGITAL_POSTBOX_M2M_APP_SECRET>",
+        "id": "r58qdwh2da6qtsqb2u5u3",
         "is_third_party": false
       }
     ],
@@ -816,11 +768,6 @@
         "indicator": "<SEEDER_ANALYTICS_API_INDICATOR>"
       },
       {
-        "id": "journey-api",
-        "name": "Journey Building Block API",
-        "indicator": "<SEEDER_JOURNEY_API_INDICATOR>"
-      },
-      {
         "id": "otel-collector-http",
         "name": "Observability Open Telemetry Collector HTTP",
         "indicator": "<SEEDER_OTEL_COLLECTOR_HTTP_INDICATOR>"
@@ -831,9 +778,14 @@
         "indicator": "<SEEDER_OTEL_COLLECTOR_GRPC_INDICATOR>"
       },
       {
+        "id": "journey-api",
+        "name": "Journey Building Block API",
+        "indicator": "<SEEDER_JOURNEY_API_INDICATOR>"
+      },
+      {
         "id": "o11y-dashboard",
         "name": "Observability Dashboard Application",
-        "indicator": "https://grafana.observability.dev.blocks.gov.ie/"
+        "indicator": "<SEEDER_O11Y_DASHBOARD_APP_INDICATOR>"
       },
       {
         "id": "formsie-sub-api",
@@ -1009,22 +961,6 @@
         "related_application_ids": ["okzj8uam29yhj4zdj21xm"]
       },
       {
-        "id": "m2m-e2e-messaging",
-        "name": "M2M E2E Messaging Citizen",
-        "description": "Role used to make M2M applications able to login as messaging citizen to perform E2E testing",
-        "permissions": [
-          {
-            "resource_id": "messaging-api",
-            "specific_permissions": [
-              "messaging:message.self:read",
-              "messaging:message.self:write"
-            ]
-          }
-        ],
-        "type": "MachineToMachine",
-        "related_application_ids": ["treftr21fgbvsdjwlol9"]
-      },
-      {
         "id": "m2m-messaging",
         "name": "M2M Messaging Public Servant",
         "description": "Role used to make M2M applications able to use Messaging service",
@@ -1038,7 +974,7 @@
           }
         ],
         "type": "MachineToMachine",
-        "related_application_ids": ["k3wblfnr6h8b8x8l8nigt"]
+        "related_application_ids": ["03jn5vm2pfh3a0433p4fp"]
       },
       {
         "id": "m2m-onboarding",
@@ -1060,22 +996,6 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["hghygzydwvrv67j4hpmon"]
-      },
-      {
-        "id": "m2m-e2e-profile",
-        "name": "M2M E2E Profile Citizen",
-        "description": "Role used to make M2M applications able to login as profile citizen to perform E2E testing",
-        "permissions": [
-          {
-            "resource_id": "profile-api",
-            "specific_permissions": [
-              "profile:user.self:read",
-              "profile:user.self:write"
-            ]
-          }
-        ],
-        "type": "MachineToMachine",
-        "related_application_ids": ["treftr21fgbvsdjwlol9"]
       },
       {
         "id": "m2m-citiz-journey",
@@ -1205,47 +1125,6 @@
         },
         "signing_key": "<SEEDER_WEBHOOK_SIGNING_KEY>",
         "enabled": true
-      }
-    ],
-    "users": [
-      {
-        "id": "e2e-user-1",
-        "username": "e2e_test_user_1",
-        "primary_email": "e2e_test_1@user.com",
-        "primary_phone": "+21312666999",
-        "name": "E2E First User",
-        "application_id": "1lvmteh2ao3xrswyq7j3e",
-        "resource_role_ids": ["bb-citizen"],
-        "ppsn": "E2E_TEST_USER_1",
-        "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant"], "organization_id": "second-testing" }
-        ]
-      },
-      {
-        "id": "e2e-cit-1",
-        "username": "e2e_citizen_user_1",
-        "primary_email": "e2e_citizen_1@user.com",
-        "primary_phone": "+21312666199",
-        "name": "E2E Citizen User",
-        "application_id": "1lvmteh2ao3xrswyq7j3e",
-        "resource_role_ids": ["bb-citizen"],
-        "ppsn": "E2E_CITIZEN_USER_1",
-        "related_organizations": []
-      },
-      {
-        "id": "e2e-ps-1",
-        "username": "e2e_ps_user_1",
-        "primary_email": "e2e_ps_1@user.com",
-        "primary_phone": "+21432666999",
-        "name": "E2E PublicServant User",
-        "application_id": "1lvmteh2ao3xrswyq7j3e",
-        "ppsn": "E2E_PS_USER_1",
-        "resource_role_ids": [],
-        "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "second-testing" }
-        ]
       }
     ],
     "raw_queries": [
