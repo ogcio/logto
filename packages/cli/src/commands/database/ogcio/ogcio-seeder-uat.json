@@ -466,7 +466,8 @@
         "description": "Role for M2M Applications that need to interact with the Messaging API",
         "specific_permissions": [
           "messaging:message:*",
-          "messaging:template:*"
+          "messaging:template:*",
+          "messaging:event:read"
         ],
         "type": "MachineToMachine",
         "related_applications": [
