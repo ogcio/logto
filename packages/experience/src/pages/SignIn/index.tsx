@@ -26,7 +26,7 @@ const getCookieValue = (cookieName: string) => {
   for (const cookie of cookies) {
     const [name, value] = cookie.split('=');
     if (!value) {
-      return;
+      continue;
     }
     if (name === cookieName) {
       return decodeURIComponent(value);
