@@ -237,6 +237,11 @@
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "first-testing" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "second-testing" },
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "hse"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "dsp"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "doe"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "lcc"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "msg-dp"},
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "first-testing" },
@@ -295,7 +300,12 @@
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" },
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"},
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "second-testing" },
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "first-testing"}]
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "first-testing"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "hse"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "dsp"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "lcc"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "msg-dp"}
+        ]
       },
       {
         "id": "m2m-analytics",
@@ -367,6 +377,11 @@
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" },
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "first-testing" },
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "second-testing" },
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "hse"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "dsp"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "doe"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "lcc"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "msg-dp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
@@ -451,7 +466,8 @@
         "description": "Role for M2M Applications that need to interact with the Messaging API",
         "specific_permissions": [
           "messaging:message:*",
-          "messaging:template:*"
+          "messaging:template:*",
+          "messaging:event:read"
         ],
         "type": "MachineToMachine",
         "related_applications": [
