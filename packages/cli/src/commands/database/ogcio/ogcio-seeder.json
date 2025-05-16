@@ -215,13 +215,14 @@
         "related_applications": [
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "ogcio" },
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "abp" },
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "dsp"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "doe"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "hap"},
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
         ]
       },
       {
@@ -235,11 +236,9 @@
         "related_applications": [
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
         ]
       },
       {
@@ -251,11 +250,9 @@
         ],
         "type": "MachineToMachine",
         "related_applications": [
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
         ]
       },
       {
@@ -267,7 +264,9 @@
         "related_applications": [
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "ogcio" },
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" },
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"}
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "hap"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "dsp"}
         ]
       },
       {
@@ -319,11 +318,12 @@
         "related_applications": [
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "ogcio" },
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "abp" },
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "dsp"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "doe"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "hap"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
         ]
       },
       {
@@ -408,11 +408,9 @@
         "related_applications": [
           { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
           { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" },
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hse"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "lcc"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "msg-dp"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
         ]
       },
       {
