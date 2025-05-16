@@ -111,13 +111,6 @@ const getUserInfo =
         throw new ConnectorError(ConnectorErrorCodes.SocialIdTokenInvalid, result.error);
       }
 
-      const dspOnlineLevel = Number(result.data.DSPOnlineLevel) || 0;
-      if (dspOnlineLevel < 2) {
-        throw new ConnectorError(ConnectorErrorCodes.AuthorizationFailed, {
-          reason: `SAFE (DSPOnlineLevel) was ${dspOnlineLevel}, expected 2 or higher`,
-        });
-      }
-
       const {
         sub: id,
         firstName,
@@ -163,6 +156,9 @@ const getUserInfo =
         avatar: undefined,
         email: conditional(email),
         phone: validatedPhone,
+        customData: {
+          rand: Math.random(),
+        },
         rawData: jsonGuard.parse(payload),
       };
     } catch (error: unknown) {
