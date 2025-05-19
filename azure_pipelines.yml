@@ -64,8 +64,6 @@ stages:
         buildArguments: $(buildArguments)
   - stage: Scan_Logto
     displayName: Scan Logto
-    pool:
-      vmImage: ${{ parameters.vmImage }}
     dependsOn:
       - Build_Logto
     jobs:
