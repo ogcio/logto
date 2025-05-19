@@ -156,9 +156,6 @@ const getUserInfo =
         avatar: undefined,
         email: conditional(email),
         phone: validatedPhone,
-        customData: {
-          rand: Math.random(),
-        },
         rawData: jsonGuard.parse(payload),
       };
     } catch (error: unknown) {
