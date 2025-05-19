@@ -103,51 +103,51 @@ async function main() {
         const closeStream = Readable.from([']']);
 
         // Combined stream using pipeline into a PassThrough stream
-        // const combinedStream = new PassThrough();
+        const combinedStream = new PassThrough();
 
-        // (async () => {
-        //     try {
-        //         // Pipe each part sequentially into the combinedStream
-        //         for (const part of [openStream, jsonRows, closeStream]) {
-        //             await pipelineAsync(part, combinedStream, { end: false });
-        //         }
-        //         combinedStream.end(); // manually close the stream when done piping
-        //     } catch (err) {
-        //         console.error('Audit Cleaner - Stream combination failed:', err);
-        //         combinedStream.destroy(err as Error);
-        //     }
-        // })();
+        (async () => {
+            try {
+                // Pipe each part sequentially into the combinedStream
+                for (const part of [openStream, jsonRows, closeStream]) {
+                    await pipelineAsync(part, combinedStream, { end: false });
+                }
+                combinedStream.end(); // manually close the stream when done piping
+            } catch (err) {
+                console.error('Audit Cleaner - Stream combination failed:', err);
+                combinedStream.destroy(err as Error);
+            }
+        })();
 
         // Build S3 key
         const timestamp = startDate.toISOString().replace(/[:.]/g, '');
         const key = `${S3_PREFIX}/audit-logs-${timestamp}.json`;
 
         // Pipe JSON array start, rows, and array end into S3 multipart upload
-        // const upload = new Upload({
-        //     client: s3,
-        //     params: {
-        //         Bucket: S3_BUCKET,
-        //         Key: key,
-        //         ContentType: 'application/json',
-        //         Body: combinedStream
-        //     },
-        //     queueSize: 4,
-        //     partSize: 5 * 1024 * 1024, // 5 MB per part
-        // });
+        const upload = new Upload({
+            client: s3,
+            params: {
+                Bucket: S3_BUCKET,
+                Key: key,
+                ContentType: 'application/json',
+                Body: combinedStream
+            },
+            queueSize: 4,
+            partSize: 5 * 1024 * 1024, // 5 MB per part
+        });
 
-        // await upload.done();
+        await upload.done();
         console.log(`Audit Cleaner - Uploaded archived logs to s3://${S3_BUCKET}/${key}`);
 
         // Delete in batches
-        // const deleteQuery = new QueryStream(
-        //     DELETE FROM logs
-        //     WHERE created_at < NOW() - make_interval(days => $1)
-        //     RETURNING logs.id`,
-        //     [RETENTION_DAYS]
-        // );
-        // const delStream = client.query(deleteQuery);
+        const deleteQuery = new QueryStream(
+            `DELETE FROM logs
+            WHERE created_at < NOW() - make_interval(days => $1)
+            RETURNING logs.id`,
+            [RETENTION_DAYS]
+        );
+        const delStream = client.query(deleteQuery);
         let deletedCount = 0;
-        // for await (const _row of delStream) deletedCount++;
+        for await (const _row of delStream) deletedCount++;
         console.log(`Audit Cleaner - Deleted ${deletedCount} rows from database.`);
 
         await client.query('COMMIT');
