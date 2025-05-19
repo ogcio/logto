@@ -8,6 +8,8 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { promisify } from 'util';
 
 import pkg from 'JSONStream';
+import { performance } from 'perf_hooks';
+import prettyMilliseconds from 'pretty-ms';
 const JSONStream = pkg;
 
 dotenv.config();
@@ -70,6 +72,7 @@ async function main() {
         return;
     }
 
+    const start = performance.now();
     const startDate = new Date();
     console.log(`Audit Cleaner - Start audit log cleanup at ${startDate.toISOString()}`);
 
@@ -163,7 +166,9 @@ async function main() {
     } finally {
         client.release();
         await pool.end();
-        console.log(`Audit Cleaner - Process finished at ${new Date().toISOString()}`);
+        const end = performance.now();
+        const endDate = new Date();
+        console.log(`Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${endDate.toISOString()}`);
     }
 }
 
