@@ -33,7 +33,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: refs/tags/v0.5.2
+      ref: refs/tags/v0.5.6
       endpoint: ogcio
     - repository: logto-k8s-apps
       type: github
@@ -59,12 +59,25 @@ stages:
     - template: pipeline-templates/build_service.yml
       parameters:
         serviceName: logto
-        pushArtefacts: ${{ variables.pushArtefacts }}
+        pushArtefacts: true
         buildArguments: $(buildArguments)
+  - stage: Scan_Logto
+    displayName: Scan Logto
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    dependsOn:
+      - Build_Logto
+    jobs:
+      - template: security/trivy.yml@pipeline-templates
+        parameters:
+          pullDockerImageFromArtifact: true
+          dockerImageName: logto
+          dockerImageTag: $(Build.BuildId)
+          errorExitCode: 0 # TODO: remove me when found vulns are fixed
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
-      - Build_Logto
+      - Scan_Logto
     condition: ${{ variables.pushArtefacts }}
     jobs:
     - deployment: VerifyDeployment
