@@ -88,6 +88,11 @@ async function main() {
         );
         console.log(`Audit Cleaner - ${count.rows[0].count} entries found`);
 
+        if (count.rows[0].count === 0) {
+            console.log(`Audit Cleaner - Exiting due to no entries found for deletion`);
+            return;
+        }
+
         const sql = `SELECT tenant_id, id, key, payload, created_at
             FROM logs
             WHERE created_at < NOW() - make_interval(days => $1)`;
