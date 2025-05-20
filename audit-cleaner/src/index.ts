@@ -91,7 +91,7 @@ async function main() {
         );
         console.log(`Audit Cleaner - ${count.rows[0].count} entries found`);
 
-        if (count.rows[0].count === 0) {
+        if (count.rows[0].count == 0) {
             console.log(`Audit Cleaner - Exiting due to no entries found for deletion`);
             return;
         }
@@ -110,6 +110,11 @@ async function main() {
         const jsonRows = stream.pipe(JSONStream.stringify('', ',', ''));
         const closeStream = Readable.from([']']);
 
+        // Build S3 key
+        const timestamp = startDate.toISOString().replace(/[:.]/g, '');
+        const key = `${S3_PREFIX}/audit-logs-${timestamp}.json`;
+        console.log(`Audit Cleaner - Start uploading archives to s3://${S3_BUCKET}/${key} at ${new Date().toISOString()}`);
+        
         // Combined stream using pipeline into a PassThrough stream
         const combinedStream = new PassThrough();
 
@@ -126,10 +131,6 @@ async function main() {
             }
         })();
 
-        // Build S3 key
-        const timestamp = startDate.toISOString().replace(/[:.]/g, '');
-        const key = `${S3_PREFIX}/audit-logs-${timestamp}.json`;
-
         // Pipe JSON array start, rows, and array end into S3 multipart upload
         const upload = new Upload({
             client: s3,
@@ -144,7 +145,7 @@ async function main() {
         });
 
         await upload.done();
-        console.log(`Audit Cleaner - Uploaded archived logs to s3://${S3_BUCKET}/${key}`);
+        console.log(`Audit Cleaner - Uploaded archived logs to s3://${S3_BUCKET}/${key} at ${new Date().toISOString()}`);
 
         // Delete in batches
         const deleteQuery = new QueryStream(
@@ -167,8 +168,7 @@ async function main() {
         client.release();
         await pool.end();
         const end = performance.now();
-        const endDate = new Date();
-        console.log(`Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${endDate.toISOString()}`);
+        console.log(`Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${new Date().toISOString()}`);
     }
 }
 
