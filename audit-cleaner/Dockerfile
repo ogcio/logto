@@ -6,7 +6,9 @@ COPY ./audit-cleaner/package*.json ./
 
 RUN npm i
 
-COPY ./audit-cleaner ./
+COPY ./audit-cleaner/src/index.ts ./
+COPY ./audit-cleaner/src/types/jsonstream.d.ts ./
+COPY ./audit-cleaner/tsconfig.json ./
 
 RUN npm run build
 
@@ -16,7 +18,7 @@ WORKDIR /app
 
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package*.json /app/
-COPY --from=builder /app /app/
+COPY --from=builder /app/dist /app/dist
 
 ENV LOG_LEVEL=trace
 

@@ -3,7 +3,6 @@ import { Pool } from 'pg';
 import QueryStream from 'pg-query-stream';
 import { PassThrough, pipeline, Readable } from 'stream';
 import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
-import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { Upload } from '@aws-sdk/lib-storage';
 import { promisify } from 'util';
 
