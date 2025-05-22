@@ -7,7 +7,6 @@ COPY ./audit-cleaner/package*.json ./
 RUN npm i
 
 COPY ./audit-cleaner/src/index.ts ./
-COPY ./audit-cleaner/src/types/jsonstream.d.ts ./
 COPY ./audit-cleaner/tsconfig.json ./
 
 RUN npm run build

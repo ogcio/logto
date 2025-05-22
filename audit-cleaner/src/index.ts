@@ -8,6 +8,17 @@ import { promisify } from "util";
 
 import { performance } from "perf_hooks";
 import prettyMilliseconds from "pretty-ms";
+import { pino } from 'pino';
+
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+    },
+  },
+});
 
 dotenv.config();
 
@@ -44,7 +55,7 @@ const checkEnv = () => {
 
   return requiredVars.every((varName) => {
     if (!process.env[varName]) {
-      console.log(
+        logger.info(
         `Audit Cleaner - Environment variable missing: ${varName}. Process execution denied.`,
       );
       return false;
@@ -90,7 +101,7 @@ async function main() {
 
   const start = performance.now();
   const startDate = new Date();
-  console.log(
+  logger.info(
     `Audit Cleaner - Start audit log cleanup at ${startDate.toISOString()}`,
   );
 
@@ -101,17 +112,17 @@ async function main() {
   try {
     await client.query("BEGIN");
 
-    console.log("Audit Cleaner - Querying old logs");
+    logger.info("Audit Cleaner - Querying old logs");
     const count = await client.query(
       `
             SELECT count(*) FROM logs
             WHERE created_at < NOW() - make_interval(days => $1)`,
       [RETENTION_DAYS],
     );
-    console.log(`Audit Cleaner - ${count.rows[0].count} entries found`);
+    logger.info(`Audit Cleaner - ${count.rows[0].count} entries found`);
 
     if (count.rows[0].count == 0) {
-      console.log(
+      logger.info(
         `Audit Cleaner - Exiting due to no entries found for deletion`,
       );
       return;
@@ -154,7 +165,7 @@ async function main() {
     // Build S3 key
     const timestamp = startDate.toISOString().replace(/[:.]/g, "");
     const key = `${S3_PREFIX}/audit-logs-${timestamp}.json`;
-    console.log(
+    logger.info(
       `Audit Cleaner - Start uploading archives to s3://${S3_BUCKET}/${key} at ${new Date().toISOString()}`,
     );
 
@@ -169,7 +180,7 @@ async function main() {
         }
         combinedStream.end(); // manually close the stream when done piping
       } catch (err) {
-        console.error("Audit Cleaner - Stream combination failed:", err);
+        logger.error("Audit Cleaner - Stream combination failed:", err);
         combinedStream.destroy(err as Error);
       }
     })();
@@ -188,7 +199,7 @@ async function main() {
     });
 
     await upload.done();
-    console.log(
+    logger.info(
       `Audit Cleaner - Uploaded archived logs to s3://${S3_BUCKET}/${key} at ${new Date().toISOString()}`,
     );
 
@@ -202,21 +213,21 @@ async function main() {
     const delStream = client.query(deleteQuery);
     let deletedCount = 0;
     for await (const _row of delStream) deletedCount++;
-    console.log(`Audit Cleaner - Deleted ${deletedCount} rows from database.`);
+    logger.info(`Audit Cleaner - Deleted ${deletedCount} rows from database.`);
 
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Audit Cleaner - Cleanup failed:", err);
+    logger.error("Audit Cleaner - Cleanup failed:", err);
     process.exit(1);
   } finally {
     client.release();
     await pool.end();
     const end = performance.now();
-    console.log(
+    logger.info(
       `Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${new Date().toISOString()}`,
     );
   }
 }
 
-main().catch(console.error);
+main().catch(logger.error);
