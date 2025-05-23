@@ -105,6 +105,9 @@ export type SignInExperienceSeeder = {
     identifiers: string[];
   };
   social_sign_in_connector_targets: string[];
+  social_sign_in: {
+    automaticAccountLinking: boolean;
+  };
   sign_in_mode: string;
   agree_to_terms_policy: string;
   privacy_policy_url: string;

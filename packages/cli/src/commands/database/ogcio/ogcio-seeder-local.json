@@ -1207,7 +1207,8 @@
         "sign_in_mode": "SignInAndRegister",
         "agree_to_terms_policy": "Automatic",
         "privacy_policy_url": "http://localhost:3003/en/privacy-policy",
-        "terms_of_use_url": "http://localhost:3003/en/terms-of-use"
+        "terms_of_use_url": "http://localhost:3003/en/terms-of-use",
+        "social_sign_in": { "automaticAccountLinking": true }
       }
     ],
     "webhooks": [
