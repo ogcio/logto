@@ -19,6 +19,4 @@ COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package*.json /app/
 COPY --from=builder /app/dist /app/dist
 
-ENV LOG_LEVEL=trace
-
 CMD [ "node", "dist/index.js" ]
