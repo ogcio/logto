@@ -218,6 +218,7 @@
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "dsp"},
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "doe"},
           { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "hap"},
+          { "application_id": "tty6llp30risjwcjhbvc9", "organization_id": "nearform-testing"},
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "ogcio" },
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
@@ -238,7 +239,8 @@
           { "application_id": "okzj8uam29yhj4zdj21xm", "organization_id": "abp" },
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
-          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"},
+          { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -266,7 +268,8 @@
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "abp" },
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "doe"},
           { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "hap"},
-          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "dsp"}
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "dsp"},
+          { "application_id": "d5q7l2m9r3w1x6bp8cv0j", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -282,7 +285,8 @@
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
-          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"},
+          { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -295,7 +299,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "03emabp0dwznxw414mxme", "organization_id": "ogcio" },
-          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" }
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "abp" },
+          { "application_id": "03emabp0dwznxw414mxme", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -306,7 +311,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "ogcio" },
-          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "abp" }
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "abp" },
+          { "application_id": "ca0c4izoo6dli4vko06g3", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -321,6 +327,7 @@
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "dsp"},
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "doe"},
           { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "hap"},
+          { "application_id": "der1wqp78uhshgbjyupl0", "organization_id": "nearform-testing"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
@@ -334,7 +341,8 @@
         "type": "MachineToMachine",
         "related_applications": [
           { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "ogcio" },
-          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "abp" }
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "abp" },
+          { "application_id": "628ud3kj186xzpid7zo5n", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -344,7 +352,8 @@
         "specific_permissions": ["o11y:dashboard:admin"],
         "related_applications": [
           { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -354,7 +363,8 @@
         "specific_permissions": ["o11y:dashboard:write"],
         "related_applications": [
           { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -364,7 +374,8 @@
         "specific_permissions": ["o11y:dashboard:read"],
         "related_applications": [
           { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "ogcio" },
-          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" }
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "abp" },
+          { "application_id": "yiuxr16z76vw4ssb2tjpg", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -381,7 +392,8 @@
         "specific_permissions": ["journey:journey:read"],
         "related_applications": [
           { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" },
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" }
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" },
+          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -392,7 +404,8 @@
         "specific_permissions": ["payments:provider:*", "payments:payment_request:*", "payments:transaction:*"],
         "related_applications": [
           { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "ogcio" },
-          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" }
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "abp" },
+          { "application_id": "6g85tgm0k3ch1p2vjnnq2", "organization_id": "nearform-testing"}
         ]
       },
       {
@@ -408,6 +421,7 @@
         "related_applications": [
           { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "ogcio" },
           { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "abp" },
+          { "application_id": "03jn5vm2pfh3a0433p4fp", "organization_id": "nearform-testing"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "dsp"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "doe"},
           { "application_id": "r58qdwh2da6qtsqb2u5u3", "organization_id": "hap"}
