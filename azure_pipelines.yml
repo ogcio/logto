@@ -145,4 +145,28 @@ stages:
         newName: ${{ variables.ecrEndpoint }}/bb-mygovid-mock
         newTag: $(Build.BuildId)
         environment: dev
-    
+  - stage: Build_Logto_Audit_Cleaner
+    displayName: Build Logto Audit Cleaner
+    dependsOn: 
+      - securityScan
+    jobs:
+    - template: pipeline-templates/build_service.yml
+      parameters:
+        serviceName: logto-audit-cleaner
+        pushArtefacts: true
+        buildArguments: $(buildArguments)
+        dockerfile: ./audit-cleaner/Dockerfile
+  - stage: Push_Logto_Audit_Cleaner
+    displayName: Push Logto Audit Cleaner to ECR
+    dependsOn: 
+      - EnvApproval
+      - Build_Logto_Audit_Cleaner
+    condition: succeeded()
+    jobs:
+    - template: build/push_image_ecr.yml@pipeline-templates
+      parameters:
+        awsServiceConnection: ${{ variables.awsServiceConnection }}
+        awsRegion: ${{ variables.awsRegion }}
+        serviceName: logto-audit-cleaner
+        repositoryName: bb-logto-audit-cleaner
+        pushTag: $(Build.BuildId)
