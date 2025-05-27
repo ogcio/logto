@@ -89,23 +89,6 @@ stages:
         serviceName: logto
         repositoryName: bb-logto
         pushTag: $(Build.BuildId)
-  - stage: Deploy_Openshift_Logto
-    displayName: GitOps deploy Logto
-    dependsOn:
-      - EnvApproval
-      - Push_Logto
-    condition: succeeded()
-    jobs:
-    - template: deploy/gitops.yml@pipeline-templates
-      parameters:
-        serviceName: logto
-        clusterName: ${{ variables.clusterName }}
-        newName: ${{ variables.ecrEndpoint }}/bb-logto
-        newTag: $(Build.BuildId)
-        ${{ if containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']) }}:
-          environment: ${{ variables['Build.SourceBranchName'] }}
-        ${{ else }}:
-          environment: dev
   - stage: Build_MyGovId_Mock
     displayName: Build MyGovId Mock
     dependsOn: 
@@ -170,3 +153,28 @@ stages:
         serviceName: logto-audit-cleaner
         repositoryName: bb-logto-audit-cleaner
         pushTag: $(Build.BuildId)
+  - stage: Deploy_Openshift_Logto
+    displayName: GitOps deploy Logto
+    dependsOn:
+      - EnvApproval
+      - Push_Logto
+      - Push_Logto_Audit_Cleaner
+    condition: succeeded()
+    jobs:
+      - template: deploy/openshift-gitops.yml@pipeline-templates
+        parameters:
+          tag: $(Build.BuildId)
+          manifestsRepositoryName: logto-k8s-apps
+          services:
+            - name: logto
+              image: ${{ variables.ecrEndpoint }}/bb-logto
+              ${{ if containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']) }}:
+                overlaysPath: logto/overlays/${{ variables.clusterName }}/${{ variables['Build.SourceBranchName'] }}
+              ${{ else }}:
+                overlaysPath: logto/overlays/${{ variables.clusterName }}/dev
+            - name: bb-logto-audit-cleaner
+              image: ${{ variables.ecrEndpoint }}/bb-logto-audit-cleaner
+              ${{ if containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']) }}:
+                overlaysPath: logto/overlays/${{ variables.clusterName }}/${{ variables['Build.SourceBranchName'] }}
+              ${{ else }}:
+                overlaysPath: logto/overlays/${{ variables.clusterName }}/dev
