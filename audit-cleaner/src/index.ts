@@ -110,6 +110,15 @@ async function main() {
   const client = await pool.connect();
   const s3 = initS3Client();
 
+  const finaliseProcess = async () => {
+    client.release();
+    await pool.end();
+    const end = performance.now();
+    logger.info(
+      `Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${new Date().toISOString()}`,
+    );
+  }
+
   try {
     await client.query("BEGIN");
 
@@ -219,15 +228,14 @@ async function main() {
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK");
-    logger.error("Audit Cleaner - Cleanup failed:", err);
+
+    logger.error("Audit Cleaner - Cleanup failed:");
+    logger.error(err);
+
+    await finaliseProcess();
     process.exit(1);
   } finally {
-    client.release();
-    await pool.end();
-    const end = performance.now();
-    logger.info(
-      `Audit Cleaner - Process finished in ${prettyMilliseconds(end - start)} at ${new Date().toISOString()}`,
-    );
+    await finaliseProcess();
   }
 }
 
