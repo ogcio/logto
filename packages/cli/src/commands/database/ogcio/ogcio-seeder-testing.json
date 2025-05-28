@@ -895,7 +895,11 @@
       },
       {
         "resource_id": "upload-api",
-        "specific_permissions": ["upload:file.self:write", "upload:file.self:read"]
+        "specific_permissions": [
+          "upload:file.self:write", 
+          "upload:file.self:read",
+          "profile:user.self:read"
+        ]
       },
       {
         "resource_id": "analytics-api",
@@ -971,7 +975,10 @@
           },
           {
             "resource_id": "upload-api",
-            "specific_permissions": ["upload:file.self:read"]
+            "specific_permissions": [
+              "upload:file.self:read",
+              "profile:user.self:read"
+            ]
           },
           {
             "resource_id": "journey-api",
@@ -1202,7 +1209,8 @@
         "sign_in_mode": "SignInAndRegister",
         "agree_to_terms_policy": "Automatic",
         "privacy_policy_url": "<SEEDER_PROFILE_PRIVACY_POLICY_URL>",
-        "terms_of_use_url": "<SEEDER_PROFILE_TERMS_OF_USE_URL>"
+        "terms_of_use_url": "<SEEDER_PROFILE_TERMS_OF_USE_URL>",
+        "social_sign_in": { "automaticAccountLinking": true }
       }
     ],
     "webhooks": [
