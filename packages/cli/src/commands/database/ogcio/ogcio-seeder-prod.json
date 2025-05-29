@@ -385,18 +385,6 @@
         "specific_permissions": []
       },
       {
-        "id": "m2m-ps-int-reader",
-        "name": "M2M Public Servant Journey Reader",
-        "description": "Role to access journey reader api with public servant privilege",
-        "type": "MachineToMachine",
-        "specific_permissions": ["journey:journey:read"],
-        "related_applications": [
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "ogcio" },
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "abp" },
-          { "application_id": "cn49p0bq3ulq6ncodwwio", "organization_id": "nearform-testing"}
-        ]
-      },
-      {
         "id": "m2m-ps-payments",
         "name": "M2M Public Servant Payments Role",
         "description": "Role for M2M Applications that need to access payments api with public servant privilege",
@@ -666,16 +654,6 @@
         "logout_redirect_uri": "<FEATURE_FLAGS_UNLEASH_APP_LOGOUT_REDIRECT_URI>",
         "secret": "<FEATURE_FLAGS_UNLEASH_APP_SECRET>",
         "id": "13weafp5dcznqc436mxko",
-        "is_third_party": false
-      },
-      {
-        "name": "M2M Public Servant Journey Reader",
-        "description": "Machine 2 Machine application used to communicate between services and Journey Builder resources for public servant",
-        "type": "MachineToMachine",
-        "redirect_uri": "",
-        "logout_redirect_uri": "",
-        "secret": "<SEEDER_M2M_PS_JOURNEY_APP_SECRET>",
-        "id": "cn49p0bq3ulq6ncodwwio",
         "is_third_party": false
       },
       {
@@ -1019,19 +997,6 @@
         ],
         "type": "MachineToMachine",
         "related_application_ids": ["ca0c4izoo6dli4vko06g3"]
-      },
-      {
-        "id": "m2m-ps-int-reader",
-        "name": "M2M Public Servant Journey Reader role",
-        "description": "Role used to make M2M applications able to read from journey resources with public servant privilege",
-        "permissions": [
-          {
-            "resource_id": "journey-api",
-            "specific_permissions": ["journey:journey:read"]
-          }
-        ],
-        "type": "MachineToMachine",
-        "related_application_ids": ["cn49p0bq3ulq6ncodwwio"]
       },
       {
         "id": "onboarded-citizen",
