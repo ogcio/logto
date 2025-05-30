@@ -121,7 +121,8 @@ export const manageDefaultUserRole = async (
     usersRoles: CreateUsersRole[]
   ) => Promise<QueryResult<QueryResultRow> | undefined>,
   organizationQueries: OrganizationQueries,
-  ctx: WithHooksAndLogsContext
+  ctx: WithHooksAndLogsContext,
+  registrationStep = true
 ) => {
   getConsoleLogFromContext(ctx).info(
     `OGCIO: New user registration with tenantID: ${user.tenantId}`
@@ -137,13 +138,16 @@ export const manageDefaultUserRole = async (
     `OGCIO: User registration - user identities: ${identities.join(', ')}`
   );
 
-  if (identities.includes(OGCIO_ENTRA_ID_IDENTITY)) {
+  if (identities.includes(OGCIO_ENTRA_ID_IDENTITY) && registrationStep) {
     getConsoleLogFromContext(ctx).info(
       `OGCIO: User registration - EntraID identity found, assigning inactive public servant role to the user.`
     );
     return assignInactivePublicServantRole(user, organizationQueries, ctx);
   }
-  if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY)) {
+  const relatedOrganizations = await organizationQueries.relations.users.getOrganizationsByUserId(
+    user.id
+  );
+  if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY) && relatedOrganizations.length === 0) {
     getConsoleLogFromContext(ctx).info(
       `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
     );
