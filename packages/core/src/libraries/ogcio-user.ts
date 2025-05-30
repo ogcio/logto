@@ -121,7 +121,8 @@ export const manageDefaultUserRole = async (
     usersRoles: CreateUsersRole[]
   ) => Promise<QueryResult<QueryResultRow> | undefined>,
   organizationQueries: OrganizationQueries,
-  ctx: WithHooksAndLogsContext
+  ctx: WithHooksAndLogsContext,
+  registrationStep = true
 ) => {
   getConsoleLogFromContext(ctx).info(
     `OGCIO: New user registration with tenantID: ${user.tenantId}`
@@ -137,7 +138,7 @@ export const manageDefaultUserRole = async (
     `OGCIO: User registration - user identities: ${identities.join(', ')}`
   );
 
-  if (identities.includes(OGCIO_ENTRA_ID_IDENTITY)) {
+  if (identities.includes(OGCIO_ENTRA_ID_IDENTITY) && registrationStep) {
     getConsoleLogFromContext(ctx).info(
       `OGCIO: User registration - EntraID identity found, assigning inactive public servant role to the user.`
     );
