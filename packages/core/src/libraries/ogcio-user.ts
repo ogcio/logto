@@ -144,7 +144,10 @@ export const manageDefaultUserRole = async (
     );
     return assignInactivePublicServantRole(user, organizationQueries, ctx);
   }
-  if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY)) {
+  const relatedOrganizations = await organizationQueries.relations.users.getOrganizationsByUserId(
+    user.id
+  );
+  if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY) && relatedOrganizations.length === 0) {
     getConsoleLogFromContext(ctx).info(
       `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
     );
