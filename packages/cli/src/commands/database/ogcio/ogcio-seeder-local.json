@@ -998,6 +998,13 @@
               "journey:run.self:read",
               "journey:run.self:write"
             ]
+          },
+          {
+            "resource_id": "formsie-sub-api",
+            "specific_permissions": [
+              "keyvault:secret.self:read",
+              "keyvault:secret.self:write"
+            ]
           }
         ]
       },
