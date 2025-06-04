@@ -98,8 +98,8 @@
         "dashboard:admin:read",
         "dashboard:admin:write",
         "formsie:submission:read",
-        "keyvault:encrypt",
-        "keyvault:decrypt",
+        "keyvault:secret:write",
+        "keyvault:secret:read",
         "profile:user.admin:write",
         "profile:user.admin:read"
       ]
@@ -488,8 +488,8 @@
         "description": "Role for Applications that need access to the FormsIE service",
         "specific_permissions": [
           "formsie:submission:read",
-          "keyvault:encrypt",
-          "keyvault:decrypt"
+          "keyvault:secret:write",
+          "keyvault:secret:read"
         ]
       },
       {
@@ -949,8 +949,8 @@
         "resource_id": "formsie-sub-api",
         "specific_permissions": [
           "formsie:submission:read",
-          "keyvault:encrypt",
-          "keyvault:decrypt"
+          "keyvault:secret:write",
+          "keyvault:secret:read"
         ]
       }
     ],
@@ -1010,8 +1010,8 @@
             "resource_id": "formsie-sub-api",
             "specific_permissions": [
               "formsie:submission:read",
-              "keyvault:encrypt",
-              "keyvault:decrypt"
+              "keyvault:secret:write",
+              "keyvault:secret:read"
             ]
           }          
         ]
