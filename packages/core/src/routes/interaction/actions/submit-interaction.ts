@@ -275,6 +275,19 @@ async function handleSubmitSignIn(
   appInsights.client?.trackEvent({
     name: getEventName(Component.Core, CoreEvent.SignIn),
   });
+
+  // OGCIO
+  const registrationStep = false;
+  const { organizations, roles, usersRoles } = queries;
+  await manageDefaultUserRole(
+    user,
+    roles.findRoleById,
+    usersRoles.insertUsersRoles,
+    organizations,
+    ctx,
+    registrationStep
+  );
+  // END OGCIO
 }
 
 export default async function submitInteraction(
