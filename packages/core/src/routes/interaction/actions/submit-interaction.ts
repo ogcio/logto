@@ -195,6 +195,7 @@ async function handleSubmitRegister(
     user,
     roles.findRoleById,
     usersRoles.insertUsersRoles,
+    usersRoles.findUsersRolesByUserId,
     organizations,
     ctx
   );
@@ -283,6 +284,7 @@ async function handleSubmitSignIn(
     user,
     roles.findRoleById,
     usersRoles.insertUsersRoles,
+    usersRoles.findUsersRolesByUserId,
     organizations,
     ctx,
     registrationStep
