@@ -38,6 +38,43 @@ const getAndConsumeCookie = (cookieName: string) => {
   return null;
 };
 
+const getCookie = (cookieName: string) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split('=');
+    if (!value) {
+      continue;
+    }
+    if (name === cookieName) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const getIsAuthorizationAdminSignin = () => {
+  const logtoCookie = getCookie('_logto');
+  if (!logtoCookie) {
+    return false;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsed = JSON.parse(logtoCookie);
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'appId' in parsed &&
+      typeof parsed.appId === 'string'
+    ) {
+      return parsed.appId === 'admin-console';
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
 const SignInFooters = () => {
   const { t } = useTranslation();
   const { termsValidation, agreeToTermsPolicy } = useTerms();
@@ -137,6 +174,9 @@ const SignIn = () => {
   }
 
   const isE2EUsernameSignin = getAndConsumeCookie('e2eUsernameSignin') === 'true';
+  // Used to determine if the user is signing in as an admin in the authorization console
+  // If so, we will show only the username sign-in method
+  const isAuthorizationAdminSignin = getIsAuthorizationAdminSignin();
   // eslint-disable-next-line unicorn/prevent-abbreviations -- E2E is a common term
   const e2eUsernameSigninIdentifier = [
     {
@@ -148,7 +188,9 @@ const SignIn = () => {
     },
   ];
 
-  const customSignInMethods = [...(isE2EUsernameSignin ? e2eUsernameSigninIdentifier : [])];
+  const customSignInMethods = [
+    ...(isE2EUsernameSignin || isAuthorizationAdminSignin ? e2eUsernameSigninIdentifier : []),
+  ];
 
   if (!signInMode) {
     return <ErrorPage />;
