@@ -1217,7 +1217,14 @@
           "fallbackLanguage": "en"
         },
         "sign_in": {
-          "methods": []
+          "methods": [
+            {
+              "password": true,
+              "identifier": "username",
+              "verificationCode": false,
+              "isPasswordPrimary": true
+            }
+          ]
         },
         "sign_up": {
           "verify": false,
