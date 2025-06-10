@@ -150,6 +150,7 @@ export type UserSeeder = {
   username: string;
   primary_email: string;
   primary_phone?: string;
+  password_encrypted?: string;
   name: string;
   application_id: string;
   resource_role_ids: string[];
