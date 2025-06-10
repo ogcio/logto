@@ -59,6 +59,10 @@ const createUser = async (params: {
       primary_phone: params.userToSeed.primary_phone ?? undefined,
       name: params.userToSeed.name,
       application_id: params.userToSeed.application_id,
+      password_encrypted: params.userToSeed.password_encrypted,
+      ...(typeof params.userToSeed.password_encrypted === 'string'
+        ? { password_encryption_method: 'Argon2i' }
+        : {}),
     },
     tableName: Users.table,
   });
