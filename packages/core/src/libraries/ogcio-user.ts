@@ -5,6 +5,7 @@ import {
   type User,
   type Organization,
   adminTenantId,
+  type UsersRole,
 } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { type QueryResult, type QueryResultRow } from '@silverhand/slonik';
@@ -79,6 +80,15 @@ const assignOrganizationRoleToUser = async (
     const publicServantRole = await organizationQueries.roles.findById(
       OGCIO_ORGANIZATION_ROLES.INACTIVE_PUBLIC_SERVANT
     );
+    const alreadyHas = await organizationQueries.relations.usersRoles.exists({
+      organizationId: organization.id,
+      organizationRoleId: publicServantRole.id,
+      userId: user.id,
+    });
+
+    if (alreadyHas) {
+      return;
+    }
 
     await organizationQueries.relations.usersRoles.insert({
       organizationId: organization.id,
@@ -120,6 +130,7 @@ export const manageDefaultUserRole = async (
   insertUsersRoles: (
     usersRoles: CreateUsersRole[]
   ) => Promise<QueryResult<QueryResultRow> | undefined>,
+  findUserRoles: (userId: string) => Promise<readonly UsersRole[]>,
   organizationQueries: OrganizationQueries,
   ctx: WithHooksAndLogsContext,
   registrationStep = true
@@ -144,13 +155,50 @@ export const manageDefaultUserRole = async (
     );
     return assignInactivePublicServantRole(user, organizationQueries, ctx);
   }
+
+  return manageDefaultCitizenRole(
+    user,
+    getRoles,
+    insertUsersRoles,
+    findUserRoles,
+    organizationQueries,
+    ctx,
+    identities
+  );
+};
+
+const manageDefaultCitizenRole = async (
+  user: User,
+  getRoles: (id: string) => Promise<Role>,
+  insertUsersRoles: (
+    usersRoles: CreateUsersRole[]
+  ) => Promise<QueryResult<QueryResultRow> | undefined>,
+  findUserRoles: (userId: string) => Promise<readonly UsersRole[]>,
+  organizationQueries: OrganizationQueries,
+  ctx: WithHooksAndLogsContext,
+  identities: string[]
+) => {
+  if (!identities.includes(OGCIO_MY_GOV_ID_IDENTITY)) {
+    return;
+  }
+
   const relatedOrganizations = await organizationQueries.relations.users.getOrganizationsByUserId(
     user.id
   );
-  if (identities.includes(OGCIO_MY_GOV_ID_IDENTITY) && relatedOrganizations.length === 0) {
-    getConsoleLogFromContext(ctx).info(
-      `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
-    );
-    return assignCitizenRole(user, getRoles, insertUsersRoles, ctx);
+
+  if (relatedOrganizations.length > 0) {
+    return;
   }
+
+  // Check if already has citizen role
+  const userRoles = await findUserRoles(user.id);
+  if (userRoles.some((ur) => ur.id === OGCIO_ROLES.BB_CITIZEN)) {
+    return;
+  }
+
+  getConsoleLogFromContext(ctx).info(
+    `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
+  );
+
+  return assignCitizenRole(user, getRoles, insertUsersRoles, ctx);
 };

@@ -479,6 +479,7 @@ export default class ExperienceInteraction {
       user,
       roles.findRoleById,
       usersRoles.insertUsersRoles,
+      usersRoles.findUsersRolesByUserId,
       organizations,
       this.ctx,
       registrationStep

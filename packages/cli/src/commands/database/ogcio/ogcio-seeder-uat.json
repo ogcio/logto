@@ -1217,7 +1217,14 @@
           "fallbackLanguage": "en"
         },
         "sign_in": {
-          "methods": []
+          "methods": [
+            {
+              "password": true,
+              "identifier": "username",
+              "verificationCode": false,
+              "isPasswordPrimary": true
+            }
+          ]
         },
         "sign_up": {
           "verify": false,
@@ -1271,9 +1278,10 @@
         "primary_phone": "+21312666199",
         "name": "E2E Citizen User",
         "application_id": "1lvmteh2ao3xrswyq7j3e",
-        "resource_role_ids": ["bb-citizen"],
+        "resource_role_ids": ["bb-citizen", "onboarded-citizen"],
         "ppsn": "E2E_CITIZEN_USER_1",
-        "related_organizations": []
+        "related_organizations": [],
+        "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
       },
       {
         "id": "e2e-ps-1",
