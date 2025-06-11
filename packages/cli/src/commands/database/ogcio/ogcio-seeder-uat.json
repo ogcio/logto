@@ -1320,8 +1320,7 @@
         "ppsn": "E2E_PS_USER_2",
         "resource_role_ids": [],
         "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" }
         ],
         "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
       }

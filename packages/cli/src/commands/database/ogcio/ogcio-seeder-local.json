@@ -1306,8 +1306,7 @@
         "ppsn": "E2E_PS_USER_2",
         "resource_role_ids": [],
         "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" }
         ],
         "password_encrypted": "$argon2i$v=19$m=4096,t=256,p=1$Nf9j0Ok9DAQWHV5QyXi4bQ$OW+SdOeUEQoQM/VrlNwd+KsfgudVGv7lB8gysCSkThg"
       }
