@@ -228,6 +228,7 @@
         "specific_permissions": [
           "journey:run:read",
           "journey:run:write",
+          "journey:journey:read",
           "profile:user.self:read"
         ]
       },
