@@ -1265,6 +1265,18 @@
         "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
       },
       {
+        "id": "e2e-cit-2",
+        "username": "e2e_citizen_user_2",
+        "primary_email": "e2e_citizen_2@user.com",
+        "primary_phone": "+21312666195",
+        "name": "E2E Citizen User 2",
+        "application_id": "1lvmteh2ao3xrswyq7j3e",
+        "resource_role_ids": ["bb-citizen", "onboarded-citizen"],
+        "ppsn": "E2E_CITIZEN_USER_2",
+        "related_organizations": [],
+        "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
+      },
+      {
         "id": "e2e-ps-1",
         "username": "e2e_ps_user_1",
         "primary_email": "e2e_ps_1@user.com",
@@ -1274,9 +1286,23 @@
         "ppsn": "E2E_PS_USER_1",
         "resource_role_ids": [],
         "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant"], "organization_id": "second-testing" }
-        ]
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "second-testing" }
+        ],
+        "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
+      },
+      {
+        "id": "e2e-ps-2",
+        "username": "e2e_ps_user_2",
+        "primary_email": "e2e_ps_2@user.com",
+        "primary_phone": "+21432666929",
+        "name": "E2E PublicServant User 2",
+        "application_id": "1lvmteh2ao3xrswyq7j3e",
+        "ppsn": "E2E_PS_USER_2",
+        "resource_role_ids": [],
+        "related_organizations": [
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" }        ],
+        "password_encrypted": "<SEEDER_E2E_USERS_ENCRYPTED_PASSWORD>"
       }
     ],
     "raw_queries": [
