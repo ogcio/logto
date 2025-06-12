@@ -80,6 +80,7 @@
         "journey:run:*",
         "journey:run:read",
         "journey:run:write",
+        "journey:run:delete",
         "dashboard:admin:read",
         "dashboard:admin:write",
         "formsie:submission:read",
@@ -198,6 +199,16 @@
           "journey:run:write",
           "profile:user.self:read",
           "profile:user.self:write"
+        ]
+      },
+      {
+        "id": "jou-submission-manag",
+        "name": "Journey Submission Manager",
+        "description": "Role for Journey public servant that can only read and edit submissions",
+        "specific_permissions": [
+          "journey:run:read",
+          "journey:run:write",
+          "profile:user.self:read"
         ]
       },
       {
@@ -865,7 +876,8 @@
           "journey:journey:read",
           "journey:run.self:read",
           "journey:run.self:write",
-          "journey:run:write"
+          "journey:run:write",
+          "journey:run:delete"
         ]
       },
       {
