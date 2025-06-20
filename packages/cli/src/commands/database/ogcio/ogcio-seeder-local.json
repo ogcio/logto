@@ -102,7 +102,8 @@
         "keyvault:secret:write",
         "keyvault:secret:read",
         "profile:user.admin:write",
-        "profile:user.admin:read"
+        "profile:user.admin:read",
+        "test:e2e:resources_cleanup"
       ]
     },
     "organization_roles": [
@@ -514,6 +515,20 @@
         "related_applications": [
           { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "ogcio" },
           { "application_id": "v32qmzp9x7lh5f8kwe6ut", "organization_id": "doe"}
+        ]
+      },
+      {
+        "id": "e2e-tester",
+        "name": "E2E Tester",
+        "description": "E2E Tester role",
+        "specific_permissions": [
+          "test:e2e:resources_cleanup"
+        ],
+        "related_applications": [
+          { "application_id": "2xz6sbi8ch01uhjt1oq8r", "organization_id": "first-testing" },
+          { "application_id": "1qpp7cfssbb4mcrvmfe0c", "organization_id": "first-testing"},
+          { "application_id": "2xz6sbi8ch01uhjt1oq8r", "organization_id": "second-testing" },
+          { "application_id": "1qpp7cfssbb4mcrvmfe0c", "organization_id": "second-testing"}
         ]
       }
     ],
@@ -964,7 +979,9 @@
         "specific_permissions": [
           "formsie:submission:read",
           "keyvault:secret:write",
-          "keyvault:secret:read"
+          "keyvault:secret:read",
+          "keyvault:secret.self:read",
+          "keyvault:secret.self:write"
         ]
       }
     ],
@@ -1322,8 +1339,8 @@
         "ppsn": "E2E_PS_USER_1",
         "resource_role_ids": [],
         "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" },
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "second-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant", "e2e-tester"], "organization_id": "first-testing" },
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant", "e2e-tester"], "organization_id": "second-testing" }
         ],
         "password_encrypted": "$argon2i$v=19$m=4096,t=256,p=1$Nf9j0Ok9DAQWHV5QyXi4bQ$OW+SdOeUEQoQM/VrlNwd+KsfgudVGv7lB8gysCSkThg"
       },
@@ -1337,7 +1354,7 @@
         "ppsn": "E2E_PS_USER_2",
         "resource_role_ids": [],
         "related_organizations": [
-          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant"], "organization_id": "first-testing" }
+          { "roles": ["upload-public-servant", "pro-public-servant", "msg-public-servant", "pay-public-servant", "int-public-servant", "e2e-tester"], "organization_id": "first-testing" }
         ],
         "password_encrypted": "$argon2i$v=19$m=4096,t=256,p=1$Nf9j0Ok9DAQWHV5QyXi4bQ$OW+SdOeUEQoQM/VrlNwd+KsfgudVGv7lB8gysCSkThg"
       }
