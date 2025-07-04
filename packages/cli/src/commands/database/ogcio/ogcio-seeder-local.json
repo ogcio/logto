@@ -537,10 +537,10 @@
         "name": "Payments Building Block",
         "description": "Payments App of Life Events",
         "type": "Traditional",
-        "redirect_uri": "http://localhost:3001/callback",
+        "redirect_uri": "http://localhost:3301/callback",
         "logout_redirect_uri": [
-          "http://localhost:3001",
-          "http://localhost:3001/login/admin"
+          "http://localhost:3301",
+          "http://localhost:3301/login/admin"
         ],
         "secret": "payments_app_local_secret",
         "id": "2xz6sbi8ch01uhjt1oq8r",
