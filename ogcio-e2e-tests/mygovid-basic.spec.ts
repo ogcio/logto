@@ -103,7 +103,7 @@ test.describe('MyGovId Mock Service - Comprehensive Tests', () => {
         expect(location).toContain('state=test-state');
     });
 
-    test('should handle custom MyGovId authentication flow with URL redirect', async ({ page }) => {
+    test('should handle custom MyGovId authentication flow with response redirect', async ({ page }) => {
         const authParams = new URLSearchParams({
             response_type: 'code',
             client_id: 'test-client',
@@ -115,12 +115,17 @@ test.describe('MyGovId Mock Service - Comprehensive Tests', () => {
 
         await page.goto(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?${authParams}`);
         await page.fill('input[name="password"]', '123');
-        await page.click('button[type="submit"]');
+        
+        // Use response-based approach instead of URL waiting
+        const [response] = await Promise.all([
+            page.waitForResponse(response => response.url().includes('/logto/mock/login')),
+            page.click('button[type="submit"]')
+        ]);
 
-        await page.waitForURL(/.*callback.*code=.*/);
-        const currentUrl = page.url();
-        expect(currentUrl).toContain('code=');
-        expect(currentUrl).toContain('state=test-state');
+        expect(response.status()).toBe(302);
+        const location = response.headers()['location'];
+        expect(location).toContain('code=');
+        expect(location).toContain('state=test-state');
     });
 
     test('should provide OIDC discovery endpoint', async ({ request }) => {
