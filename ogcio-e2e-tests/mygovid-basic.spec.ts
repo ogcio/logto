@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 const MYGOVID_MOCK_BASE_URL = process.env.MYGOVID_MOCK_URL || 'http://localhost:4005';
-const LOGTO_BASE_URL = process.env.LOGTO_API_URL || 'http://localhost:3301';
+const LOGTO_BASE_URL = process.env.LOGTO_API_URL || 'http://localhost:3001';
 const CALLBACK_URL = `${LOGTO_BASE_URL}/callback`;
 
-test.describe('MyGovId Mock Service - Basic Tests', () => {
+test.describe('MyGovId Mock Service - Comprehensive Tests', () => {
 
     test('should provide health check endpoint', async ({ request }) => {
         const response = await request.get(`${MYGOVID_MOCK_BASE_URL}/health`);
@@ -15,7 +15,7 @@ test.describe('MyGovId Mock Service - Basic Tests', () => {
         expect(content.status).toBe('ok');
     });
 
-    test('should serve OIDC auth endpoint with custom parameters', async ({ page }) => {
+    test('should serve OIDC auth endpoint with all required form fields', async ({ page }) => {
         const authParams = new URLSearchParams({
             response_type: 'code',
             client_id: 'test-client',
@@ -29,6 +29,11 @@ test.describe('MyGovId Mock Service - Basic Tests', () => {
 
         await expect(page.locator('form')).toBeVisible();
         await expect(page.locator('input[name="password"]')).toBeVisible();
+        await expect(page.locator('input[name="firstName"]')).toBeAttached();
+        await expect(page.locator('input[name="lastName"]')).toBeAttached();
+        await expect(page.locator('input[name="email"]')).toBeAttached();
+        await expect(page.locator('input[name="sub"]')).toBeAttached();
+        await expect(page.locator('input[name="oid"]')).toBeAttached();
 
         const formContent = await page.content();
         expect(formContent).toContain('test-state');
@@ -98,7 +103,36 @@ test.describe('MyGovId Mock Service - Basic Tests', () => {
         expect(location).toContain('state=test-state');
     });
 
-    test('should reject invalid password', async ({ page }) => {
+    test('should handle custom MyGovId authentication flow with URL redirect', async ({ page }) => {
+        const authParams = new URLSearchParams({
+            response_type: 'code',
+            client_id: 'test-client',
+            redirect_uri: CALLBACK_URL,
+            state: 'test-state',
+            nonce: 'test-nonce',
+            scope: 'openid profile email'
+        });
+
+        await page.goto(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?${authParams}`);
+        await page.fill('input[name="password"]', '123');
+        await page.click('button[type="submit"]');
+
+        await page.waitForURL(/.*callback.*code=.*/);
+        const currentUrl = page.url();
+        expect(currentUrl).toContain('code=');
+        expect(currentUrl).toContain('state=test-state');
+    });
+
+    test('should provide OIDC discovery endpoint', async ({ request }) => {
+        const authResponse = await request.get(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?response_type=code&client_id=test&redirect_uri=${encodeURIComponent(CALLBACK_URL)}&state=test&nonce=test&scope=openid`);
+        expect(authResponse.ok()).toBe(true);
+
+        const content = await authResponse.text();
+        expect(content).toContain('<form');
+        expect(content).toContain('password');
+    });
+
+    test('should reject invalid password (response method)', async ({ page }) => {
         const authParams = new URLSearchParams({
             response_type: 'code',
             client_id: 'test-client',
@@ -119,6 +153,24 @@ test.describe('MyGovId Mock Service - Basic Tests', () => {
         expect(response.status()).toBe(302);
         const location = response.headers()['location'];
         expect(location).toContain('/logto/mock/auth');
+    });
+
+    test('should reject invalid credentials (URL method)', async ({ page }) => {
+        const authParams = new URLSearchParams({
+            response_type: 'code',
+            client_id: 'test-client',
+            redirect_uri: CALLBACK_URL,
+            state: 'test-state',
+            nonce: 'test-nonce',
+            scope: 'openid profile email'
+        });
+
+        await page.goto(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?${authParams}`);
+        await page.fill('input[name="password"]', 'wrong-password');
+        await page.click('button[type="submit"]');
+
+        await page.waitForURL(/.*\/logto\/mock\/auth.*/);
+        expect(page.url()).toContain('/logto/mock/auth');
     });
 
     test('should handle logout endpoint', async ({ request }) => {
