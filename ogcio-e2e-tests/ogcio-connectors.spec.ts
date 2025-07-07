@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+//this file is to test OGCIO custom connectors
+// it includes tests for MyGovId and OGCIO EntraID connectors   
+
 const LOGTO_API_BASE_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
 test.describe('OGCIO Custom Connectors', () => {

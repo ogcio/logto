@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+// This file is to test OGCIO custom seeder functionality
+// It includes tests for OGCIO organizations, custom connectors, and seeder data integrity  
+
 const LOGTO_API_BASE_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
 test.describe('OGCIO Custom Seeder', () => {

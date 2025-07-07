@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+//this file is to test custom ogcio user flows
+// such as creating users, assigning roles, and deleting users
+
 const LOGTO_ADMIN_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
 const TEST_USERNAME = process.env.TEST_USERNAME;

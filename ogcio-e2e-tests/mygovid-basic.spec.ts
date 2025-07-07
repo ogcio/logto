@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+//this file is to test mygovid mock service
+// it includes comprehensive tests for the MyGovId mock service endpoints and functionality
+// it covers health check, OIDC auth endpoint, token endpoint, JWKS endpoint, form submission,
+// custom authentication flow, discovery endpoint, invalid credentials handling, and logout endpoint
+
 const MYGOVID_MOCK_BASE_URL = process.env.MYGOVID_MOCK_URL || 'http://localhost:4005';
 const LOGTO_BASE_URL = process.env.LOGTO_API_URL || 'http://localhost:3001';
 const CALLBACK_URL = `${LOGTO_BASE_URL}/callback`;

@@ -24,9 +24,9 @@
     "ci:lint": "pnpm -r --parallel --workspace-concurrency=0 lint",
     "ci:stylelint": "pnpm -r --parallel --workspace-concurrency=0 stylelint",
     "ci:test": "pnpm -r --parallel --workspace-concurrency=0 test:ci",
-    "e2e:install": "pnpm playwright install",
-    "e2e:test": "pnpm playwright test",
-    "e2e:test:ui": "pnpm playwright test --ui"
+    "ogcio:e2e:install": "pnpm playwright install",
+    "ogcio:e2e:test": "pnpm playwright test",
+    "ogcio:e2e:test:ui": "pnpm playwright test --ui"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
