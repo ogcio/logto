@@ -137,58 +137,55 @@ stages:
           - script: |
               npx playwright install chromium
             displayName: 'Install Playwright browsers'
-
+            
           - script: |
-              echo "🛢️ Setting up PostgreSQL database for CI..."
-
-              # Start the database
-              echo "Starting PostgreSQL container..."
-              docker-compose -f docker-compose-db.yml up -d
-
-              # Wait for PostgreSQL to be ready
-              echo "Waiting for PostgreSQL to be ready..."
-              for i in {1..30}; do
-                if docker-compose -f docker-compose-db.yml exec -T postgres pg_isready -h localhost -p 5433; then
-                  echo "✅ PostgreSQL is ready!"
+              echo "🔧 Setting up PostgreSQL service..."
+              sudo apt-get update
+              sudo apt-get install -y postgresql postgresql-contrib
+              sudo service postgresql start
+              
+              # Wait for PostgreSQL to start
+              echo "⏳ Waiting for PostgreSQL to start..."
+              for i in {1..10}; do
+                if sudo -u postgres pg_isready; then
+                  echo "✅ PostgreSQL service is running!"
                   break
                 fi
-                echo "⏳ PostgreSQL not ready yet, waiting... ($i of 30)"
+                echo "⏳ PostgreSQL not ready yet, waiting... ($i of 10)"
                 sleep 2
-                
-                # After 10 attempts, show logs
-                if [ $i -eq 10 ]; then
-                  echo "⚠️ PostgreSQL taking longer than expected. Showing logs:"
-                  docker-compose -f docker-compose-db.yml logs postgres
-                fi
               done
-
-              # Check one more time
-              if ! docker-compose -f docker-compose-db.yml exec -T postgres pg_isready -h localhost -p 5433; then
-                echo "❌ PostgreSQL failed to start properly!"
-                docker-compose -f docker-compose-db.yml logs postgres
-                exit 1
-              fi
-
-              # Show database connection details
-              echo "📊 Database connection details:"
-              echo "Host: localhost"
-              echo "Port: 5433"
-              echo "User: postgres"
-
-              # Create an environment file with appropriate database connection settings
-              echo "Creating .env file with database configuration..."
-              cat > .env << EOF
-              DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto
-              PORT=3001
-              ADMIN_PORT=3002
-              ENDPOINT=http://localhost:3001
-              ADMIN_ENDPOINT=http://localhost:3002
-              EOF
-
-              echo "✅ Database setup complete!"
               
-              echo "🚀 Starting Logto with make run-native in background..."
-              nohup make run-native > logto-startup.log 2>&1 &
+              # Create logto database and user
+              echo "Creating logto database and user..."
+              sudo -u postgres psql -c "CREATE USER logto WITH PASSWORD 'p0stgr3s';"
+              sudo -u postgres psql -c "CREATE DATABASE logto OWNER logto;"
+              sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE logto TO logto;"
+              echo "✅ Database created!"
+              
+              # Create .env file from sample
+              echo "📄 Setting up environment..."
+              cp .env.sample .env
+              
+              # Update .env file with local PostgreSQL settings
+              sed -i 's|DB_URL=.*|DB_URL=postgres://logto:p0stgr3s@localhost:5432/logto|g' .env
+              
+              echo "📄 Environment file created:"
+              cat .env
+              
+              echo "🚀 Running Logto setup..."
+              # Pre-run setup steps from makefile but without docker
+              pnpm pnpm:devPreinstall && pnpm prepack
+              
+              echo "🔄 Running database migrations and seeding..."
+              npm run cli db seed -- --swe
+              npm run cli db alteration deploy latest
+              npm run cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
+              
+              echo "🔌 Building connectors..."
+              pnpm connectors build && pnpm cli connector link
+              
+              echo "🚀 Starting Logto in background..."
+              nohup pnpm dev > logto-startup.log 2>&1 &
               
               # Track Logto startup progress
               echo "⏱️ Waiting for Logto to initialize (max 5 minutes)..."
@@ -218,14 +215,26 @@ stages:
                   break
                 fi
                 
-                # Check for database connection errors
+                # Check for common errors in the logs
                 if grep -q "Error: timeout expired" logto-startup.log; then
                   echo "⚠️ Database connection timeout detected!"
-                  echo "📊 Docker container status:"
-                  docker ps
-                  echo "📊 Docker logs for PostgreSQL:"
-                  docker-compose -f docker-compose-db.yml logs --tail 50 postgres
-                  break
+                  
+                  # Try to fix the database connection issue
+                  echo "🔧 Attempting to fix database connection..."
+                  cat .env
+                  echo "Testing direct database connectivity..."
+                  sudo -u postgres psql -c "SELECT 1" || echo "Failed to connect to PostgreSQL"
+                  sudo -u postgres psql -c "\l" || echo "Failed to list databases"
+                fi
+                
+                # Check for network issues
+                if grep -q "ECONNREFUSED" logto-startup.log; then
+                  echo "⚠️ Connection refused error detected!"
+                  echo "📊 Network status:"
+                  ss -tulpn | grep LISTEN
+                  echo "📊 PostgreSQL connectivity check:"
+                  nc -zv localhost 5432 || echo "Cannot connect to PostgreSQL port"
+                  sudo service postgresql status
                 fi
                 
                 # Print progress and recent logs
@@ -248,11 +257,15 @@ stages:
                 echo "⚠️ Last 50 lines of logto-startup.log:"
                 tail -50 logto-startup.log
                 
-                echo "📊 PostgreSQL logs:"
-                docker-compose -f docker-compose-db.yml logs --tail 50 postgres
+                echo "📊 PostgreSQL status:"
+                sudo service postgresql status
+                sudo -u postgres psql -c "\l" || echo "Failed to list databases"
                 
                 echo "📊 Network status:"
                 ss -tulpn | grep LISTEN
+                
+                echo "📊 Process status:"
+                ps aux | grep -E 'node|pnpm|postgres'
                 
                 echo "📊 Full environment:"
                 printenv | grep -v PASSWORD
@@ -370,9 +383,11 @@ stages:
               echo "Environment variables:" >> debug-artifacts/system-info.txt
               printenv | grep -v PASSWORD >> debug-artifacts/system-info.txt
               
-              # Collect database logs if available
-              echo "Collecting database logs..."
-              docker-compose -f docker-compose-db.yml logs > debug-artifacts/database-logs.txt 2>&1 || echo "Could not collect database logs"
+              # Collect PostgreSQL logs and status
+              echo "Collecting PostgreSQL logs and status..."
+              sudo cat /var/log/postgresql/postgresql-*.log > debug-artifacts/postgresql-logs.txt 2>&1 || echo "Could not collect PostgreSQL logs"
+              sudo -u postgres psql -c "\l" > debug-artifacts/postgresql-databases.txt 2>&1 || echo "Could not list PostgreSQL databases"
+              sudo -u postgres psql -c "\du" >> debug-artifacts/postgresql-databases.txt 2>&1 || echo "Could not list PostgreSQL users"
               
               echo "📦 Debug information collected"
             displayName: 'Collect Debug Information'
