@@ -90,6 +90,15 @@ stages:
     dependsOn: 
       - EnvApproval
       - Build_Logto_Audit_Cleaner
+    condition: succeeded()
+    jobs:
+    - template: build/push_image_ecr.yml@pipeline-templates
+      parameters:
+        awsServiceConnection: ${{ variables.awsServiceConnection }}
+        awsRegion: ${{ variables.awsRegion }}
+        serviceName: logto-audit-cleaner
+        repositoryName: bb-logto-audit-cleaner
+        pushTag: $(Build.BuildId)
   - stage: OGCIO_E2E_Tests
     displayName: OGCIO E2E Tests
     dependsOn: 
