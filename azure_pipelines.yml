@@ -144,13 +144,6 @@ stages:
               testRunTitle: 'OGCIO E2E Tests - $(environment)'
               mergeTestResults: true
 
-          - task: PublishHtmlReport@1
-            displayName: 'Publish Playwright HTML Report'
-            condition: always()
-            inputs:
-              reportDir: 'playwright-report'
-              tabName: 'Playwright Report'
-
           - task: PublishPipelineArtifact@1
             displayName: 'Upload Playwright Report'
             condition: always()
