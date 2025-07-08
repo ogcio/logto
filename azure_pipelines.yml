@@ -142,12 +142,12 @@ stages:
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
 
-              echo "⏱️ Waiting 6 minutes for Logto to fully initialize..."
+              echo "⏱️ Waiting 5 minutes for Logto to fully initialize..."
               echo "Started waiting at: $(date)"
-              sleep 360
+              sleep 300
               echo "Finished waiting at: $(date)"
 
-              echo "✅ Proceeding with tests after 6-minute wait"
+              echo "✅ Proceeding with tests after 5-minute wait"
               
               # Quick check if server is responding
               if curl -s http://localhost:3302/ > /dev/null; then
@@ -165,20 +165,11 @@ stages:
               echo "Test start time: $(date)"
               
               # Run tests with increased timeouts for CI environment
-              # Add debug flag to get more verbose output
-              pnpm exec playwright test --project=chromium --timeout=60000 --debug
+              pnpm exec playwright test --project=chromium --timeout=60000
               TEST_RESULT=$?
               
               echo "Test end time: $(date)"
               echo "Test exit code: $TEST_RESULT"
-              
-              # List all test artifacts that were generated
-              echo "Listing test result artifacts:"
-              find test-results -type f | grep -E '\.(webm|png|zip)$'
-              
-              # Count videos to ensure they were created
-              VIDEO_COUNT=$(find test-results -name "*.webm" | wc -l)
-              echo "Number of video files generated: $VIDEO_COUNT"
               
               # If tests fail, show the Logto log for debugging
               if [ $TEST_RESULT -ne 0 ]; then
@@ -220,16 +211,6 @@ stages:
               targetPath: 'test-results'
               artifact: 'test-results-$(environment)-$(System.JobId)'
               publishLocation: 'pipeline'
-              
-          # Explicitly publish video artifacts separately to ensure they're captured
-          - task: PublishPipelineArtifact@1
-            displayName: 'Upload Test Videos'
-            condition: always()
-            inputs:
-              targetPath: 'test-results/**/*.webm'
-              artifact: 'test-videos-$(environment)-$(System.JobId)'
-              publishLocation: 'pipeline'
-              
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
