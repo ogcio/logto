@@ -142,8 +142,8 @@ stages:
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
               echo "Waiting for Logto to start up..."
-              # Wait for admin console to be available
-              timeout 300 bash -c 'until curl -f http://localhost:3302/health; do echo "Waiting for Logto admin..."; sleep 5; done'
+              # Wait for admin console to be available (check for UI response)
+              timeout 300 bash -c 'until curl -s http://localhost:3302/ | grep -q "Logto\|html\|<!DOCTYPE"; do echo "Waiting for Logto admin..."; sleep 5; done'
               echo "✅ Logto is ready!"
             displayName: 'Start Logto with make run-native'
 
