@@ -85,6 +85,11 @@ stages:
         pushArtefacts: true
         buildArguments: $(buildArguments)
         dockerfile: ./audit-cleaner/Dockerfile
+  - stage: Push_Logto_Audit_Cleaner
+    displayName: Push Logto Audit Cleaner to ECR
+    dependsOn: 
+      - EnvApproval
+      - Build_Logto_Audit_Cleaner
   - stage: OGCIO_E2E_Tests
     displayName: OGCIO E2E Tests
     dependsOn: 
