@@ -139,16 +139,55 @@ stages:
             displayName: 'Install Playwright browsers'
 
           - script: |
-              echo "�️ Setting up database services first..."
+              echo "🛢️ Setting up PostgreSQL database for CI..."
+
+              # Start the database
+              echo "Starting PostgreSQL container..."
               docker-compose -f docker-compose-db.yml up -d
+
+              # Wait for PostgreSQL to be ready
+              echo "Waiting for PostgreSQL to be ready..."
+              for i in {1..30}; do
+                if docker-compose -f docker-compose-db.yml exec -T postgres pg_isready -h localhost -p 5433; then
+                  echo "✅ PostgreSQL is ready!"
+                  break
+                fi
+                echo "⏳ PostgreSQL not ready yet, waiting... ($i of 30)"
+                sleep 2
+                
+                # After 10 attempts, show logs
+                if [ $i -eq 10 ]; then
+                  echo "⚠️ PostgreSQL taking longer than expected. Showing logs:"
+                  docker-compose -f docker-compose-db.yml logs postgres
+                fi
+              done
+
+              # Check one more time
+              if ! docker-compose -f docker-compose-db.yml exec -T postgres pg_isready -h localhost -p 5433; then
+                echo "❌ PostgreSQL failed to start properly!"
+                docker-compose -f docker-compose-db.yml logs postgres
+                exit 1
+              fi
+
+              # Show database connection details
+              echo "📊 Database connection details:"
+              echo "Host: localhost"
+              echo "Port: 5433"
+              echo "User: postgres"
+
+              # Create an environment file with appropriate database connection settings
+              echo "Creating .env file with database configuration..."
+              cat > .env << EOF
+              DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto
+              PORT=3001
+              ADMIN_PORT=3002
+              ENDPOINT=http://localhost:3001
+              ADMIN_ENDPOINT=http://localhost:3002
+              EOF
+
+              echo "✅ Database setup complete!"
               
-              echo "⏳ Waiting for database to be ready..."
-              sleep 30
-              
-              echo "🔍 Checking database status..."
-              docker ps
-              
-              echo "�🚀 Starting Logto with make run-native in background..."
+              echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
               
               # Track Logto startup progress
