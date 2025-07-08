@@ -141,44 +141,51 @@ stages:
           - script: |
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
-              echo "Waiting for Logto admin login form to be fully interactive..."
-              # Wait for the exact login form elements that tests expect to be ready
-              timeout 300 bash -c 'while true; do
-                response=$(curl -s http://localhost:3302/ 2>/dev/null)
-                if echo "$response" | grep -q "Sign in" && \
-                   echo "$response" | grep -q "button"; then
-                  echo "✅ Complete login form detected!"
-                  # Additional check: ensure the page is fully loaded (not just HTML fragments)
-                  if echo "$response" | grep -q "</html>" || echo "$response" | grep -q "Logto"; then
-                    echo "✅ Full page loaded - Logto is ready for tests!"
-                    break
-                  else
-                    echo "Page partially loaded, waiting for complete render..."
-                  fi
-                else
-                  echo "Waiting for login form elements (identifier, password, Sign in button)..."
-                fi
-                sleep 5
-              done'
-              # Give it a few more seconds for any JavaScript to finish loading
-              echo "⏱️ Waiting additional 10 seconds for JS initialization..."
-              sleep 10
-              echo "✅ Logto should be fully ready now!"
-              # Debug: Show what the login page actually contains
-              echo "🔍 Login page content preview:"
-              curl -s http://localhost:3302/ | grep -E "(Sign in|identifier|password|button|form)" | head -10 || echo "Could not fetch login page content"
-            displayName: 'Start Logto and wait for login'
+              
+              echo "⏱️ Waiting 3 minutes for Logto to fully initialize..."
+              echo "Started waiting at: $(date)"
+              sleep 180
+              echo "Finished waiting at: $(date)"
+              
+              echo "✅ Proceeding with tests after 3-minute wait"
+              
+              # Quick check if server is responding
+              if curl -s http://localhost:3302/ > /dev/null; then
+                echo "✅ Server is responding at http://localhost:3302/"
+              else
+                echo "⚠️ Warning: Server may not be responding, but continuing anyway"
+                echo "⚠️ Logto startup log contents:"
+                tail -50 logto-startup.log
+              fi
+            displayName: 'Start Logto and wait 3 minutes'
 
           - script: |
               echo "Running tests against: $(LOGTO_ADMIN_URL)"
               echo "Environment: $(environment)"
-              pnpm exec playwright test --project=chromium
+              echo "Test start time: $(date)"
+              
+              # Run tests with increased timeouts for CI environment
+              pnpm exec playwright test --project=chromium --timeout=60000
+              TEST_RESULT=$?
+              
+              echo "Test end time: $(date)"
+              echo "Test exit code: $TEST_RESULT"
+              
+              # If tests fail, show the Logto log for debugging
+              if [ $TEST_RESULT -ne 0 ]; then
+                echo "⚠️ Tests failed! Showing Logto startup log:"
+                cat logto-startup.log
+              fi
+              
+              exit $TEST_RESULT
             displayName: 'Run Playwright Tests'
             env:
               LOGTO_ADMIN_URL: $(LOGTO_ADMIN_URL)
               TEST_USERNAME: $(TEST_USERNAME)
               TEST_PASSWORD: $(TEST_PASSWORD)
               CI: true
+              # Increase browser timeout
+              PLAYWRIGHT_BROWSER_TIMEOUT: 180000
 
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'

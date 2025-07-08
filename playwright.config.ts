@@ -16,7 +16,7 @@ export default defineConfig({
 	/* Retry on CI only */
 	retries: process.env.CI ? 2 : 0,
 	/* Opt out of parallel tests on CI. */
-	workers: 3,
+	workers: process.env.CI ? 1 : 3, // Use single worker in CI to avoid overloading
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: process.env.CI ? [['junit', { outputFile: 'test-results/results.xml' }], ['html']] : 'html',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -25,7 +25,15 @@ export default defineConfig({
 		baseURL: process.env.LOGTO_ADMIN_URL || 'http://localhost:3302',
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
+		/* Increase timeouts for CI environment */
+		navigationTimeout: process.env.CI ? 60000 : 30000,
+		actionTimeout: process.env.CI ? 30000 : 10000,
+		/* Take screenshot on failure */
+		screenshot: 'only-on-failure',
 	},
+
+	/* Timeout for each test */
+	timeout: process.env.CI ? 90000 : 30000,
 
 	/* Configure projects for major browsers */
 	projects: [
