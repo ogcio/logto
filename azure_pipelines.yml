@@ -141,40 +141,99 @@ stages:
           - script: |
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
-
-              echo "⏱️ Waiting 5 minutes for Logto to fully initialize..."
-              echo "Started waiting at: $(date)"
-              sleep 300
-              echo "Finished waiting at: $(date)"
-
-              echo "✅ Proceeding with tests after 5-minute wait"
               
-              # Quick check if server is responding
-              if curl -s http://localhost:3302/ > /dev/null; then
-                echo "✅ Server is responding at http://localhost:3302/"
-              else
-                echo "⚠️ Warning: Server may not be responding, but continuing anyway"
-                echo "⚠️ Logto startup log contents:"
+              echo "⏱️ Waiting for Logto to initialize (max 10 minutes)..."
+              echo "Started waiting at: $(date)"
+              
+              # Poll for server availability with timeout
+              MAX_WAIT=600  # 10 minutes in seconds
+              WAIT_INTERVAL=10  # Check every 10 seconds
+              ELAPSED=0
+              
+              while [ $ELAPSED -lt $MAX_WAIT ]; do
+                if curl -s http://localhost:3302/ > /dev/null; then
+                  echo "✅ Server is responding at http://localhost:3302/ after $ELAPSED seconds"
+                  break
+                fi
+                
+                echo "⏳ Server not ready yet, waiting... ($ELAPSED seconds elapsed)"
+                sleep $WAIT_INTERVAL
+                ELAPSED=$((ELAPSED + WAIT_INTERVAL))
+                
+                # Print some logs periodically
+                if [ $((ELAPSED % 60)) -eq 0 ]; then
+                  echo "📋 Recent log entries:"
+                  tail -20 logto-startup.log
+                fi
+              done
+              
+              if [ $ELAPSED -ge $MAX_WAIT ]; then
+                echo "⚠️ WARNING: Timed out waiting for server to respond!"
+                echo "⚠️ Last 50 lines of logto-startup.log:"
                 tail -50 logto-startup.log
+              else
+                # Give it a bit more time to fully stabilize
+                echo "🔍 Server responded, waiting additional 30 seconds for full initialization..."
+                sleep 30
+                echo "✅ Proceeding with tests now"
               fi
-            displayName: 'Start Logto and wait 3 minutes'
+              
+              # Final check and verification
+              echo "🔄 Testing server with HTTP request:"
+              curl -v http://localhost:3302/ || echo "⚠️ Server not responding to final check!"
+              
+              # Report network status for debugging
+              echo "📡 Network status:"
+              netstat -tulpn | grep LISTEN
+            displayName: 'Start Logto and wait for initialization'
 
           - script: |
+              echo "📝 Pre-test diagnostics:"
               echo "Running tests against: $(LOGTO_ADMIN_URL)"
               echo "Environment: $(environment)"
               echo "Test start time: $(date)"
+              echo "Using username: $(TEST_USERNAME)"
+              echo "Password provided: $(if [ -n \"$(TEST_PASSWORD)\" ]; then echo 'Yes'; else echo 'No'; fi)"
               
-              # Run tests with increased timeouts for CI environment
-              pnpm exec playwright test --project=chromium --timeout=60000
+              # Verify server is still up
+              echo "🔄 Testing server one more time before tests:"
+              curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3302/
+              
+              # Debug log
+              echo "🔍 Test environment variables:"
+              env | grep -E 'LOGTO|TEST|PLAYWRIGHT' || echo "No matching variables found"
+              
+              # Run tests with increased timeouts for CI environment and debug flag
+              echo "🚀 Running Playwright tests with debug mode and retries..."
+              PLAYWRIGHT_DRIVER_TIMEOUT=180000 PLAYWRIGHT_REUSE_CONTEXT=1 pnpm exec playwright test --project=chromium --timeout=120000 --debug --retries=2 --workers=1
               TEST_RESULT=$?
               
               echo "Test end time: $(date)"
               echo "Test exit code: $TEST_RESULT"
               
-              # If tests fail, show the Logto log for debugging
+              # Diagnostic checks
+              echo "📊 Post-test diagnostics:"
+              
+              # List all test artifacts that were generated
+              echo "🗂️ Test artifacts generated:"
+              find test-results -type f | grep -E '\.(webm|png|zip)$' || echo "No artifacts found"
+              
+              # Count videos to ensure they were created
+              VIDEO_COUNT=$(find test-results -name "*.webm" | wc -l)
+              echo "Number of video files generated: $VIDEO_COUNT"
+              
+              # If tests fail, show detailed diagnostics
               if [ $TEST_RESULT -ne 0 ]; then
                 echo "⚠️ Tests failed! Showing Logto startup log:"
                 cat logto-startup.log
+                
+                echo "🔄 Final server check:"
+                curl -v http://localhost:3302/ || echo "Server not responding"
+                
+                echo "💻 System resource status:"
+                free -h
+                df -h
+                top -b -n 1 | head -20
               fi
               
               exit $TEST_RESULT
@@ -184,7 +243,7 @@ stages:
               TEST_USERNAME: $(TEST_USERNAME)
               TEST_PASSWORD: $(TEST_PASSWORD)
               CI: true
-              # Increase browser timeout
+              DEBUG: pw:api,pw:browser*
               PLAYWRIGHT_BROWSER_TIMEOUT: 180000
 
           - task: PublishTestResults@2

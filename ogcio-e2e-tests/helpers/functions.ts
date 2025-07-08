@@ -15,6 +15,7 @@ export async function loginToLogtoAdmin(
     password: string
 ): Promise<void> {
     await page.goto(adminUrl);
+    console.log('debug: we are currently on '+ page.url());
     await page.locator('input[name="identifier"]').fill(username);
     await page.locator('input[name="password"]').fill(password);
     await page.getByRole('button', { name: 'Sign in' }).click();
