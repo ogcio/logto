@@ -141,11 +141,33 @@ stages:
           - script: |
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
-              echo "Waiting for Logto to start up..."
-              # Wait for admin console to be available (check for UI response)
-              timeout 300 bash -c 'until curl -s http://localhost:3302/ | grep -q "Logto\|html\|<!DOCTYPE"; do echo "Waiting for Logto admin..."; sleep 5; done'
-              echo "✅ Logto is ready!"
-            displayName: 'Start Logto with make run-native'
+              echo "Waiting for Logto admin login form to be fully interactive..."
+              # Wait for the exact login form elements that tests expect to be ready
+              timeout 300 bash -c 'while true; do
+                response=$(curl -s http://localhost:3302/ 2>/dev/null)
+                if echo "$response" | grep -q "Sign in" && \
+                   echo "$response" | grep -q "button"; then
+                  echo "✅ Complete login form detected!"
+                  # Additional check: ensure the page is fully loaded (not just HTML fragments)
+                  if echo "$response" | grep -q "</html>" || echo "$response" | grep -q "Logto"; then
+                    echo "✅ Full page loaded - Logto is ready for tests!"
+                    break
+                  else
+                    echo "Page partially loaded, waiting for complete render..."
+                  fi
+                else
+                  echo "Waiting for login form elements (identifier, password, Sign in button)..."
+                fi
+                sleep 5
+              done'
+              # Give it a few more seconds for any JavaScript to finish loading
+              echo "⏱️ Waiting additional 10 seconds for JS initialization..."
+              sleep 10
+              echo "✅ Logto should be fully ready now!"
+              # Debug: Show what the login page actually contains
+              echo "🔍 Login page content preview:"
+              curl -s http://localhost:3302/ | grep -E "(Sign in|identifier|password|button|form)" | head -10 || echo "Could not fetch login page content"
+            displayName: 'Start Logto and wait for login'
 
           - script: |
               echo "Running tests against: $(LOGTO_ADMIN_URL)"
