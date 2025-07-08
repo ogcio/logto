@@ -141,13 +141,13 @@ stages:
           - script: |
               echo "🚀 Starting Logto with make run-native in background..."
               nohup make run-native > logto-startup.log 2>&1 &
-              
-              echo "⏱️ Waiting 3 minutes for Logto to fully initialize..."
+
+              echo "⏱️ Waiting 5 minutes for Logto to fully initialize..."
               echo "Started waiting at: $(date)"
-              sleep 180
+              sleep 600
               echo "Finished waiting at: $(date)"
-              
-              echo "✅ Proceeding with tests after 3-minute wait"
+
+              echo "✅ Proceeding with tests after 5-minute wait"
               
               # Quick check if server is responding
               if curl -s http://localhost:3302/ > /dev/null; then
