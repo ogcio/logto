@@ -139,42 +139,138 @@ stages:
             displayName: 'Install Playwright browsers'
 
           - script: |
-              echo "🚀 Starting Logto with make run-native in background..."
-              nohup make run-native > logto-startup.log 2>&1 &
-
-              echo "⏱️ Waiting 10 minutes for Logto to fully initialize..."
-              echo "Started waiting at: $(date)"
-              sleep 600
-              echo "Finished waiting at: $(date)"
-
-              echo "✅ Proceeding with tests after 10-minute wait"
+              echo "�️ Setting up database services first..."
+              docker-compose -f docker-compose-db.yml up -d
               
-              # Quick check if server is responding
-              if curl -s http://localhost:3302/ > /dev/null; then
-                echo "✅ Server is responding at http://localhost:3302/"
+              echo "⏳ Waiting for database to be ready..."
+              sleep 30
+              
+              echo "🔍 Checking database status..."
+              docker ps
+              
+              echo "�🚀 Starting Logto with make run-native in background..."
+              nohup make run-native > logto-startup.log 2>&1 &
+              
+              # Track Logto startup progress
+              echo "⏱️ Waiting for Logto to initialize (max 5 minutes)..."
+              echo "Started waiting at: $(date)"
+              
+              # Function to check if server is ready
+              check_server() {
+                if curl -s http://localhost:3302/ > /dev/null; then
+                  return 0  # Success
+                else
+                  return 1  # Failed
+                fi
+              }
+              
+              # Poll for readiness with timeout
+              MAX_WAIT=300  # 5 minutes in seconds
+              WAIT_INTERVAL=10  # Check every 10 seconds
+              ELAPSED=0
+              SUCCESS=false
+              
+              while [ $ELAPSED -lt $MAX_WAIT ]; do
+                echo "⏳ Checking if Logto is ready after $ELAPSED seconds..."
+                
+                if check_server; then
+                  echo "✅ Server is responding at http://localhost:3302/ after $ELAPSED seconds"
+                  SUCCESS=true
+                  break
+                fi
+                
+                # Check for database connection errors
+                if grep -q "Error: timeout expired" logto-startup.log; then
+                  echo "⚠️ Database connection timeout detected!"
+                  echo "📊 Docker container status:"
+                  docker ps
+                  echo "📊 Docker logs for PostgreSQL:"
+                  docker-compose -f docker-compose-db.yml logs --tail 50 postgres
+                  break
+                fi
+                
+                # Print progress and recent logs
+                if [ $((ELAPSED % 60)) -eq 0 ]; then
+                  echo "📋 Recent log entries (at $ELAPSED seconds):"
+                  tail -30 logto-startup.log
+                fi
+                
+                sleep $WAIT_INTERVAL
+                ELAPSED=$((ELAPSED + WAIT_INTERVAL))
+              done
+              
+              echo "Finished waiting at: $(date)"
+              
+              # Final check and detailed reporting
+              if $SUCCESS; then
+                echo "✅ Logto is running and responding to requests"
               else
-                echo "⚠️ Warning: Server may not be responding, but continuing anyway"
-                echo "⚠️ Logto startup log contents:"
+                echo "⚠️ WARNING: Logto is not responding properly"
+                echo "⚠️ Last 50 lines of logto-startup.log:"
                 tail -50 logto-startup.log
+                
+                echo "📊 PostgreSQL logs:"
+                docker-compose -f docker-compose-db.yml logs --tail 50 postgres
+                
+                echo "📊 Network status:"
+                ss -tulpn | grep LISTEN
+                
+                echo "📊 Full environment:"
+                printenv | grep -v PASSWORD
+                
+                echo "⚠️ Logto failed to start properly, but we'll attempt tests anyway"
               fi
-            displayName: 'Start Logto and wait 3 minutes'
+            displayName: 'Start Database and Logto'
 
           - script: |
+              echo "📝 Pre-test diagnostics:"
               echo "Running tests against: $(LOGTO_ADMIN_URL)"
               echo "Environment: $(environment)"
               echo "Test start time: $(date)"
+              echo "Using username: $(TEST_USERNAME)"
+              echo "Password provided: $(if [ -n \"$(TEST_PASSWORD)\" ]; then echo 'Yes'; else echo 'No'; fi)"
               
-              # Run tests with increased timeouts for CI environment
-              pnpm exec playwright test --project=chromium --timeout=60000
+              # One final check of server health
+              echo "🔄 Final server connectivity check before running tests..."
+              curl -v http://localhost:3302/ || echo "⚠️ Server not responding to final check!"
+              
+              # Try to get useful info from Logto
+              echo "🔄 Checking Logto API health..."
+              curl -s http://localhost:3302/.well-known/jwks.json || echo "⚠️ JWKS endpoint not responding"
+              
+              # Add manual debugging test to check if network is accessible
+              echo "🔍 Checking if network is working from container..."
+              curl -I https://httpbin.org/status/200
+              
+              # Run tests with debugging flags and trace enabled
+              echo "🚀 Running Playwright tests..."
+              PWDEBUG=1 DEBUG=pw:api pnpm exec playwright test --project=chromium --timeout=120000 --retries=1 
               TEST_RESULT=$?
               
               echo "Test end time: $(date)"
               echo "Test exit code: $TEST_RESULT"
               
-              # If tests fail, show the Logto log for debugging
+              # Detailed diagnostics for failures
               if [ $TEST_RESULT -ne 0 ]; then
-                echo "⚠️ Tests failed! Showing Logto startup log:"
+                echo "⚠️ Tests failed! Running diagnostics..."
+                
+                echo "📊 Server status:"
+                curl -v http://localhost:3302/ || echo "Server not responding"
+                
+                echo "📋 Logto startup log:"
                 cat logto-startup.log
+                
+                echo "📊 Docker container status:"
+                docker ps
+                
+                echo "📊 Network interfaces:"
+                ip addr
+                
+                echo "📊 Network connectivity:"
+                ping -c 4 localhost
+                
+                echo "📊 Process list:"
+                ps aux | grep -E 'node|logto|pnpm'
               fi
               
               exit $TEST_RESULT
@@ -210,6 +306,45 @@ stages:
             inputs:
               targetPath: 'test-results'
               artifact: 'test-results-$(environment)-$(System.JobId)'
+              publishLocation: 'pipeline'
+              
+          # Collect all logs and debug information
+          - script: |
+              echo "📦 Collecting debug information..."
+              mkdir -p debug-artifacts
+              
+              # Copy logs
+              cp logto-startup.log debug-artifacts/ || echo "No logto startup log found"
+              
+              # Create system info file
+              echo "System information at $(date)" > debug-artifacts/system-info.txt
+              echo "======================" >> debug-artifacts/system-info.txt
+              echo "Docker status:" >> debug-artifacts/system-info.txt
+              docker ps >> debug-artifacts/system-info.txt 2>&1 || echo "Docker not available"
+              echo "======================" >> debug-artifacts/system-info.txt
+              echo "Network interfaces:" >> debug-artifacts/system-info.txt
+              ip addr >> debug-artifacts/system-info.txt 2>&1
+              echo "======================" >> debug-artifacts/system-info.txt
+              echo "Listening ports:" >> debug-artifacts/system-info.txt
+              ss -tulpn >> debug-artifacts/system-info.txt 2>&1
+              echo "======================" >> debug-artifacts/system-info.txt
+              echo "Environment variables:" >> debug-artifacts/system-info.txt
+              printenv | grep -v PASSWORD >> debug-artifacts/system-info.txt
+              
+              # Collect database logs if available
+              echo "Collecting database logs..."
+              docker-compose -f docker-compose-db.yml logs > debug-artifacts/database-logs.txt 2>&1 || echo "Could not collect database logs"
+              
+              echo "📦 Debug information collected"
+            displayName: 'Collect Debug Information'
+            condition: always()
+            
+          - task: PublishPipelineArtifact@1
+            displayName: 'Upload Debug Information'
+            condition: always()
+            inputs:
+              targetPath: 'debug-artifacts'
+              artifact: 'debug-info-$(environment)-$(System.JobId)'
               publishLocation: 'pipeline'
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
