@@ -113,7 +113,7 @@ stages:
         
         variables:
           # Environment variables for the tests
-          LOGTO_ADMIN_URL: 'https://logto-admin-$(environment).ogcio.gov.ie'
+          LOGTO_ADMIN_URL: 'http://localhost:3302'
           TEST_USERNAME: $(OGCIO_TEST_USERNAME)
           TEST_PASSWORD: $(OGCIO_TEST_PASSWORD)
 
@@ -127,8 +127,8 @@ stages:
               versionSpec: '20.x'
 
           - script: |
-              npm install -g pnpm
-            displayName: 'Install pnpm'
+              npm install -g pnpm@9
+            displayName: 'Install pnpm v9'
 
           - script: |
               pnpm install --frozen-lockfile
@@ -139,9 +139,14 @@ stages:
             displayName: 'Install Playwright browsers'
 
           - script: |
+              echo "🚀 Starting Logto with make run-native..."
+              make run-native
+            displayName: 'Start Logto with make run-native'
+
+          - script: |
               echo "Running tests against: $(LOGTO_ADMIN_URL)"
               echo "Environment: $(environment)"
-              pnpm exec playwright test --project=chromium --reporter=junit
+              pnpm exec playwright test --project=chromium
             displayName: 'Run Playwright Tests'
             env:
               LOGTO_ADMIN_URL: $(LOGTO_ADMIN_URL)
