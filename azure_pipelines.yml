@@ -27,7 +27,7 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
-  - group: ogcio-e2e-test-credentials
+  - group: ogcio-e2e-test-creds
 
 resources:
   repositories:
