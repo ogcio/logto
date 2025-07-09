@@ -131,6 +131,9 @@ stages:
         variables:
           # Environment variables for the tests
           LOGTO_ADMIN_URL: 'http://localhost:3302'
+          # Set default admin credentials if not provided by the variable group
+          ADMIN_USERNAME: 'admin'
+          ADMIN_PASSWORD: 'admin123'
 
         steps:
           - checkout: self
@@ -211,6 +214,26 @@ stages:
               echo "Setting up the database..."
               pnpm cli db seed -- --swe || { echo "❌ Database seeding failed"; exit 1; }
               pnpm cli db alteration deploy latest || { echo "❌ Database alteration failed"; exit 1; }
+              
+              # Create admin user account for testing
+              echo "Creating admin user for tests..."
+              # Check if admin user already exists, if not create one
+              pnpm cli user create \
+                --username="${TEST_USERNAME:-admin}" \
+                --password="${TEST_PASSWORD:-admin123}" \
+                --name="Test Admin" \
+                --admin || {
+                echo "Admin user creation failed, trying alternative approach..."
+                # Alternative: directly insert admin user via SQL if CLI doesn't work
+                docker exec postgres psql -U postgres -d logto -c "
+                  INSERT INTO users (id, username, primary_email, name, created_at) 
+                  VALUES ('admin-user-id', '${TEST_USERNAME:-admin}', 'admin@example.com', 'Test Admin', NOW()) 
+                  ON CONFLICT (username) DO NOTHING;
+                  INSERT INTO users_password_encryptor (user_id, value, created_at) 
+                  VALUES ('admin-user-id', crypt('${TEST_PASSWORD:-admin123}', gen_salt('bf')), NOW()) 
+                  ON CONFLICT (user_id) DO NOTHING;
+                " || echo "Direct SQL admin creation also failed, proceeding anyway..."
+              }
               
               # Handle the OGCIO seeder file
               echo "Setting up the OGCIO seeder..."
@@ -376,6 +399,23 @@ stages:
               ps aux | grep node | grep -v grep
               
               echo "✅ Logto is ready!"
+              
+              # Verify admin user creation
+              echo "Verifying admin user creation..."
+              docker exec postgres psql -U postgres -d logto -c "SELECT id, username, primary_email, name FROM users WHERE username = '${TEST_USERNAME:-admin}';" || echo "Could not verify admin user"
+              
+              # Check if we can access the admin console directly
+              echo "Testing admin console accessibility..."
+              curl -s -I http://localhost:3302/console || echo "Admin console not accessible"
+              
+              # Test if we get the welcome/setup page (which we want to avoid)
+              RESPONSE=$(curl -s http://localhost:3302/console/welcome)
+              if echo "$RESPONSE" | grep -q "Create account"; then
+                echo "⚠️ WARNING: Logto is showing the initial setup page - admin user may not be properly configured"
+                echo "This may cause test failures as tests expect an existing admin user"
+              else
+                echo "✅ Admin console seems properly configured"
+              fi
             displayName: 'Setup Database and Start Logto'
 
           - script: |
@@ -393,6 +433,9 @@ stages:
               LOGTO_ADMIN_URL: $(LOGTO_ADMIN_URL)
               TEST_USERNAME: $(TEST_USERNAME)
               TEST_PASSWORD: $(TEST_PASSWORD)
+              # Fallback to defaults if variables aren't set
+              ADMIN_USERNAME: $(ADMIN_USERNAME)
+              ADMIN_PASSWORD: $(ADMIN_PASSWORD)
               CI: true
               # Increase browser timeout
               PLAYWRIGHT_BROWSER_TIMEOUT: 180000
