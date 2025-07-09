@@ -137,20 +137,28 @@ stages:
             displayName: 'Install Playwright browsers'
             
           - script: |
-              # Start PostgreSQL using docker-compose
-              echo "Starting PostgreSQL from docker-compose..."
-              docker-compose -f docker-compose-db.yml up -d postgres
+              # Install Docker Compose if not available
+              echo "Installing Docker Compose..."
+              if ! command -v docker-compose &> /dev/null; then
+                sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+                docker-compose --version
+              fi
+              
+              # Start PostgreSQL directly with Docker
+              echo "Starting PostgreSQL with Docker..."
+              docker run --name postgres -d -p 5433:5433 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=p0stgr3s -e PGPORT=5433 postgres:14-alpine
               
               # Wait for PostgreSQL to be ready - increased timeout to 180 seconds
               echo "Waiting for PostgreSQL to be ready..."
-              timeout 180 bash -c 'until docker exec $(docker ps -q --filter name=postgres) pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
+              timeout 180 bash -c 'until docker exec postgres pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
               echo "✅ PostgreSQL is ready!"
               
               # Enhanced PostgreSQL readiness check
               echo "Performing enhanced PostgreSQL readiness checks..."
               for i in {1..5}; do
                 echo "Connection test attempt $i of 5..."
-                if docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "SELECT 1;" >/dev/null 2>&1; then
+                if docker exec postgres psql -U postgres -c "SELECT 1;" >/dev/null 2>&1; then
                   echo "✅ PostgreSQL is accepting queries!"
                   break
                 fi
@@ -160,9 +168,9 @@ stages:
               
               # Create logto database if it doesn't exist
               echo "Creating logto database if it doesn't exist..."
-              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "DROP DATABASE IF EXISTS logto;" || echo "Failed to drop database, might not exist"
-              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "CREATE DATABASE logto;" || echo "Failed to create database"
-              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE logto TO postgres;" || echo "Failed to grant privileges"
+              docker exec postgres psql -U postgres -c "DROP DATABASE IF EXISTS logto;" || echo "Failed to drop database, might not exist"
+              docker exec postgres psql -U postgres -c "CREATE DATABASE logto;" || echo "Failed to create database"
+              docker exec postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE logto TO postgres;" || echo "Failed to grant privileges"
               
               # Create .env file for Logto
               echo "Creating .env file with PostgreSQL connection..."
