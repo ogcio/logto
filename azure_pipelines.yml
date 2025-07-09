@@ -179,7 +179,7 @@ stages:
               
               # Build CLI and other essential packages first
               echo "Building CLI and core packages..."
-              pnpm build
+              pnpm ci:build
               
               # Verify database connection with explicit check
               echo "Verifying database connection..."
