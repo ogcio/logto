@@ -99,12 +99,29 @@ stages:
         serviceName: logto-audit-cleaner
         repositoryName: bb-logto-audit-cleaner
         pushTag: $(Build.BuildId)
+  - stage: Debug_Info
+    displayName: Debug Pipeline Variables
+    dependsOn: []
+    jobs:
+      - job: ShowVariables
+        displayName: Show Pipeline Variables
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              echo "Branch name: $(Build.SourceBranchName)"
+              echo "Build reason: $(Build.Reason)"
+              echo "Build ID: $(Build.BuildId)"
+              echo "Push artifacts: ${{ variables.pushArtefacts }}"
+              echo "Environment: $(environment)"
+            displayName: 'Show Pipeline Variables'
   - stage: OGCIO_E2E_Tests
     displayName: OGCIO E2E Tests
     dependsOn: 
       - Build_Logto
       - Build_Logto_Audit_Cleaner
-    condition: or(eq(variables['Build.SourceBranchName'], 'dev'), eq(variables['Build.Reason'], 'PullRequest'))
+      - Debug_Info
+    condition: succeeded()
     jobs:
       - job: PlaywrightTests
         displayName: Run Playwright E2E Tests
@@ -116,12 +133,6 @@ stages:
           LOGTO_ADMIN_URL: 'http://localhost:3302'
 
         steps:
-          # Debug step to print build info
-          - script: |
-              echo "Debug: Current branch is $(Build.SourceBranchName)"
-              echo "Debug: Build reason is $(Build.Reason)"
-              echo "Debug: Condition evaluation: or(eq('$(Build.SourceBranchName)', 'dev'), eq('$(Build.Reason)', 'PullRequest'))"
-            displayName: 'Debug build variables'
           - checkout: self
             displayName: 'Checkout source code'
 
@@ -286,8 +297,20 @@ stages:
               echo "Building connectors..."
               pnpm connectors build && pnpm cli connector link
               
-              echo "🚀 Starting Logto with make run-native in background with output tailing..."
-              make run-native > logto-startup.log 2>&1 &
+              echo "🚀 Starting Logto directly (skipping PostgreSQL startup since we already have one)..."
+              
+              # We can't use make run-native directly as it would start another PostgreSQL instance
+              # So we'll execute the Logto start commands directly but skip PostgreSQL parts
+              echo "Starting Logto directly (skipping PostgreSQL startup)..." >> logto-startup.log
+              
+              # Verify environment setup
+              echo "Checking .env file content:" >> logto-startup.log
+              cat .env >> logto-startup.log
+              echo "----------------------------------------" >> logto-startup.log
+              
+              # Start Logto with npm/pnpm start
+              echo "Starting Logto app with pnpm start..." >> logto-startup.log
+              pnpm start > >(tee -a logto-startup.log) 2>&1 &
               LOGTO_PID=$!
               
               # Tail the log file so we can see what's happening
