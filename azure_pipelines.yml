@@ -177,6 +177,10 @@ stages:
               cp .env.sample .env
               sed -i 's|DB_URL=.*|DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto|g' .env
               
+              # Build CLI and other essential packages first
+              echo "Building CLI and core packages..."
+              pnpm build
+              
               # Verify database connection with explicit check
               echo "Verifying database connection..."
               pnpm cli db check || { echo "❌ Database connection failed"; exit 1; }
