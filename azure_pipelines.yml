@@ -201,22 +201,15 @@ stages:
               
               echo "✅ Database seeding and alteration completed successfully"
               
-              # Create admin user via Logto API (proper approach)
-              echo "Creating admin user via Logto Management API..."
+              # Skip admin user creation - tests will use API tokens directly
+              echo "Using API token approach - no admin user creation needed"
               
-              # Wait a bit more to ensure Logto is fully ready for API calls
-              echo "Waiting for Logto APIs to be fully ready..."
-              sleep 10
-              
-              # Run the admin user creation script
-              TEST_USERNAME="${TEST_USERNAME:-admin}" TEST_PASSWORD="${TEST_PASSWORD:-admin123}" node scripts/create-admin-user.js
-              
-              # Verify admin user was created by checking API
-              echo "Verifying admin user creation via API..."
+              # Verify API is accessible
+              echo "Verifying Management API is accessible..."
               if curl -s -f "http://localhost:3302/api/health" > /dev/null; then
-                echo "Admin user creation completed - API accessible"
+                echo "✅ Management API is accessible"
               else
-                echo "Warning: Could not verify API access after user creation"
+                echo "⚠️ Management API not accessible - tests may need fallback approach"
               fi
               
               # Handle the OGCIO seeder file
