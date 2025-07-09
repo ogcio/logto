@@ -181,9 +181,8 @@ stages:
               echo "Building CLI and core packages..."
               pnpm ci:build
               
-              # Verify database connection with explicit check
-              echo "Verifying database connection..."
-              pnpm cli db check || { echo "❌ Database connection failed"; exit 1; }
+              # Skip database connection check as it's not available
+              echo "Skipping explicit database check (command not available)..."
               
               # Run database migrations and seeding
               echo "Setting up the database..."
