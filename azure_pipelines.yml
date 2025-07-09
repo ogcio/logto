@@ -114,8 +114,6 @@ stages:
         variables:
           # Environment variables for the tests
           LOGTO_ADMIN_URL: 'http://localhost:3302'
-          TEST_USERNAME: $(TEST_USERNAME)
-          TEST_PASSWORD: $(TEST_PASSWORD)
 
         steps:
           - checkout: self
@@ -139,13 +137,120 @@ stages:
             displayName: 'Install Playwright browsers'
             
           - script: |
-              echo "� Starting Logto with make run-native in background..."
-              nohup make run-native > logto-startup.log 2>&1 &
-              echo "Waiting for Logto to start up..."
-              # Wait for admin console to be available
-              timeout 300 bash -c 'until curl -f http://localhost:3302/health; do echo "Waiting for Logto admin..."; sleep 5; done'
+              # Start PostgreSQL using docker-compose
+              echo "Starting PostgreSQL from docker-compose..."
+              docker-compose -f docker-compose-db.yml up -d postgres
+              
+              # Wait for PostgreSQL to be ready - increased timeout to 180 seconds
+              echo "Waiting for PostgreSQL to be ready..."
+              timeout 180 bash -c 'until docker exec $(docker ps -q --filter name=postgres) pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
+              echo "✅ PostgreSQL is ready!"
+              
+              # Enhanced PostgreSQL readiness check
+              echo "Performing enhanced PostgreSQL readiness checks..."
+              for i in {1..5}; do
+                echo "Connection test attempt $i of 5..."
+                if docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "SELECT 1;" >/dev/null 2>&1; then
+                  echo "✅ PostgreSQL is accepting queries!"
+                  break
+                fi
+                echo "PostgreSQL not yet accepting queries, waiting..."
+                sleep 5
+              done
+              
+              # Create logto database if it doesn't exist
+              echo "Creating logto database if it doesn't exist..."
+              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "DROP DATABASE IF EXISTS logto;" || echo "Failed to drop database, might not exist"
+              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "CREATE DATABASE logto;" || echo "Failed to create database"
+              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE logto TO postgres;" || echo "Failed to grant privileges"
+              
+              # Create .env file for Logto
+              echo "Creating .env file with PostgreSQL connection..."
+              cp .env.sample .env
+              sed -i 's|DB_URL=.*|DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto|g' .env
+              
+              # Verify database connection with explicit check
+              echo "Verifying database connection..."
+              pnpm cli db check || { echo "❌ Database connection failed"; exit 1; }
+              
+              # Run database migrations and seeding
+              echo "Setting up the database..."
+              pnpm cli db seed -- --swe || { echo "❌ Database seeding failed"; exit 1; }
+              pnpm cli db alteration deploy latest || { echo "❌ Database alteration failed"; exit 1; }
+              pnpm cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json" || { echo "❌ OGCIO seeding failed"; exit 1; }
+              
+              # Build required connectors
+              echo "Building connectors..."
+              pnpm connectors build && pnpm cli connector link
+              
+              echo "🚀 Starting Logto with make run-native in background with output tailing..."
+              make run-native > logto-startup.log 2>&1 &
+              LOGTO_PID=$!
+              
+              # Tail the log file so we can see what's happening
+              echo "Tailing logto-startup.log to see startup progress:"
+              tail -f logto-startup.log &
+              TAIL_PID=$!
+              
+              echo "Waiting for Logto to start up (watching for health endpoint)..."
+              # Increased timeout to 10 minutes (120 retries × 5 seconds)
+              RETRY_COUNT=0
+              MAX_RETRIES=120
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:3302/health > /dev/null; then
+                  echo "✅ Logto health endpoint is responding!"
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "Waiting for Logto admin... (attempt $RETRY_COUNT of $MAX_RETRIES)"
+                
+                # Check if Logto process is still running
+                if ! ps -p $LOGTO_PID > /dev/null; then
+                  echo "❌ ERROR: Logto process died! Here are the last 50 lines of the log:"
+                  tail -50 logto-startup.log
+                  exit 1
+                fi
+                
+                # Every 12 attempts (about every minute), show recent logs
+                if [ $((RETRY_COUNT % 12)) -eq 0 ]; then
+                  echo "📋 Recent Logto logs (at attempt $RETRY_COUNT):"
+                  tail -20 logto-startup.log
+                fi
+                
+                sleep 5
+              done
+              
+              # Stop tailing the log
+              kill $TAIL_PID || true
+              
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "❌ Logto failed to start within the timeout period. Last 50 lines of log:"
+                tail -50 logto-startup.log
+                exit 1
+              fi
+              
+              # Enhanced endpoint verification
+              echo "Testing Logto endpoints..."
+              
+              echo "1. Testing admin console root endpoint..."
+              if ! curl -s -I http://localhost:3302/ | grep -q "HTTP/"; then
+                echo "⚠️ Admin console root endpoint not responding properly!"
+              else
+                curl -s -I http://localhost:3302/ | head -1
+              fi
+              
+              echo "2. Testing JWKS endpoint..."
+              if ! curl -s http://localhost:3302/.well-known/jwks.json | grep -q "keys"; then
+                echo "⚠️ JWKS endpoint not responding properly!"
+              else
+                echo "✅ JWKS endpoint is responding!"
+              fi
+              
+              echo "3. Showing running Node.js processes..."
+              ps aux | grep node | grep -v grep
+              
               echo "✅ Logto is ready!"
-            displayName: 'Start Database and Logto'
+            displayName: 'Setup Database and Start Logto'
 
           - script: |
               echo " Running Playwright tests..."
