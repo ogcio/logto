@@ -14,10 +14,24 @@ parameters:
   - name: buildBranches
     type: object
            - script: |
+              # Start PostgreSQL using docker-compose
+              echo "Starting PostgreSQL from docker-compose..."
+              docker-compose -f docker-compose-db.yml up -d postgres
+              
+              # Wait for PostgreSQL to be ready
+              echo "Waiting for PostgreSQL to be ready..."
+              timeout 60 bash -c 'until docker exec $(docker ps -q --filter name=postgres) pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
+              echo "✅ PostgreSQL is ready!"
+              
               # Create .env file for Logto
               echo "Creating .env file with PostgreSQL connection..."
               cp .env.sample .env
-              sed -i 's|DB_URL=.*|DB_URL=postgres://logto:p0stgr3s@localhost:5432/logto|g' .env
+              # Use the PostgreSQL configuration from docker-compose-db.yml
+              sed -i 's|DB_URL=.*|DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto|g' .env
+              
+              # Create logto database if it doesn't exist
+              echo "Creating logto database if it doesn't exist..."
+              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "CREATE DATABASE logto;" || echo "Database might already exist"
               
               # Run database migrations and seeding
               echo "Setting up the database..."
@@ -133,16 +147,6 @@ stages:
         displayName: Run Playwright E2E Tests
         pool:
           vmImage: 'ubuntu-latest'
-        
-        services:
-          postgres: 
-            image: postgres:14
-            ports:
-              - 5432:5432
-            env:
-              POSTGRES_USER: logto
-              POSTGRES_PASSWORD: p0stgr3s
-              POSTGRES_DB: logto
         
         variables:
           # Environment variables for the tests
