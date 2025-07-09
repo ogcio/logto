@@ -13,7 +13,30 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "uat", 'prod']
+           - script: |
+              # Create .env file for Logto
+              echo "Creating .env file with PostgreSQL connection..."
+              cp .env.sample .env
+              sed -i 's|DB_URL=.*|DB_URL=postgres://logto:p0stgr3s@localhost:5432/logto|g' .env
+              
+              # Run database migrations and seeding
+              echo "Setting up the database..."
+              pnpm cli db seed -- --swe
+              pnpm cli db alteration deploy latest
+              pnpm cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
+              
+              # Build required connectors
+              echo "Building connectors..."
+              pnpm connectors build && pnpm cli connector link
+              
+              echo "🚀 Starting Logto with make run-native in background..."
+              nohup make run-native > logto-startup.log 2>&1 &
+              
+              echo "Waiting for Logto to start up..."
+              # Wait for admin console to be available
+              timeout 300 bash -c 'until curl -f http://localhost:3302/health; do echo "Waiting for Logto admin..."; sleep 5; done'
+              echo "✅ Logto is ready!"
+            displayName: 'Setup Database and Start Logto'lt: ["dev", "uat", 'prod']
 
   - name: validEnvironments
     type: object
@@ -111,6 +134,16 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         
+        services:
+          postgres: 
+            image: postgres:14
+            ports:
+              - 5432:5432
+            env:
+              POSTGRES_USER: logto
+              POSTGRES_PASSWORD: p0stgr3s
+              POSTGRES_DB: logto
+        
         variables:
           # Environment variables for the tests
           LOGTO_ADMIN_URL: 'http://localhost:3302'
@@ -148,54 +181,12 @@ stages:
             displayName: 'Start Database and Logto'
 
           - script: |
-              echo "📝 Pre-test diagnostics:"
-              echo "Running tests against: $(LOGTO_ADMIN_URL)"
-              echo "Environment: $(environment)"
-              echo "Test start time: $(date)"
-              echo "Using username: $(TEST_USERNAME)"
-              echo "Password provided: $(if [ -n \"$(TEST_PASSWORD)\" ]; then echo 'Yes'; else echo 'No'; fi)"
-              
-              # One final check of server health
-              echo "🔄 Final server connectivity check before running tests..."
-              curl -v http://localhost:3302/ || echo "⚠️ Server not responding to final check!"
-              
-              # Try to get useful info from Logto
-              echo "🔄 Checking Logto API health..."
-              curl -s http://localhost:3302/.well-known/jwks.json || echo "⚠️ JWKS endpoint not responding"
-              
-              # Add manual debugging test to check if network is accessible
-              echo "🔍 Checking if network is working from container..."
-              curl -I https://httpbin.org/status/200
-              
-              # Run tests with debugging flags and trace enabled
-              echo "🚀 Running Playwright tests..."
-              PWDEBUG=1 DEBUG=pw:api pnpm exec playwright test --project=chromium --timeout=120000 --retries=1 
+              echo " Running Playwright tests..."
+              pnpm exec playwright test --project=chromium --timeout=120000 --retries=1
               TEST_RESULT=$?
               
-              echo "Test end time: $(date)"
-              echo "Test exit code: $TEST_RESULT"
-              
-              # Detailed diagnostics for failures
               if [ $TEST_RESULT -ne 0 ]; then
-                echo "⚠️ Tests failed! Running diagnostics..."
-                
-                echo "📊 Server status:"
-                curl -v http://localhost:3302/ || echo "Server not responding"
-                
-                echo "📋 Logto startup log:"
-                cat logto-startup.log
-                
-                echo "📊 Docker container status:"
-                docker ps
-                
-                echo "📊 Network interfaces:"
-                ip addr
-                
-                echo "📊 Network connectivity:"
-                ping -c 4 localhost
-                
-                echo "📊 Process list:"
-                ps aux | grep -E 'node|logto|pnpm'
+                echo "⚠️ Tests failed. Check the test report for details."
               fi
               
               exit $TEST_RESULT
@@ -233,45 +224,20 @@ stages:
               artifact: 'test-results-$(environment)-$(System.JobId)'
               publishLocation: 'pipeline'
               
-          # Collect all logs and debug information
+          # Collect minimal logs
           - script: |
-              echo "📦 Collecting debug information..."
+              echo "📦 Collecting logs..."
               mkdir -p debug-artifacts
-              
-              # Copy logs
               cp logto-startup.log debug-artifacts/ || echo "No logto startup log found"
-              
-              # Create system info file
-              echo "System information at $(date)" > debug-artifacts/system-info.txt
-              echo "======================" >> debug-artifacts/system-info.txt
-              echo "Docker status:" >> debug-artifacts/system-info.txt
-              docker ps >> debug-artifacts/system-info.txt 2>&1 || echo "Docker not available"
-              echo "======================" >> debug-artifacts/system-info.txt
-              echo "Network interfaces:" >> debug-artifacts/system-info.txt
-              ip addr >> debug-artifacts/system-info.txt 2>&1
-              echo "======================" >> debug-artifacts/system-info.txt
-              echo "Listening ports:" >> debug-artifacts/system-info.txt
-              ss -tulpn >> debug-artifacts/system-info.txt 2>&1
-              echo "======================" >> debug-artifacts/system-info.txt
-              echo "Environment variables:" >> debug-artifacts/system-info.txt
-              printenv | grep -v PASSWORD >> debug-artifacts/system-info.txt
-              
-              # Collect PostgreSQL logs and status
-              echo "Collecting PostgreSQL logs and status..."
-              sudo cat /var/log/postgresql/postgresql-*.log > debug-artifacts/postgresql-logs.txt 2>&1 || echo "Could not collect PostgreSQL logs"
-              sudo -u postgres psql -c "\l" > debug-artifacts/postgresql-databases.txt 2>&1 || echo "Could not list PostgreSQL databases"
-              sudo -u postgres psql -c "\du" >> debug-artifacts/postgresql-databases.txt 2>&1 || echo "Could not list PostgreSQL users"
-              
-              echo "📦 Debug information collected"
-            displayName: 'Collect Debug Information'
+            displayName: 'Collect Logs'
             condition: always()
             
           - task: PublishPipelineArtifact@1
-            displayName: 'Upload Debug Information'
+            displayName: 'Upload Logs'
             condition: always()
             inputs:
               targetPath: 'debug-artifacts'
-              artifact: 'debug-info-$(environment)-$(System.JobId)'
+              artifact: 'logs-$(environment)-$(System.JobId)'
               publishLocation: 'pipeline'
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
