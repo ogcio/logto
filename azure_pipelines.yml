@@ -13,44 +13,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-           - script: |
-              # Start PostgreSQL using docker-compose
-              echo "Starting PostgreSQL from docker-compose..."
-              docker-compose -f docker-compose-db.yml up -d postgres
-              
-              # Wait for PostgreSQL to be ready
-              echo "Waiting for PostgreSQL to be ready..."
-              timeout 60 bash -c 'until docker exec $(docker ps -q --filter name=postgres) pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
-              echo "✅ PostgreSQL is ready!"
-              
-              # Create .env file for Logto
-              echo "Creating .env file with PostgreSQL connection..."
-              cp .env.sample .env
-              # Use the PostgreSQL configuration from docker-compose-db.yml
-              sed -i 's|DB_URL=.*|DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto|g' .env
-              
-              # Create logto database if it doesn't exist
-              echo "Creating logto database if it doesn't exist..."
-              docker exec $(docker ps -q --filter name=postgres) psql -U postgres -c "CREATE DATABASE logto;" || echo "Database might already exist"
-              
-              # Run database migrations and seeding
-              echo "Setting up the database..."
-              pnpm cli db seed -- --swe
-              pnpm cli db alteration deploy latest
-              pnpm cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
-              
-              # Build required connectors
-              echo "Building connectors..."
-              pnpm connectors build && pnpm cli connector link
-              
-              echo "🚀 Starting Logto with make run-native in background..."
-              nohup make run-native > logto-startup.log 2>&1 &
-              
-              echo "Waiting for Logto to start up..."
-              # Wait for admin console to be available
-              timeout 300 bash -c 'until curl -f http://localhost:3302/health; do echo "Waiting for Logto admin..."; sleep 5; done'
-              echo "✅ Logto is ready!"
-            displayName: 'Setup Database and Start Logto'lt: ["dev", "uat", 'prod']
+    default: ["dev", "uat", 'prod']
 
   - name: validEnvironments
     type: object
