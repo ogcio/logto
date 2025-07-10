@@ -229,6 +229,9 @@ export async function deleteUserViaApi(userId: string) {
 
 /**
  * Force bypass welcome page config
+ *
+ * Uses curl with carefully quoted headers and JSON data to PATCH the admin-console config.
+ * Logs both stdout and stderr for easier debugging. Returns true on success, false on failure.
  */
 export async function forceBypassWelcomePageConfig() {
     // This function will PATCH the admin-console config using the dev header
@@ -243,18 +246,38 @@ export async function forceBypassWelcomePageConfig() {
             communityChecked: true,
             m2mApplicationCreated: true
         };
+        // Log the config object for debugging
+        console.log('PATCHING admin-console config with:', JSON.stringify(config));
+        // Properly quote headers and data for shell (zsh/bash safe)
+        // Each -H must be a single string, and -d JSON must be single-quoted
         const curlCmd = [
             'curl',
             '-X', 'PATCH',
             'http://localhost:3302/api/configs/admin-console',
-            '-H', 'Content-Type: application/json',
-            '-H', 'development-user-id: integration-test-admin-user',
-            '-d', `'${JSON.stringify(config)}'`
+            '-H', '"Content-Type: application/json"',
+            '-H', '"development-user-id: integration-test-admin-user"',
+            '-d', `'${JSON.stringify(config).replace(/'/g, "'\\''")}'`
         ].join(' ');
         console.log('Forcing admin-console config via PATCH:', curlCmd);
-        const result = execSync(curlCmd, { encoding: 'utf-8' });
-        console.log('Config PATCH result:', result);
+        // Try to capture both stdout and stderr
+        let result;
+        try {
+            result = execSync(curlCmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+            console.log('Config PATCH result (stdout):', result);
+            return true;
+        } catch (err) {
+            // If execSync throws, log both stdout and stderr if available
+            if (err.stdout) {
+                console.error('Config PATCH stdout:', err.stdout.toString());
+            }
+            if (err.stderr) {
+                console.error('Config PATCH stderr:', err.stderr.toString());
+            }
+            console.error('Failed to force admin-console config:', err.message);
+            return false;
+        }
     } catch (err) {
-        console.error('Failed to force admin-console config:', err.message);
+        console.error('Unexpected error in forceBypassWelcomePageConfig:', err.message);
+        return false;
     }
 }

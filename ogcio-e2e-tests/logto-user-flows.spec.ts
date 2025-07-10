@@ -14,8 +14,8 @@ import {
 
 const LOGTO_ADMIN_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
-const TEST_USERNAME = process.env.TEST_USERNAME; 
-const TEST_PASSWORD = process.env.TEST_PASSWORD;
+const TEST_USERNAME = process.env.TEST_USERNAME || 'playwrighttest';
+const TEST_PASSWORD = process.env.TEST_PASSWORD || 'Playwright-test123!!!';
 
 test.describe('Logto User Flows - OGCIO E2E Tests', () => {
 
