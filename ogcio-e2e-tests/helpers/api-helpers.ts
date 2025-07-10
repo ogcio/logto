@@ -234,52 +234,27 @@ export async function deleteUserViaApi(userId: string) {
  * Logs both stdout and stderr for easier debugging. Returns true on success, false on failure.
  */
 export async function forceBypassWelcomePageConfig() {
-    // This function will PATCH the admin-console config using the dev header
+    // Use the same config as before
+    const config = {
+        livePreviewChecked: true,
+        applicationCreated: true,
+        signInExperienceCustomized: true,
+        passwordlessConfigured: true,
+        furtherReadingsChecked: true,
+        roleCreated: true,
+        communityChecked: true,
+        m2mApplicationCreated: true
+    };
+    console.log('PATCHING admin-console config with:', JSON.stringify(config));
     try {
-        const config = {
-            livePreviewChecked: true,
-            applicationCreated: true,
-            signInExperienceCustomized: true,
-            passwordlessConfigured: true,
-            furtherReadingsChecked: true,
-            roleCreated: true,
-            communityChecked: true,
-            m2mApplicationCreated: true
-        };
-        // Log the config object for debugging
-        console.log('PATCHING admin-console config with:', JSON.stringify(config));
-        // Properly quote headers and data for shell (zsh/bash safe)
-        // Try both development-user-id and Authorization headers for compatibility
-        const curlCmd = [
-            'curl',
-            '-X', 'PATCH',
-            'http://localhost:3302/api/configs/admin-console',
-            '-H', '"Content-Type: application/json"',
-            '-H', '"development-user-id: integration-test-admin-user"',
-            '-H', '"Authorization: integration-test-admin-user"',
-            '-H', '"Authorization: Bearer integration-test-admin-user"',
-            '-d', `'${JSON.stringify(config).replace(/'/g, "'\\''")}'`
-        ].join(' ');
-        console.log('Forcing admin-console config via PATCH:', curlCmd);
-        // Try to capture both stdout and stderr
-        let result;
-        try {
-            result = execSync(curlCmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
-            console.log('Config PATCH result (stdout):', result);
-            return true;
-        } catch (err) {
-            // If execSync throws, log both stdout and stderr if available
-            if (err.stdout) {
-                console.error('Config PATCH stdout:', err.stdout.toString());
-            }
-            if (err.stderr) {
-                console.error('Config PATCH stderr:', err.stderr.toString());
-            }
-            console.error('Failed to force admin-console config:', err.message);
-            return false;
-        }
+        const result = await callManagementApi('/configs/admin-console', {
+            method: 'PATCH',
+            body: JSON.stringify(config),
+        });
+        console.log('Config PATCH result:', result);
+        return true;
     } catch (err) {
-        console.error('Unexpected error in forceBypassWelcomePageConfig:', err.message);
+        console.error('Failed to force admin-console config:', err.message);
         return false;
     }
 }
