@@ -482,11 +482,12 @@ stages:
                 echo "API config check:"
                 curl -s http://localhost:3302/api/configs/admin-console || echo "API call failed"
                 
-                # Try to fix it with API call
+                # Try to fix it with API call (PATCH, direct body, and auth header)
                 echo "Attempting to fix via API..."
-                curl -X POST http://localhost:3302/api/configs/admin-console \
+                curl -X PATCH http://localhost:3302/api/configs/admin-console \
                   -H "Content-Type: application/json" \
-                  -d '{"value":{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}}' \
+                  -H "development-user-id: integration-test-admin-user" \
+                  -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
                   || echo "API fix attempt failed"
                 
                 echo "⚠️ WARNING: Welcome page may still appear in tests"
