@@ -249,13 +249,15 @@ export async function forceBypassWelcomePageConfig() {
         // Log the config object for debugging
         console.log('PATCHING admin-console config with:', JSON.stringify(config));
         // Properly quote headers and data for shell (zsh/bash safe)
-        // Each -H must be a single string, and -d JSON must be single-quoted
+        // Try both development-user-id and Authorization headers for compatibility
         const curlCmd = [
             'curl',
             '-X', 'PATCH',
             'http://localhost:3302/api/configs/admin-console',
             '-H', '"Content-Type: application/json"',
             '-H', '"development-user-id: integration-test-admin-user"',
+            '-H', '"Authorization: integration-test-admin-user"',
+            '-H', '"Authorization: Bearer integration-test-admin-user"',
             '-d', `'${JSON.stringify(config).replace(/'/g, "'\\''")}'`
         ].join(' ');
         console.log('Forcing admin-console config via PATCH:', curlCmd);
