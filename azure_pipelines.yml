@@ -508,10 +508,11 @@ stages:
                 echo "❌ CRITICAL: Admin console is redirecting to welcome page!"
                 echo "Tests will likely fail. Attempting emergency fix..."
                 
-                # Emergency fix attempt
-                curl -X POST http://localhost:3302/api/configs/admin-console \
+                # Emergency fix attempt (PATCH, direct body, and auth header)
+                curl -X PATCH http://localhost:3302/api/configs/admin-console \
                   -H "Content-Type: application/json" \
-                  -d '{"value":{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}}' \
+                  -H "development-user-id: integration-test-admin-user" \
+                  -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
                   && echo "✅ Emergency API fix applied" || echo "❌ Emergency fix failed"
                 
                 # Wait and test again
