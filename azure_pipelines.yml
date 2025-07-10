@@ -201,8 +201,68 @@ stages:
               
               echo "✅ Database seeding and alteration completed successfully"
               
-              # Skip admin user creation - tests will use API tokens directly
-              echo "Using API token approach - no admin user creation needed"
+              # Complete admin console setup to avoid welcome page redirect (CRITICAL for CI)
+              echo "🔧 Completing admin console setup to bypass welcome page..."
+              
+              # Method 1: Mark console as configured by updating database directly with correct structure
+              echo "Marking admin console as configured in database with proper structure..."
+              docker exec postgres psql -U postgres -d logto -c "
+                INSERT INTO logto_configs (tenant_id, key, value) 
+                VALUES ('admin', 'adminConsole', '{
+                  \"livePreviewChecked\": true,
+                  \"applicationCreated\": true,
+                  \"signInExperienceCustomized\": true,
+                  \"passwordlessConfigured\": true,
+                  \"furtherReadingsChecked\": true,
+                  \"roleCreated\": true,
+                  \"communityChecked\": true,
+                  \"m2mApplicationCreated\": true
+                }')
+                ON CONFLICT (tenant_id, key) 
+                DO UPDATE SET value = EXCLUDED.value;
+              " && echo "✅ Admin console config inserted successfully" || { echo "❌ Database setup failed!"; exit 1; }
+              
+              # Also add the config for 'default' tenant_id as a fallback
+              echo "Adding admin console config for default tenant as fallback..."
+              docker exec postgres psql -U postgres -d logto -c "
+                INSERT INTO logto_configs (tenant_id, key, value) 
+                VALUES ('default', 'adminConsole', '{
+                  \"livePreviewChecked\": true,
+                  \"applicationCreated\": true,
+                  \"signInExperienceCustomized\": true,
+                  \"passwordlessConfigured\": true,
+                  \"furtherReadingsChecked\": true,
+                  \"roleCreated\": true,
+                  \"communityChecked\": true,
+                  \"m2mApplicationCreated\": true
+                }')
+                ON CONFLICT (tenant_id, key) 
+                DO UPDATE SET value = EXCLUDED.value;
+              " && echo "✅ Default tenant admin console config added" || echo "⚠️ Default tenant config failed (may not be needed)"
+              
+              # Verify the configuration was set correctly
+              echo "Verifying admin console configuration in database..."
+              docker exec postgres psql -U postgres -d logto -c "
+                SELECT tenant_id, key, value FROM logto_configs WHERE key = 'adminConsole';
+              " && echo "✅ Admin console config verified" || { echo "❌ Failed to verify admin console config"; exit 1; }
+              
+              # Additional verification - check that the JSON is valid
+              echo "Validating JSON structure in database..."
+              docker exec postgres psql -U postgres -d logto -c "
+                SELECT 
+                  tenant_id,
+                  value->>'applicationCreated' as app_created,
+                  value->>'signInExperienceCustomized' as sie_customized,
+                  value->>'furtherReadingsChecked' as further_readings,
+                  value->>'livePreviewChecked' as live_preview
+                FROM logto_configs 
+                WHERE key = 'adminConsole';
+              " && echo "✅ JSON structure validated" || echo "⚠️ JSON validation warning"
+              
+              echo "✅ Admin console setup completed - should bypass welcome page now"
+              
+              # Skip admin user creation - tests will use existing credentials
+              echo "Using existing admin credentials - no additional user creation needed"
               
               # Verify API is accessible
               echo "Verifying Management API is accessible..."
@@ -297,6 +357,19 @@ stages:
               echo "Building connectors..."
               pnpm connectors build && pnpm cli connector link
               
+              # Start MyGovId Mock Service
+              echo "🚀 Starting MyGovId Mock Service..."
+              cd mygovid-mock-service
+              npm install
+              npm start > ../mygovid-mock.log 2>&1 &
+              MYGOVID_PID=$!
+              cd ..
+              
+              # Wait for MyGovId service to be ready
+              echo "Waiting for MyGovId Mock Service to be ready..."
+              timeout 60 bash -c 'until curl -s http://localhost:4005/health > /dev/null; do echo "Waiting for MyGovId Mock Service..."; sleep 2; done'
+              echo "✅ MyGovId Mock Service is ready!"
+              
               echo "🚀 Starting Logto directly (skipping PostgreSQL startup since we already have one)..."
               
               # We can't use make run-native directly as it would start another PostgreSQL instance
@@ -375,8 +448,111 @@ stages:
               echo "3. Showing running Node.js processes..."
               ps aux | grep node | grep -v grep
               
+              echo "4. Testing admin console configuration API..."
+              if curl -s http://localhost:3302/api/configs/admin-console | grep -q '"value"'; then
+                echo "✅ Admin console configuration API is responding!"
+                echo "Admin console config from API:"
+                curl -s http://localhost:3302/api/configs/admin-console | head -200
+              else
+                echo "⚠️ Admin console configuration API not responding properly!"
+              fi
+              
+              echo "5. Final verification of admin console database config..."
+              docker exec postgres psql -U postgres -d logto -c "
+                SELECT 'Config exists:', EXISTS(SELECT 1 FROM logto_configs WHERE key = 'adminConsole') as configured;
+                SELECT 'Config values:' as label, value->'applicationCreated' as app_created, 
+                       value->'signInExperienceCustomized' as sie_customized,
+                       value->'furtherReadingsChecked' as further_readings
+                FROM logto_configs WHERE key = 'adminConsole';
+              " || echo "Failed to verify final config"
+              
+              echo "6. CRITICAL CI CHECK: Testing welcome page behavior..."
+              # Test if accessing the console root redirects to welcome page
+              CONSOLE_RESPONSE=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+              echo "Console response: $CONSOLE_RESPONSE"
+              
+              if echo "$CONSOLE_RESPONSE" | grep -q "welcome"; then
+                echo "❌ CRITICAL: Console is still redirecting to welcome page!"
+                echo "This will cause CI tests to fail. Debugging..."
+                
+                # Additional debugging
+                echo "Database config check:"
+                docker exec postgres psql -U postgres -d logto -c "SELECT * FROM logto_configs WHERE key = 'adminConsole';"
+                
+                echo "API config check:"
+                curl -s http://localhost:3302/api/configs/admin-console || echo "API call failed"
+                
+                # Try to fix it with API call
+                echo "Attempting to fix via API..."
+                curl -X POST http://localhost:3302/api/configs/admin-console \
+                  -H "Content-Type: application/json" \
+                  -d '{"value":{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}}' \
+                  || echo "API fix attempt failed"
+                
+                echo "⚠️ WARNING: Welcome page may still appear in tests"
+              else
+                echo "✅ Console is NOT redirecting to welcome page - CI should work!"
+              fi
+              
               echo "✅ Logto is ready!"
             displayName: 'Setup Database and Start Logto'
+
+          - script: |
+              echo "🧪 Pre-test verification..."
+              
+              # Test 1: Verify admin console configuration is working
+              echo "1. Testing admin console welcome page behavior..."
+              WELCOME_TEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+              if echo "$WELCOME_TEST" | grep -q "welcome"; then
+                echo "❌ CRITICAL: Admin console is redirecting to welcome page!"
+                echo "Tests will likely fail. Attempting emergency fix..."
+                
+                # Emergency fix attempt
+                curl -X POST http://localhost:3302/api/configs/admin-console \
+                  -H "Content-Type: application/json" \
+                  -d '{"value":{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}}' \
+                  && echo "✅ Emergency API fix applied" || echo "❌ Emergency fix failed"
+                
+                # Wait and test again
+                sleep 5
+                RETEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+                if echo "$RETEST" | grep -q "welcome"; then
+                  echo "❌ Emergency fix didn't work - tests may still fail"
+                else
+                  echo "✅ Emergency fix worked!"
+                fi
+              else
+                echo "✅ Admin console is NOT redirecting to welcome page"
+              fi
+              
+              # Test 2: Verify test credentials
+              echo "2. Verifying test credentials..."
+              if [ -z "$TEST_USERNAME" ] || [ -z "$TEST_PASSWORD" ]; then
+                echo "❌ CRITICAL: Test credentials not set!"
+                echo "TEST_USERNAME: ${TEST_USERNAME:-'NOT SET'}"
+                echo "TEST_PASSWORD: ${TEST_PASSWORD:-'NOT SET'}"
+                exit 1
+              else
+                echo "✅ Test credentials are set"
+              fi
+              
+              # Test 3: Verify all services are responding
+              echo "3. Final service health check..."
+              
+              echo "  - Logto admin console health..."
+              curl -s -f http://localhost:3302/health > /dev/null && echo "    ✅ Logto admin healthy" || { echo "    ❌ Logto admin unhealthy"; exit 1; }
+              
+              echo "  - MyGovId mock service health..."
+              curl -s -f http://localhost:4005/health > /dev/null && echo "    ✅ MyGovId mock healthy" || { echo "    ❌ MyGovId mock unhealthy"; exit 1; }
+              
+              echo "  - Database connectivity..."
+              docker exec postgres psql -U postgres -d logto -c "SELECT 1;" > /dev/null && echo "    ✅ Database healthy" || { echo "    ❌ Database unhealthy"; exit 1; }
+              
+              echo "✅ Pre-test verification completed successfully!"
+            displayName: 'Pre-test Verification'
+            env:
+              TEST_USERNAME: $(TEST_USERNAME)
+              TEST_PASSWORD: $(TEST_PASSWORD)
 
           - script: |
               echo "🚀 Running Playwright tests..."
@@ -434,6 +610,7 @@ stages:
               echo "📦 Collecting logs..."
               mkdir -p debug-artifacts
               cp logto-startup.log debug-artifacts/ || echo "No logto startup log found"
+              cp mygovid-mock.log debug-artifacts/ || echo "No MyGovId mock log found"
             displayName: 'Collect Logs'
             condition: always()
             

@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { addNewUser, loginToLogtoAdmin } from './helpers/functions';
 import {
-    bypassLoginWithApiToken,
     createUserViaApi,
     getRolesViaApi,
     assignRolesToUserViaApi,
-    deleteUserViaApi
+    deleteUserViaApi,
+    
 } from './helpers/api-helpers';
 
 // this file is to test custom ogcio user flows and data
@@ -13,15 +13,18 @@ import {
 
 const LOGTO_ADMIN_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
-// Hardcode credentials as fallback for CI (these are test credentials)
-const TEST_USERNAME = process.env.TEST_USERNAME || 'playwrighttest';
-const TEST_PASSWORD = process.env.TEST_PASSWORD || 'Playwright-test123!!!';
+const TEST_USERNAME = process.env.TEST_USERNAME;
+const TEST_PASSWORD = process.env.TEST_PASSWORD;
 
 test.describe('Logto User Flows - OGCIO E2E Tests', () => {
 
     // Use direct UI login for reliability in CI
     test.beforeEach(async ({ page }) => {
         console.log('Logging in to admin console with credentials...');
+        
+        if (!TEST_USERNAME || !TEST_PASSWORD) {
+            throw new Error('TEST_USERNAME and TEST_PASSWORD environment variables must be set');
+        }
         
         try {
             await loginToLogtoAdmin(page, LOGTO_ADMIN_URL, TEST_USERNAME, TEST_PASSWORD);
