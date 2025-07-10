@@ -262,7 +262,13 @@ stages:
               echo "✅ Admin console setup completed - should bypass welcome page now"
               
               # Skip admin user creation - tests will use existing credentials
-              echo "Using existing admin credentials - no additional user creation needed"
+              # echo "Using existing admin credentials - no additional user creation needed"
+              
+              # Create or upsert admin user for UI tests
+              echo "Creating/upserting admin user for UI tests..."
+              echo "TEST_USERNAME: ${TEST_USERNAME}"
+              echo "TEST_PASSWORD: ${TEST_PASSWORD}"
+              node ./scripts/create-admin-user.js || { echo "❌ Failed to create admin user"; exit 1; }
               
               # Verify API is accessible
               echo "Verifying Management API is accessible..."
