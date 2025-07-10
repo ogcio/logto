@@ -5,7 +5,8 @@ import {
     getRolesViaApi,
     assignRolesToUserViaApi,
     deleteUserViaApi,
-    
+    forceBypassWelcomePageConfig,
+
 } from './helpers/api-helpers';
 
 // this file is to test custom ogcio user flows and data
@@ -13,7 +14,7 @@ import {
 
 const LOGTO_ADMIN_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
 
-const TEST_USERNAME = process.env.TEST_USERNAME;
+const TEST_USERNAME = process.env.TEST_USERNAME; 
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
 
 test.describe('Logto User Flows - OGCIO E2E Tests', () => {
@@ -21,16 +22,28 @@ test.describe('Logto User Flows - OGCIO E2E Tests', () => {
     // Use direct UI login for reliability in CI
     test.beforeEach(async ({ page }) => {
         console.log('Logging in to admin console with credentials...');
-        
         if (!TEST_USERNAME || !TEST_PASSWORD) {
             throw new Error('TEST_USERNAME and TEST_PASSWORD environment variables must be set');
         }
-        
         try {
             await loginToLogtoAdmin(page, LOGTO_ADMIN_URL, TEST_USERNAME, TEST_PASSWORD);
             console.log('Successfully logged in via UI');
         } catch (error) {
             console.error('UI login failed:', error.message);
+            // If stuck on /welcome, try to force config and reload
+            if (page.url().includes('/welcome')) {
+                console.log('Detected /welcome, attempting to force config via API...');
+                await forceBypassWelcomePageConfig();
+                await page.reload({ waitUntil: 'networkidle' });
+                // Try login again
+                try {
+                    await loginToLogtoAdmin(page, LOGTO_ADMIN_URL, TEST_USERNAME, TEST_PASSWORD);
+                    console.log('Successfully logged in after forcing config');
+                    return;
+                } catch (retryError) {
+                    console.error('Retry login after config force failed:', retryError.message);
+                }
+            }
             throw new Error(`Login failed. Ensure admin user exists: ${TEST_USERNAME}`);
         }
     });

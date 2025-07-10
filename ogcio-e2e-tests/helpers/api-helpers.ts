@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { execSync } from 'child_process';
 
 // Use the same URLs as integration tests expect
 const logtoUrl = 'http://localhost:3301';
@@ -19,12 +19,12 @@ export async function callManagementApi(endpoint: string, options: RequestInit =
             ...options.headers,
         },
     });
-    
+
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`API call failed: ${response.status} ${errorText}`);
     }
-    
+
     // Handle different response types
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
@@ -43,30 +43,30 @@ export async function callManagementApi(endpoint: string, options: RequestInit =
  */
 export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = logtoConsoleUrl) {
     console.log('🔍 Checking for welcome page and attempting to navigate past it...');
-    
+
     // Wait for page to load with extended timeout for CI
     await page.waitForLoadState('networkidle', { timeout: 15000 });
-    
+
     console.log('Current URL:', page.url());
-    
+
     // Check for multiple variations of welcome/onboarding pages
-    const isOnWelcomePage = page.url().includes('/console/welcome') || 
-                           page.url().includes('/console/get-started') ||
-                           page.url().includes('/console/onboarding') ||
-                           page.url().includes('/welcome') ||
-                           page.url().includes('welcome');
-    
+    const isOnWelcomePage = page.url().includes('/console/welcome') ||
+        page.url().includes('/console/get-started') ||
+        page.url().includes('/console/onboarding') ||
+        page.url().includes('/welcome') ||
+        page.url().includes('welcome');
+
     if (isOnWelcomePage) {
         console.log('🚨 DETECTED: On welcome/get-started page, attempting to complete setup...');
         console.log('⚠️ This indicates the admin console configuration may not have been applied properly in CI');
-        
+
         try {
             // Strategy 1: Wait a bit more and try to detect page content
             console.log('Waiting for page content to fully load...');
             await page.waitForTimeout(3000);
-            
+
             // Try multiple strategies to get past the welcome page
-            
+
             // Strategy 1A: Look for and click common setup completion buttons
             const buttonSelectors = [
                 'button:has-text("Create account")',
@@ -85,7 +85,7 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
                 'button[type="submit"]',
                 'input[type="submit"]'
             ];
-            
+
             let foundButton = false;
             for (const selector of buttonSelectors) {
                 try {
@@ -95,7 +95,7 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
                         await button.click();
                         await page.waitForLoadState('networkidle', { timeout: 15000 });
                         foundButton = true;
-                        
+
                         // Check if we've navigated away from welcome page
                         if (!page.url().includes('/welcome') && !page.url().includes('/get-started') && !page.url().includes('/onboarding')) {
                             console.log('✅ Successfully navigated away from welcome page via button click');
@@ -107,11 +107,11 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
                     continue;
                 }
             }
-            
+
             if (!foundButton) {
                 console.log('⚠️ No actionable buttons found on welcome page');
             }
-            
+
             // Strategy 2: Try direct navigation to dashboard/console
             console.log('🚀 Attempting direct navigation to bypass welcome page...');
             const navigationTargets = [
@@ -121,18 +121,18 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
                 `${adminUrl}/console/get-started`,
                 `${adminUrl}/console`
             ];
-            
+
             for (const target of navigationTargets) {
                 try {
                     console.log(`🎯 Trying to navigate to: ${target}`);
                     await page.goto(target, { timeout: 20000 });
                     await page.waitForLoadState('networkidle', { timeout: 15000 });
-                    
+
                     // Check if we've successfully navigated away from welcome
                     await page.waitForTimeout(2000); // Give it time to redirect if needed
                     const currentUrl = page.url();
                     console.log(`Current URL after navigation attempt: ${currentUrl}`);
-                    
+
                     if (!currentUrl.includes('/welcome') && !currentUrl.includes('/get-started') && !currentUrl.includes('/onboarding')) {
                         console.log(`✅ Successfully navigated to non-welcome page: ${currentUrl}`);
                         return;
@@ -142,13 +142,13 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
                     continue;
                 }
             }
-            
+
             // Strategy 3: Force navigation and accept we might still be on welcome
             console.log('🔄 Final attempt: Force navigation to dashboard...');
             await page.goto(`${adminUrl}/console/dashboard`, { timeout: 20000 });
             await page.waitForLoadState('networkidle', { timeout: 15000 });
             await page.waitForTimeout(3000);
-            
+
             const finalUrl = page.url();
             if (finalUrl.includes('/welcome') || finalUrl.includes('/get-started') || finalUrl.includes('/onboarding')) {
                 console.log('⚠️ CRITICAL: Still on welcome page after all attempts!');
@@ -157,7 +157,7 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
             } else {
                 console.log('✅ Final navigation successful - no longer on welcome page');
             }
-            
+
         } catch (error) {
             console.log('❌ Welcome page navigation failed with error:', error.message);
             console.log('⚠️ Will proceed - individual tests will need to handle welcome page if present');
@@ -165,7 +165,7 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
     } else {
         console.log('✅ Not on welcome page - admin console configuration appears to be working correctly');
     }
-    
+
     console.log('🏁 Final URL after welcome handling:', page.url());
 }
 
@@ -174,22 +174,22 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
  */
 export async function createUserViaApi(email: string, phone: string | null, username: string, displayName: string) {
     console.log('Creating user via API:', username);
-    
+
     const userData: any = {
         username,
         primaryEmail: email,
         name: displayName,
     };
-    
+
     if (phone) {
         userData.primaryPhone = phone;
     }
-    
+
     const user = await callManagementApi('/users', {
         method: 'POST',
         body: JSON.stringify(userData),
     });
-    
+
     console.log('User created via API:', user.id);
     return user;
 }
@@ -224,5 +224,37 @@ export async function deleteUserViaApi(userId: string) {
         if (!error.message.includes('404')) {
             throw error;
         }
+    }
+}
+
+/**
+ * Force bypass welcome page config
+ */
+export async function forceBypassWelcomePageConfig() {
+    // This function will PATCH the admin-console config using the dev header
+    try {
+        const config = {
+            livePreviewChecked: true,
+            applicationCreated: true,
+            signInExperienceCustomized: true,
+            passwordlessConfigured: true,
+            furtherReadingsChecked: true,
+            roleCreated: true,
+            communityChecked: true,
+            m2mApplicationCreated: true
+        };
+        const curlCmd = [
+            'curl',
+            '-X', 'PATCH',
+            'http://localhost:3302/api/configs/admin-console',
+            '-H', 'Content-Type: application/json',
+            '-H', 'development-user-id: integration-test-admin-user',
+            '-d', `'${JSON.stringify(config)}'`
+        ].join(' ');
+        console.log('Forcing admin-console config via PATCH:', curlCmd);
+        const result = execSync(curlCmd, { encoding: 'utf-8' });
+        console.log('Config PATCH result:', result);
+    } catch (err) {
+        console.error('Failed to force admin-console config:', err.message);
     }
 }
