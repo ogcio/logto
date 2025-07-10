@@ -254,7 +254,37 @@ export async function forceBypassWelcomePageConfig() {
         console.log('Config PATCH result:', result);
         return true;
     } catch (err) {
-        console.error('Failed to force admin-console config:', err.message);
+        // If 401, give a clear CI/dev header warning
+        if (err.message && err.message.includes('401')) {
+            console.error('❌ Failed to force admin-console config: 401 Unauthorized.');
+            console.error('   The Logto API is rejecting the development-user-id header.');
+            console.error('   This usually means Logto is running in production mode or dev headers are disabled.');
+            console.error('   To fix: Ensure Logto is running in development mode (NODE_ENV=development) or dev headers are enabled in CI.');
+            if (process.env.LOGTO_ADMIN_BEARER_TOKEN) {
+                // Optionally, try with a Bearer token if available
+                try {
+                    const bearerResult = await fetch(`${logtoConsoleUrl}/api/configs/admin-console`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${process.env.LOGTO_ADMIN_BEARER_TOKEN}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(config),
+                    });
+                    if (!bearerResult.ok) {
+                        const bearerText = await bearerResult.text();
+                        throw new Error(`Bearer PATCH failed: ${bearerResult.status} ${bearerText}`);
+                    }
+                    const bearerJson = await bearerResult.json();
+                    console.log('Config PATCH result (Bearer):', bearerJson);
+                    return true;
+                } catch (bearerErr) {
+                    console.error('❌ Bearer token PATCH also failed:', bearerErr.message);
+                }
+            }
+        } else {
+            console.error('Failed to force admin-console config:', err.message);
+        }
         return false;
     }
 }
