@@ -268,7 +268,7 @@ stages:
               echo "Creating/upserting admin user for UI tests..."
               echo "TEST_USERNAME: ${TEST_USERNAME}"
               echo "TEST_PASSWORD: ${TEST_PASSWORD}"
-              node ./scripts/create-admin-user.js || { echo "❌ Failed to create admin user"; exit 1; }
+              node ./scripts/create-admin-user.cjs || { echo "❌ Failed to create admin user"; exit 1; }
               
               # Verify API is accessible
               echo "Verifying Management API is accessible..."
