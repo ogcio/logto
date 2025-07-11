@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 
 // Use the same URLs as integration tests expect
 const logtoUrl = 'http://localhost:3301';
-const logtoConsoleUrl = 'http://localhost:3302';
+const logtoConsoleUrl = 'http://localhost:3301'; // Use core port 3301 to access default tenant data
 
 /**
  * Make authenticated API calls to Logto Management API using development mode
@@ -191,9 +191,12 @@ function safeRandomString(length = 8) {
 export async function createUserViaApi(email: string, phone: string | null, username: string, displayName: string) {
     // Ensure unique and valid username and email for each test run
     const uniqueSuffix = safeRandomString(8);
-    const uniqueUsername = `${username}_${uniqueSuffix}`;
+    // Create a valid username (alphanumeric only, no special characters)
+    const cleanUsername = username.replace(/[^a-zA-Z0-9]/g, '');
+    const uniqueUsername = `${cleanUsername}${uniqueSuffix}`;
     const emailParts = email.split('@');
-    const uniqueEmail = `${emailParts[0]}_${uniqueSuffix}@${emailParts[1]}`;
+    const uniqueEmail = `${emailParts[0]}${uniqueSuffix}@${emailParts[1]}`;
+    
     console.log('Creating user via API:', uniqueUsername, uniqueEmail);
     const userData: any = {
         username: uniqueUsername,
@@ -223,7 +226,7 @@ export async function assignRolesToUserViaApi(userId: string, roles: string[]): 
     console.log(`Assigning roles to user ${userId}:`, roles);
     return await callManagementApi(`/users/${userId}/roles`, {
         method: 'POST',
-        body: JSON.stringify({ roles }),
+        body: JSON.stringify({ roleIds: roles }),
     });
 }
 
