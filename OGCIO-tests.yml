@@ -49,8 +49,8 @@ stages:
         
         variables:
           LOGTO_ADMIN_URL: 'https://logto-admin-$(environment).ogcio.gov.ie'
-          TEST_USERNAME: $(OGCIO_TEST_USERNAME)
-          TEST_PASSWORD: $(OGCIO_TEST_PASSWORD)
+          TEST_USERNAME: $(TEST_USERNAME)
+          TEST_PASSWORD: $(TEST_PASSWORD)
 
         steps:
           - checkout: self
