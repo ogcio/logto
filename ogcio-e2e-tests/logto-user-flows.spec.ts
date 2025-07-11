@@ -1,13 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { addNewUser, loginToLogtoAdmin } from './helpers/functions';
+import { expect, test } from '@playwright/test';
 import {
-    createUserViaApi,
-    getRolesViaApi,
     assignRolesToUserViaApi,
+    createUserViaApi,
     deleteUserViaApi,
-    forceBypassWelcomePageConfig,
-
+    getRolesViaApi,
 } from './helpers/api-helpers';
+import { addNewUser } from './helpers/functions';
 
 // this file is to test custom ogcio user flows and data
 // such as creating users, assigning roles, and deleting users
@@ -30,8 +28,8 @@ test.describe('Logto User Flows - OGCIO E2E Tests', () => {
         );
         console.log('Ensured admin user exists via API. Proceeding to UI login...');
         await page.goto(`${LOGTO_ADMIN_URL}/console/login`);
-        await page.getByPlaceholder('Username').fill(TEST_USERNAME);
-        await page.getByPlaceholder('Password').fill(TEST_PASSWORD);
+        await page.locator('input[name="identifier"]').fill(TEST_USERNAME);
+        await page.locator('input[name="password"]').fill(TEST_PASSWORD);
         await page.getByRole('button', { name: 'Sign in' }).click();
         await page.waitForLoadState('networkidle', { timeout: 15000 });
         // If stuck on /welcome, retry navigation to dashboard

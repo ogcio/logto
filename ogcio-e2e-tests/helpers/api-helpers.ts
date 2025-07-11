@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { randomUUID } from 'crypto';
 
 // Use the same URLs as integration tests expect
 const logtoUrl = 'http://localhost:3301';
@@ -183,165 +184,72 @@ export async function handleWelcomePageAfterLogin(page: any, adminUrl: string = 
 /**
  * Create a user via API instead of UI
  */
-export async function createUserViaApi(email: string, phone: string | null, username: string, displayName: string) {
-    console.log('Creating user via API:', username);
+function safeRandomString(length = 8) {
+    return Math.random().toString(36).replace(/[^a-z0-9]/gi, '').slice(0, length);
+}
 
+export async function createUserViaApi(email: string, phone: string | null, username: string, displayName: string) {
+    // Ensure unique and valid username and email for each test run
+    const uniqueSuffix = safeRandomString(8);
+    const uniqueUsername = `${username}_${uniqueSuffix}`;
+    const emailParts = email.split('@');
+    const uniqueEmail = `${emailParts[0]}_${uniqueSuffix}@${emailParts[1]}`;
+    console.log('Creating user via API:', uniqueUsername, uniqueEmail);
     const userData: any = {
-        username,
-        primaryEmail: email,
+        username: uniqueUsername,
+        primaryEmail: uniqueEmail,
         name: displayName,
     };
-
-    if (phone) {
-        userData.primaryPhone = phone;
-    }
-
+    // Do NOT include primaryPhone, even if phone is provided
     const user = await callManagementApi('/users', {
         method: 'POST',
         body: JSON.stringify(userData),
     });
-
     console.log('User created via API:', user.id);
-    return user;
+    // Return both user object and the unique username/email for login
+    return { ...user, username: uniqueUsername, email: uniqueEmail, phone: null };
 }
 
 /**
- * Get roles via API
+ * Assign roles to a user via API
+ * @param userId - The ID of the user to assign roles to
+ * @param roles - Array of role IDs to assign
+ * @returns API response
  */
-export async function getRolesViaApi() {
-    return callManagementApi('/roles');
-}
-
-/**
- * Assign roles to user via API
- */
-export async function assignRolesToUserViaApi(userId: string, roleIds: string[]) {
-    return callManagementApi(`/users/${userId}/roles`, {
+export async function assignRolesToUserViaApi(userId: string, roles: string[]): Promise<any> {
+    if (!userId || !Array.isArray(roles) || roles.length === 0) {
+        throw new Error('assignRolesToUserViaApi: userId and roles[] are required');
+    }
+    console.log(`Assigning roles to user ${userId}:`, roles);
+    return await callManagementApi(`/users/${userId}/roles`, {
         method: 'POST',
-        body: JSON.stringify({ roleIds }),
+        body: JSON.stringify({ roles }),
     });
 }
 
 /**
- * Delete user via API
+ * Delete a user via API
+ * @param userId - The ID of the user to delete
+ * @returns API response
  */
-export async function deleteUserViaApi(userId: string) {
-    try {
-        await callManagementApi(`/users/${userId}`, {
-            method: 'DELETE',
-        });
-    } catch (error) {
-        // Ignore 404 errors (user already deleted)
-        if (!error.message.includes('404')) {
-            throw error;
-        }
+export async function deleteUserViaApi(userId: string): Promise<any> {
+    if (!userId) {
+        throw new Error('deleteUserViaApi: userId is required');
     }
+    console.log(`Deleting user via API: ${userId}`);
+    return await callManagementApi(`/users/${userId}`, {
+        method: 'DELETE',
+    });
 }
 
 /**
- * Helper to fetch a Bearer token for the admin user using the password grant.
- * Uses PLAYWRIGHT_TEST_USERNAME, PLAYWRIGHT_TEST_PASSWORD, and LOGTO_CLIENT_ID from env.
- * Sets LOGTO_ADMIN_BEARER_TOKEN in process.env for reuse.
+ * Get all roles via API
+ * @returns Array of roles
  */
-export async function getAdminBearerToken() {
-    const clientId = process.env.LOGTO_CLIENT_ID;
-    const username = process.env.PLAYWRIGHT_TEST_USERNAME;
-    const password = process.env.PLAYWRIGHT_TEST_PASSWORD;
-    const tokenUrl = `${logtoUrl}/oidc/token`;
-    if (!clientId || !username || !password) {
-        throw new Error('LOGTO_CLIENT_ID, PLAYWRIGHT_TEST_USERNAME, and PLAYWRIGHT_TEST_PASSWORD must be set in env');
-    }
-    const params = new URLSearchParams({
-        grant_type: 'password',
-        client_id: clientId,
-        username,
-        password,
-        scope: 'openid offline_access management'
+export async function getRolesViaApi(): Promise<any[]> {
+    console.log('Fetching roles via API...');
+    const roles = await callManagementApi('/roles', {
+        method: 'GET',
     });
-    const response = await fetch(tokenUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-    });
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Failed to get admin bearer token: ${response.status} ${text}`);
-    }
-    const json = await response.json();
-    if (!json.access_token) {
-        throw new Error('No access_token in token response');
-    }
-    process.env.LOGTO_ADMIN_BEARER_TOKEN = json.access_token;
-    return json.access_token;
-}
-
-/**
- * Force bypass welcome page config
- *
- * Uses curl with carefully quoted headers and JSON data to PATCH the admin-console config.
- * Logs both stdout and stderr for easier debugging. Returns true on success, false on failure.
- */
-export async function forceBypassWelcomePageConfig() {
-    // Use the same config as before
-    const config = {
-        livePreviewChecked: true,
-        applicationCreated: true,
-        signInExperienceCustomized: true,
-        passwordlessConfigured: true,
-        furtherReadingsChecked: true,
-        roleCreated: true,
-        communityChecked: true,
-        m2mApplicationCreated: true
-    };
-    console.log('PATCHING admin-console config with:', JSON.stringify(config));
-    try {
-        const result = await callManagementApi('/configs/admin-console', {
-            method: 'PATCH',
-            body: JSON.stringify(config),
-        });
-        console.log('Config PATCH result:', result);
-        return true;
-    } catch (err) {
-        // If 401, give a clear CI/dev header warning
-        if (err.message && err.message.includes('401')) {
-            console.error('❌ Failed to force admin-console config: 401 Unauthorized.');
-            console.error('   The Logto API is rejecting the development-user-id header.');
-            console.error('   This usually means Logto is running in production mode or dev headers are disabled.');
-            console.error('   To fix: Ensure Logto is running in development mode (NODE_ENV=development) or dev headers are enabled in CI.');
-            // Try to get a Bearer token using Playwright test credentials if not already set
-            if (!process.env.LOGTO_ADMIN_BEARER_TOKEN) {
-                try {
-                    console.log('Attempting to fetch Bearer token using Playwright test credentials...');
-                    await getAdminBearerToken();
-                } catch (tokenErr) {
-                    console.error('❌ Could not obtain Bearer token:', tokenErr.message);
-                }
-            }
-            if (process.env.LOGTO_ADMIN_BEARER_TOKEN) {
-                // Optionally, try with a Bearer token if available
-                try {
-                    const bearerResult = await fetch(`${logtoConsoleUrl}/api/configs/admin-console`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `Bearer ${process.env.LOGTO_ADMIN_BEARER_TOKEN}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(config),
-                    });
-                    if (!bearerResult.ok) {
-                        const bearerText = await bearerResult.text();
-                        throw new Error(`Bearer PATCH failed: ${bearerResult.status} ${bearerText}`);
-                    }
-                    const bearerJson = await bearerResult.json();
-                    console.log('Config PATCH result (Bearer):', bearerJson);
-                    return true;
-                } catch (bearerErr) {
-                    console.error('❌ Bearer token PATCH also failed:', bearerErr.message);
-                }
-            }
-        } else {
-            console.error('Failed to force admin-console config:', err.message);
-        }
-        return false;
-    }
+    return Array.isArray(roles) ? roles : [];
 }
