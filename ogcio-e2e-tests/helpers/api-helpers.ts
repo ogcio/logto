@@ -9,15 +9,26 @@ const logtoConsoleUrl = 'http://localhost:3302';
  * This uses the development-user-id header which bypasses OAuth in dev mode
  */
 export async function callManagementApi(endpoint: string, options: RequestInit = {}): Promise<any> {
-    // Use development-user-id header for authentication in development mode
-    // This matches how integration tests work and bypasses OAuth entirely
+    // Use Bearer token if available, otherwise use development-user-id header
+    const baseHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    // Merge any additional headers from options, ensuring only string key-value pairs
+    const extraHeaders = (options.headers && typeof options.headers === 'object' && !Array.isArray(options.headers))
+        ? Object.fromEntries(Object.entries(options.headers).filter(([k, v]) => typeof v === 'string'))
+        : {};
+    const headers: Record<string, string> = {
+        ...baseHeaders,
+        ...extraHeaders,
+    };
+    if (process.env.LOGTO_ADMIN_BEARER_TOKEN) {
+        headers['Authorization'] = `Bearer ${process.env.LOGTO_ADMIN_BEARER_TOKEN}`;
+    } else {
+        headers['development-user-id'] = 'integration-test-admin-user';
+    }
     const response = await fetch(`${logtoConsoleUrl}/api${endpoint}`, {
         ...options,
-        headers: {
-            'development-user-id': 'integration-test-admin-user',
-            'Content-Type': 'application/json',
-            ...options.headers,
-        },
+        headers,
     });
 
     if (!response.ok) {
