@@ -7,6 +7,3 @@ variables:
   buildArguments: ""
   environment: LifeEvents-dev
   clusterName: non-prod-02
-  # E2E Test Configuration
-  OGCIO_TEST_USERNAME: $(TEST_USERNAME_DEV)
-  OGCIO_TEST_PASSWORD: $(TEST_PASSWORD_DEV)
