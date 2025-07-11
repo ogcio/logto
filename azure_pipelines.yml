@@ -261,14 +261,8 @@ stages:
               
               echo "✅ Admin console setup completed - should bypass welcome page now"
               
-              # Skip admin user creation - tests will use existing credentials
-              # echo "Using existing admin credentials - no additional user creation needed"
-              
-              # Create or upsert admin user for UI tests
-              echo "Creating/upserting admin user for UI tests..."
-              echo "TEST_USERNAME: ${TEST_USERNAME}"
-              echo "TEST_PASSWORD: ${TEST_PASSWORD}"
-              node ./scripts/create-admin-user.cjs || { echo "❌ Failed to create admin user"; exit 1; }
+              # Tests will create users via API - no need for pre-created admin user
+              echo "Tests will use API-based user creation - skipping admin user creation script"
               
               # Verify API is accessible
               echo "Verifying Management API is accessible..."
@@ -523,8 +517,7 @@ stages:
 
           - script: |
               echo "🚀 Running Playwright tests..."
-              echo "Note: Admin user should be created in the database before tests run"
-              echo "If tests fail with login issues, check admin user creation above"
+              echo "Tests will create users dynamically via API calls"
               
               # Check OGCIO seeding status and set environment variable accordingly
               if [ -f "./ogcio-seeding-status.env" ]; then
@@ -550,9 +543,8 @@ stages:
               if [ $TEST_RESULT -ne 0 ]; then
                 echo "⚠️ Tests failed. Check the test report for details."
                 echo "Debugging information:"
-                echo "- Check if admin user was created in database above"
-                echo "- Verify credentials match TEST_USERNAME/TEST_PASSWORD"
                 echo "- Check Logto admin console is accessible"
+                echo "- Verify OGCIO seeding completed successfully"  
                 echo "- OGCIO seeding status: EXPECT_OGCIO_SEEDING=$EXPECT_OGCIO_SEEDING"
               fi
               
