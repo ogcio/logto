@@ -196,7 +196,7 @@ export async function createUserViaApi(email: string, phone: string | null, user
     const uniqueUsername = `${cleanUsername}${uniqueSuffix}`;
     const emailParts = email.split('@');
     const uniqueEmail = `${emailParts[0]}${uniqueSuffix}@${emailParts[1]}`;
-    
+
     console.log('Creating user via API:', uniqueUsername, uniqueEmail);
     const userData: any = {
         username: uniqueUsername,

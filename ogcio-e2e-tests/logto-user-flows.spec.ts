@@ -7,76 +7,42 @@ import {
     callManagementApi,
 } from './helpers/api-helpers';
 
-// this file is to test custom ogcio user flows and data
-// such as creating users, assigning roles, and deleting users
-
-const LOGTO_ADMIN_URL = process.env.LOGTO_ADMIN_URL || 'http://localhost:3302';
-
 test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
 
-    // No UI login needed - all tests are API-only
-    test.beforeEach(async () => {
-        console.log('🎯 Running OGCIO-specific tests - testing custom OGCIO functionality only');
-        console.log('⚠️ These tests will FAIL if OGCIO seeding has not been properly executed');
-    });
-
     test('OGCIO user management: create user, assign OGCIO roles, and delete user', async () => {
-        // This test specifically validates OGCIO role assignment functionality
         const username = `ogcio-test-user-${Date.now()}`;
-
-        console.log('👤 Testing OGCIO user management with OGCIO-specific roles...');
-        console.log('Creating user via API...');
         const user = await createUserViaApi('ogcio-test@test.com', null, username, 'OGCIO test user');
-
-        // Get available roles
         const roles = await getRolesViaApi();
-        console.log(`📋 Found ${roles.length} total roles available`);
 
-        // REQUIREMENT: Test OGCIO-specific role assignment
         const ogcioTargetRoles = roles.filter((role: any) =>
             ['Onboarded citizen', 'Citizen', 'FormsIE Admin'].includes(role.name)
         );
 
-        console.log(`🎯 Found ${ogcioTargetRoles.length} OGCIO target roles:`, ogcioTargetRoles.map((r: any) => r.name));
-
-        // REQUIREMENT: OGCIO roles must exist for testing
         expect(ogcioTargetRoles.length).toBeGreaterThan(0);
-
-        // Assign OGCIO roles via API
-        console.log('Assigning OGCIO roles via API...');
         await assignRolesToUserViaApi(user.id, ogcioTargetRoles.map((role: any) => role.id));
 
-        // Verify OGCIO roles were assigned
         const userRoles = await callManagementApi(`/users/${user.id}/roles`);
         expect(Array.isArray(userRoles)).toBe(true);
         expect(userRoles.length).toBeGreaterThanOrEqual(ogcioTargetRoles.length);
 
-        // Verify specific OGCIO roles were assigned
         for (const targetRole of ogcioTargetRoles) {
             const assignedRole = userRoles.find((role: any) => role.id === targetRole.id);
             expect(assignedRole).toBeDefined();
-            console.log(`✅ OGCIO role "${targetRole.name}" successfully assigned`);
         }
 
-        // Remove OGCIO roles via API
-        console.log('Removing OGCIO roles via API...');
         for (const targetRole of ogcioTargetRoles) {
             await callManagementApi(`/users/${user.id}/roles/${targetRole.id}`, {
                 method: 'DELETE',
             });
         }
 
-        // Verify OGCIO roles were removed
         const userRolesAfterRemoval = await callManagementApi(`/users/${user.id}/roles`);
         for (const targetRole of ogcioTargetRoles) {
             const removedRole = userRolesAfterRemoval.find((role: any) => role.id === targetRole.id);
             expect(removedRole).toBeUndefined();
-            console.log(`✅ OGCIO role "${targetRole.name}" successfully removed`);
         }
 
-        // Clean up - delete the user
         await deleteUserViaApi(user.id);
-        console.log('✅ OGCIO user management test completed successfully');
     });
 
     test('OGCIO custom connectors must be configured', async () => {
@@ -176,7 +142,7 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
         // REQUIREMENT: These specific OGCIO roles must exist
         const requiredOGCIORoles = [
             'Citizen',
-            'FormsIE Admin', 
+            'FormsIE Admin',
             'Onboarded citizen',
             'M2M Citizen Profile Reader role',
             'M2M Public Servant Profile role',
@@ -239,7 +205,7 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
         // REQUIREMENT: These specific OGCIO building block API resources must exist
         const requiredOGCIOResources = [
             'Payments Building Block API',
-            'Messaging Building Block API', 
+            'Messaging Building Block API',
             'Scheduler Building Block API',
             'Profile Building Block API',
             'File Upload Service API',

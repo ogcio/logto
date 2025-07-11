@@ -113,7 +113,7 @@ stages:
         
         variables:
           # Environment variables for the tests
-          LOGTO_ADMIN_URL: 'http://localhost:3302'
+          LOGTO_ADMIN_URL: 'http://localhost:3301'
 
         steps:
           - checkout: self
@@ -272,7 +272,7 @@ stages:
               
               # Verify API is accessible
               echo "Verifying Management API is accessible..."
-              if curl -s -f "http://localhost:3302/api/health" > /dev/null; then
+              if curl -s -f "http://localhost:3301/api/health" > /dev/null; then
                 echo "✅ Management API is accessible"
               else
                 echo "⚠️ Management API not accessible - tests may need fallback approach"
@@ -362,7 +362,7 @@ stages:
               RETRY_COUNT=0
               MAX_RETRIES=120
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                if curl -s -f http://localhost:3302/health > /dev/null; then
+                if curl -s -f http://localhost:3301/health > /dev/null; then
                   echo "✅ Logto health endpoint is responding!"
                   break
                 fi
@@ -398,14 +398,14 @@ stages:
               echo "Testing Logto endpoints..."
               
               echo "1. Testing admin console root endpoint..."
-              if ! curl -s -I http://localhost:3302/ | grep -q "HTTP/"; then
+              if ! curl -s -I http://localhost:3301/ | grep -q "HTTP/"; then
                 echo "⚠️ Admin console root endpoint not responding properly!"
               else
-                curl -s -I http://localhost:3302/ | head -1
+                curl -s -I http://localhost:3301/ | head -1
               fi
               
               echo "2. Testing JWKS endpoint..."
-              if ! curl -s http://localhost:3302/.well-known/jwks.json | grep -q "keys"; then
+              if ! curl -s http://localhost:3301/.well-known/jwks.json | grep -q "keys"; then
                 echo "⚠️ JWKS endpoint not responding properly!"
               else
                 echo "✅ JWKS endpoint is responding!"
@@ -415,10 +415,10 @@ stages:
               ps aux | grep node | grep -v grep
               
               echo "4. Testing admin console configuration API..."
-              if curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console | grep -q '"value"'; then
+              if curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console | grep -q '"value"'; then
                 echo "✅ Admin console configuration API is responding!"
                 echo "Admin console config from API:"
-                curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console | head -200
+                curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console | head -200
               else
                 echo "⚠️ Admin console configuration API not responding properly!"
               fi
@@ -434,7 +434,7 @@ stages:
               
               echo "6. CRITICAL CI CHECK: Testing welcome page behavior..."
               # Test if accessing the console root redirects to welcome page
-              CONSOLE_RESPONSE=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+              CONSOLE_RESPONSE=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
               echo "Console response: $CONSOLE_RESPONSE"
               
               if echo "$CONSOLE_RESPONSE" | grep -q "welcome"; then
@@ -445,11 +445,11 @@ stages:
                 echo "Database config check:"
                 docker exec postgres psql -U postgres -d logto -c "SELECT * FROM logto_configs WHERE key = 'adminConsole';"
                    echo "API config check:"
-              curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console || echo "API call failed"
+              curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console || echo "API call failed"
                 
                 # Try to fix it with API call (PATCH, direct body, and auth header)
                 echo "Attempting to fix via API..."
-                curl -X PATCH http://localhost:3302/api/configs/admin-console \
+                curl -X PATCH http://localhost:3301/api/configs/admin-console \
                   -H "Content-Type: application/json" \
                   -H "development-user-id: integration-test-admin-user" \
                   -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
@@ -468,13 +468,13 @@ stages:
               
               # Test 1: Verify admin console configuration is working
               echo "1. Testing admin console welcome page behavior..."
-              WELCOME_TEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+              WELCOME_TEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
               if echo "$WELCOME_TEST" | grep -q "welcome"; then
                 echo "❌ CRITICAL: Admin console is redirecting to welcome page!"
                 echo "Tests will likely fail. Attempting emergency fix..."
                 
                 # Emergency fix attempt (PATCH, direct body, and auth header)
-                curl -X PATCH http://localhost:3302/api/configs/admin-console \
+                curl -X PATCH http://localhost:3301/api/configs/admin-console \
                   -H "Content-Type: application/json" \
                   -H "development-user-id: integration-test-admin-user" \
                   -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
@@ -482,7 +482,7 @@ stages:
                 
                 # Wait and test again
                 sleep 5
-                RETEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3302/console)
+                RETEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
                 if echo "$RETEST" | grep -q "welcome"; then
                   echo "❌ Emergency fix didn't work - tests may still fail"
                 else
@@ -507,7 +507,7 @@ stages:
               echo "3. Final service health check..."
               
               echo "  - Logto admin console health..."
-              curl -s -f http://localhost:3302/health > /dev/null && echo "    ✅ Logto admin healthy" || { echo "    ❌ Logto admin unhealthy"; exit 1; }
+              curl -s -f http://localhost:3301/health > /dev/null && echo "    ✅ Logto admin healthy" || { echo "    ❌ Logto admin unhealthy"; exit 1; }
               
               echo "  - MyGovId mock service health..."
               curl -s -f http://localhost:4005/health > /dev/null && echo "    ✅ MyGovId mock healthy" || { echo "    ❌ MyGovId mock unhealthy"; exit 1; }
