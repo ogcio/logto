@@ -455,10 +455,10 @@ stages:
               ps aux | grep node | grep -v grep
               
               echo "4. Testing admin console configuration API..."
-              if curl -s http://localhost:3302/api/configs/admin-console | grep -q '"value"'; then
+              if curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console | grep -q '"value"'; then
                 echo "✅ Admin console configuration API is responding!"
                 echo "Admin console config from API:"
-                curl -s http://localhost:3302/api/configs/admin-console | head -200
+                curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console | head -200
               else
                 echo "⚠️ Admin console configuration API not responding properly!"
               fi
@@ -484,9 +484,8 @@ stages:
                 # Additional debugging
                 echo "Database config check:"
                 docker exec postgres psql -U postgres -d logto -c "SELECT * FROM logto_configs WHERE key = 'adminConsole';"
-                
-                echo "API config check:"
-                curl -s http://localhost:3302/api/configs/admin-console || echo "API call failed"
+                   echo "API config check:"
+              curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3302/api/configs/admin-console || echo "API call failed"
                 
                 # Try to fix it with API call (PATCH, direct body, and auth header)
                 echo "Attempting to fix via API..."
