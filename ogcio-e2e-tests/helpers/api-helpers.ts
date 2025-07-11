@@ -228,6 +228,43 @@ export async function deleteUserViaApi(userId: string) {
 }
 
 /**
+ * Helper to fetch a Bearer token for the admin user using the password grant.
+ * Uses PLAYWRIGHT_TEST_USERNAME, PLAYWRIGHT_TEST_PASSWORD, and LOGTO_CLIENT_ID from env.
+ * Sets LOGTO_ADMIN_BEARER_TOKEN in process.env for reuse.
+ */
+export async function getAdminBearerToken() {
+    const clientId = process.env.LOGTO_CLIENT_ID;
+    const username = process.env.PLAYWRIGHT_TEST_USERNAME;
+    const password = process.env.PLAYWRIGHT_TEST_PASSWORD;
+    const tokenUrl = `${logtoUrl}/oidc/token`;
+    if (!clientId || !username || !password) {
+        throw new Error('LOGTO_CLIENT_ID, PLAYWRIGHT_TEST_USERNAME, and PLAYWRIGHT_TEST_PASSWORD must be set in env');
+    }
+    const params = new URLSearchParams({
+        grant_type: 'password',
+        client_id: clientId,
+        username,
+        password,
+        scope: 'openid offline_access management'
+    });
+    const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Failed to get admin bearer token: ${response.status} ${text}`);
+    }
+    const json = await response.json();
+    if (!json.access_token) {
+        throw new Error('No access_token in token response');
+    }
+    process.env.LOGTO_ADMIN_BEARER_TOKEN = json.access_token;
+    return json.access_token;
+}
+
+/**
  * Force bypass welcome page config
  *
  * Uses curl with carefully quoted headers and JSON data to PATCH the admin-console config.
@@ -260,6 +297,15 @@ export async function forceBypassWelcomePageConfig() {
             console.error('   The Logto API is rejecting the development-user-id header.');
             console.error('   This usually means Logto is running in production mode or dev headers are disabled.');
             console.error('   To fix: Ensure Logto is running in development mode (NODE_ENV=development) or dev headers are enabled in CI.');
+            // Try to get a Bearer token using Playwright test credentials if not already set
+            if (!process.env.LOGTO_ADMIN_BEARER_TOKEN) {
+                try {
+                    console.log('Attempting to fetch Bearer token using Playwright test credentials...');
+                    await getAdminBearerToken();
+                } catch (tokenErr) {
+                    console.error('❌ Could not obtain Bearer token:', tokenErr.message);
+                }
+            }
             if (process.env.LOGTO_ADMIN_BEARER_TOKEN) {
                 // Optionally, try with a Bearer token if available
                 try {

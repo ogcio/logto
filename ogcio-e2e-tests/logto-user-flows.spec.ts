@@ -21,31 +21,29 @@ test.describe('Logto User Flows - OGCIO E2E Tests', () => {
 
     // Use direct UI login for reliability in CI
     test.beforeEach(async ({ page }) => {
-        console.log('Logging in to admin console with credentials...');
-        if (!TEST_USERNAME || !TEST_PASSWORD) {
-            throw new Error('TEST_USERNAME and TEST_PASSWORD environment variables must be set');
-        }
-        try {
-            await loginToLogtoAdmin(page, LOGTO_ADMIN_URL, TEST_USERNAME, TEST_PASSWORD);
-            console.log('Successfully logged in via UI');
-        } catch (error) {
-            console.error('UI login failed:', error.message);
-            // If stuck on /welcome, try to force config and reload
+        // Ensure admin user exists before UI login
+        await createUserViaApi(
+            'playwrighttest@test.com',
+            '123456789',
+            TEST_USERNAME,
+            'playwright admin user'
+        );
+        console.log('Ensured admin user exists via API. Proceeding to UI login...');
+        await page.goto(`${LOGTO_ADMIN_URL}/console/login`);
+        await page.getByPlaceholder('Username').fill(TEST_USERNAME);
+        await page.getByPlaceholder('Password').fill(TEST_PASSWORD);
+        await page.getByRole('button', { name: 'Sign in' }).click();
+        await page.waitForLoadState('networkidle', { timeout: 15000 });
+        // If stuck on /welcome, retry navigation to dashboard
+        if (page.url().includes('/welcome')) {
+            console.log('Detected /welcome after login, retrying navigation to dashboard...');
+            await page.goto(`${LOGTO_ADMIN_URL}/console/dashboard`, { timeout: 20000 });
+            await page.waitForLoadState('networkidle', { timeout: 15000 });
             if (page.url().includes('/welcome')) {
-                console.log('Detected /welcome, attempting to force config via API...');
-                await forceBypassWelcomePageConfig();
-                await page.reload({ waitUntil: 'networkidle' });
-                // Try login again
-                try {
-                    await loginToLogtoAdmin(page, LOGTO_ADMIN_URL, TEST_USERNAME, TEST_PASSWORD);
-                    console.log('Successfully logged in after forcing config');
-                    return;
-                } catch (retryError) {
-                    console.error('Retry login after config force failed:', retryError.message);
-                }
+                throw new Error('Still stuck on /welcome after admin user creation and dashboard navigation. Check admin user status.');
             }
-            throw new Error(`Login failed. Ensure admin user exists: ${TEST_USERNAME}`);
         }
+        console.log('Successfully logged in and bypassed /welcome.');
     });
 
     test('An admin can create user and assign/delete roles and then delete the user', async ({ page }) => {
