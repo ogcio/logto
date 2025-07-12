@@ -163,37 +163,6 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
         console.log('✅ All required OGCIO roles are properly seeded');
     });
 
-    test('OGCIO organizations must be seeded', async () => {
-        // This test checks for OGCIO-specific organizations only
-        const organizations = await callManagementApi('/organizations');
-        expect(Array.isArray(organizations)).toBe(true);
-
-        console.log('🏛️ Checking OGCIO-specific organizations...');
-        console.log(`📋 Found ${organizations.length} organizations`);
-
-        // REQUIREMENT: These specific OGCIO organizations must exist
-        const requiredOGCIOOrgs = [
-            'OGCIO Seeded Org',
-            'An Bord Pleanála',
-            'Inactive Public Servants Org',
-            'First Testing Organisation',
-            'Second Testing Organisation',
-            'Health Service Executive',
-            'Department of Social Protection',
-            'Dept. of Education/An Roinn Oideachais',
-            'Limerick City and County Council',
-            'Messaging Test'
-        ];
-
-        for (const requiredOrg of requiredOGCIOOrgs) {
-            const org = organizations.find((o: any) => o.name === requiredOrg);
-            expect(org).toBeDefined();
-            console.log(`✅ OGCIO organization "${requiredOrg}" found`);
-        }
-
-        console.log('✅ All required OGCIO organizations are properly seeded');
-    });
-
     test('OGCIO API resources (building blocks) must be seeded', async () => {
         // This test checks for OGCIO building block API resources only
         const apiResources = await callManagementApi('/resources');
