@@ -210,7 +210,7 @@ stages:
               RETRY_COUNT=0
               MAX_RETRIES=30
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                if curl -s -f http://localhost:4005 > /dev/null; then
+                if curl -s -f http://localhost:4005/health > /dev/null; then
                   echo "✅ MyGovId mock service is ready!"
                   break
                 fi
@@ -272,7 +272,7 @@ stages:
               curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto core API healthy" || { echo "❌ Logto core API unhealthy"; exit 1; }
               
               echo "Verifying MyGovId mock service is ready..."
-              curl -s -f http://localhost:4005 > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
+              curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
               
               echo "Verifying database connectivity..."
               docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
@@ -335,6 +335,7 @@ stages:
               echo "📦 Collecting logs..."
               mkdir -p debug-artifacts
               cp logto-core.log debug-artifacts/ || echo "No logto core log found"
+              cp mygovid-mock.log debug-artifacts/ || echo "No MyGovId mock log found"
             displayName: 'Collect Logs'
             condition: always()
             
