@@ -156,18 +156,22 @@ stages:
               timeout 60 bash -c 'until docker compose -f docker-compose-db.yml exec postgres psql -U postgres -d postgres -c "SELECT 1;" > /dev/null 2>&1; do echo "Waiting for database to be fully ready..."; sleep 3; done'
               echo "✅ PostgreSQL is fully operational!"
               
+              # Install postgresql-client to test the exact connection Logto will use
+              echo "Installing PostgreSQL client for connection testing..."
+              sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+              
+              # Test the exact connection string Logto will use from the host
+              echo "Testing exact database connection that Logto will use..."
+              timeout 60 bash -c 'until PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d postgres -c "SELECT version();" > /dev/null 2>&1; do echo "Testing Logto connection string..."; sleep 3; done'
+              echo "✅ Database connection from host verified!"
+              
               # Give database a moment to stabilize
               echo "Allowing database to stabilize..."
-              sleep 5
+              sleep 10
               
-              # Test database connection using the same connection string Logto will use
-              echo "Testing database connection with Logto's connection string..."
-              timeout 30 bash -c 'until docker compose -f docker-compose-db.yml exec postgres psql "postgresql://postgres:p0stgr3s@localhost:5433/logto" -c "SELECT version();" > /dev/null 2>&1; do echo "Testing database connection..."; sleep 2; done'
-              echo "✅ Database connection test successful!"
-              
-              # Ensure the logto database exists
+              # Ensure the logto database exists using the same connection method Logto will use
               echo "Ensuring logto database exists..."
-              docker compose -f docker-compose-db.yml exec postgres psql -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
+              PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
               echo "✅ Logto database ready!"
               
               # Step 3: Install dependencies (exactly like makefile) - MOVED BEFORE seeding
@@ -199,10 +203,31 @@ stages:
               
               # Step 7: Start Logto in dev mode (exactly like makefile)
               echo "Starting Logto in development mode..."
-              echo "Environment check - DB_URL: $DB_URL"
-              echo "Environment check - PORT: $PORT"
+              
+              # Debug environment variables and add PostgreSQL timeout settings
+              echo "Environment debugging:"
+              echo "DB_URL from .env: $(grep DB_URL .env || echo 'Not found')"
+              echo "Current working directory: $(pwd)"
+              echo "Contents of .env file:"
+              cat .env
+              
+              # Add PostgreSQL client timeout environment variables for better connectivity
+              export PGCONNECT_TIMEOUT=60
+              export PGCOMMAND_TIMEOUT=60
+              echo "Added PostgreSQL timeout environment variables"
+              
               pnpm dev > logto-startup.log 2>&1 &
               LOGTO_PID=$!
+              
+              # Give Logto a moment to start and check for immediate errors
+              echo "Checking for immediate startup errors..."
+              sleep 20  # Increased from 10 to give more time for database connection
+              if ! ps -p $LOGTO_PID > /dev/null; then
+                echo "❌ Logto died immediately! Startup log:"
+                cat logto-startup.log
+                exit 1
+              fi
+              echo "✅ Logto process is running, checking for database connection..."
               
               # Wait for Logto to be ready
               echo "Waiting for Logto to start..."
@@ -223,10 +248,10 @@ stages:
                   exit 1
                 fi
                 
-                # Show logs every 12 attempts (1 minute)
-                if [ $((RETRY_COUNT % 12)) -eq 0 ]; then
+                # Show logs every 6 attempts (30 seconds)
+                if [ $((RETRY_COUNT % 6)) -eq 0 ]; then
                   echo "📋 Recent Logto logs (at attempt $RETRY_COUNT):"
-                  tail -20 logto-startup.log
+                  tail -30 logto-startup.log
                 fi
                 
                 sleep 5
