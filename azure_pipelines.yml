@@ -129,11 +129,6 @@ stages:
             displayName: 'Install pnpm v9'
 
           - script: |
-              # Install Playwright browsers with dependencies
-              pnpm exec playwright install --with-deps chromium
-            displayName: 'Install Playwright browsers'
-            
-          - script: |
               # Use the exact same setup as 'make run-native' for consistency
               echo "🚀 Setting up environment exactly like local 'make run-native'..."
               
@@ -170,6 +165,11 @@ stages:
               echo "Installing dependencies..."
               pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
               echo "✅ Dependencies installed"
+              
+              # Step 3.5: Install Playwright browsers after dependencies are available
+              echo "Installing Playwright browsers..."
+              pnpm exec playwright install --with-deps chromium
+              echo "✅ Playwright browsers installed"
               
               # Step 4: Seed database with OGCIO data using the correct CLI syntax
               echo "Seeding database with OGCIO configuration..."
