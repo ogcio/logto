@@ -129,10 +129,6 @@ stages:
             displayName: 'Install pnpm v9'
 
           - script: |
-              pnpm install --frozen-lockfile
-            displayName: 'Install dependencies'
-
-          - script: |
               npx playwright install chromium
             displayName: 'Install Playwright browsers'
             
@@ -150,12 +146,31 @@ stages:
               docker compose -f docker-compose-db.yml up --detach
               echo "✅ Database started"
               
-              # Wait for database to be ready
+              # Wait for database to be ready with more robust checks
               echo "Waiting for PostgreSQL to be ready..."
               timeout 180 bash -c 'until docker compose -f docker-compose-db.yml exec postgres pg_isready; do echo "Waiting for PostgreSQL..."; sleep 2; done'
-              echo "✅ PostgreSQL is ready!"
+              echo "✅ PostgreSQL is accepting connections!"
               
-              # Step 3: Install dependencies (exactly like makefile)
+              # Additional check: verify database can actually process queries
+              echo "Verifying database is fully operational..."
+              timeout 60 bash -c 'until docker compose -f docker-compose-db.yml exec postgres psql -U postgres -d postgres -c "SELECT 1;" > /dev/null 2>&1; do echo "Waiting for database to be fully ready..."; sleep 3; done'
+              echo "✅ PostgreSQL is fully operational!"
+              
+              # Give database a moment to stabilize
+              echo "Allowing database to stabilize..."
+              sleep 5
+              
+              # Test database connection using the same connection string Logto will use
+              echo "Testing database connection with Logto's connection string..."
+              timeout 30 bash -c 'until docker compose -f docker-compose-db.yml exec postgres psql "postgresql://postgres:p0stgr3s@localhost:5433/logto" -c "SELECT version();" > /dev/null 2>&1; do echo "Testing database connection..."; sleep 2; done'
+              echo "✅ Database connection test successful!"
+              
+              # Ensure the logto database exists
+              echo "Ensuring logto database exists..."
+              docker compose -f docker-compose-db.yml exec postgres psql -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
+              echo "✅ Logto database ready!"
+              
+              # Step 3: Install dependencies (exactly like makefile) - MOVED BEFORE seeding
               echo "Installing dependencies..."
               pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
               echo "✅ Dependencies installed"
@@ -184,15 +199,17 @@ stages:
               
               # Step 7: Start Logto in dev mode (exactly like makefile)
               echo "Starting Logto in development mode..."
+              echo "Environment check - DB_URL: $DB_URL"
+              echo "Environment check - PORT: $PORT"
               pnpm dev > logto-startup.log 2>&1 &
               LOGTO_PID=$!
               
               # Wait for Logto to be ready
               echo "Waiting for Logto to start..."
               RETRY_COUNT=0
-              MAX_RETRIES=120
+              MAX_RETRIES=180  # Increased from 120 to give more time in CI environment
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                if curl -s -f http://localhost:3301/health > /dev/null; then
+                if curl -s -f http://localhost:3301/api/status > /dev/null; then
                   echo "✅ Logto is ready!"
                   break
                 fi
@@ -204,6 +221,12 @@ stages:
                   echo "❌ Logto process died! Last 50 lines of log:"
                   tail -50 logto-startup.log
                   exit 1
+                fi
+                
+                # Show logs every 12 attempts (1 minute)
+                if [ $((RETRY_COUNT % 12)) -eq 0 ]; then
+                  echo "📋 Recent Logto logs (at attempt $RETRY_COUNT):"
+                  tail -20 logto-startup.log
                 fi
                 
                 sleep 5
@@ -223,7 +246,7 @@ stages:
               
               # Simple health checks
               echo "Verifying Logto is ready..."
-              curl -s -f http://localhost:3301/health > /dev/null && echo "✅ Logto healthy" || { echo "❌ Logto unhealthy"; exit 1; }
+              curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto healthy" || { echo "❌ Logto unhealthy"; exit 1; }
               
               echo "Verifying MyGovId Mock is ready..."
               curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId healthy" || { echo "❌ MyGovId unhealthy"; exit 1; }
