@@ -129,7 +129,8 @@ stages:
             displayName: 'Install pnpm v9'
 
           - script: |
-              npx playwright install chromium
+              # Install Playwright browsers with dependencies
+              pnpm exec playwright install --with-deps chromium
             displayName: 'Install Playwright browsers'
             
           - script: |
@@ -174,6 +175,11 @@ stages:
               echo "Seeding database with OGCIO configuration..."
               npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json
               echo "✅ Database seeded with OGCIO configuration"
+              
+              # Step 4.5: Build connectors (required for OGCIO connectors to be available)
+              echo "Building connectors..."
+              pnpm connectors
+              echo "✅ Connectors built"
               
               # Step 5: Start both Logto core API and MyGovId mock service
               echo "Starting Logto core API server and MyGovId mock service for testing..."
