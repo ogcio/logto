@@ -129,43 +129,187 @@ stages:
             displayName: 'Install pnpm v9'
 
           - script: |
-              # Setup environment for OGCIO E2E tests
+              # Use the exact same setup as 'make run-native' for consistency
+              echo "🚀 Setting up environment exactly like local 'make run-native'..."
+              
+              # Step 1: Copy .env file (exactly like makefile)
+              echo "Copying .env file..."
               cp .env.sample .env
+              echo "✅ .env file copied"
               
-              # Start database
+              # Step 2: Start PostgreSQL using docker-compose (exactly like makefile)
+              echo "Starting database with docker-compose..."
               docker compose -f docker-compose-db.yml up --detach
-              timeout 60 bash -c 'until docker compose -f docker-compose-db.yml exec postgres pg_isready; do sleep 2; done'
+              echo "✅ Database started"
               
-              # Install dependencies and browsers
+              # Wait for database to be ready - simplified since we only need the core API
+              echo "Waiting for PostgreSQL to be ready..."
+              timeout 60 bash -c 'until docker compose -f docker-compose-db.yml exec postgres pg_isready; do echo "Waiting for PostgreSQL..."; sleep 2; done'
+              echo "✅ PostgreSQL is accepting connections!"
+              
+              # Install postgresql-client to test the connection
+              echo "Installing PostgreSQL client for connection testing..."
+              sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+              
+              # Simple connection test
+              echo "Testing database connection..."
+              timeout 30 bash -c 'until PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d postgres -c "SELECT 1;" > /dev/null 2>&1; do echo "Testing connection..."; sleep 2; done'
+              echo "✅ Database connection verified!"
+              
+              # Ensure the logto database exists
+              echo "Ensuring logto database exists..."
+              PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
+              echo "✅ Logto database ready!"
+              
+              # Step 3: Install dependencies (exactly like makefile) - MOVED BEFORE seeding
+              echo "Installing dependencies..."
               pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
+              echo "✅ Dependencies installed"
+              
+              # Step 3.5: Install Playwright browsers after dependencies are available
+              echo "Installing Playwright browsers..."
               pnpm exec playwright install --with-deps chromium
+              echo "✅ Playwright browsers installed"
               
-              # Seed database with OGCIO data
+              # Step 4: Seed database with OGCIO data using the correct CLI syntax
+              echo "Seeding database with OGCIO configuration..."
               npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json
+              echo "✅ Database seeded with OGCIO configuration"
               
-              # Build connectors
+              # Step 4.5: Build connectors (required for OGCIO connectors to be available)
+              echo "Building connectors..."
               pnpm connectors build && pnpm cli connector link
+              echo "✅ Connectors built"
               
-              # Build and start services
+              # Step 5: Start both Logto core API and MyGovId mock service
+              echo "Starting Logto core API server and MyGovId mock service for testing..."
+              
+              # Build only the essential packages needed for core API
+              echo "Building essential packages..."
               pnpm --filter @logto/shared build
               pnpm --filter @logto/schemas build  
               pnpm --filter @logto/phrases build
               pnpm --filter @logto/core build
               
-              cd mygovid-mock-service && npm run build && npm start > ../mygovid-mock.log 2>&1 & cd ..
-              cd packages/core && pnpm dev > ../../logto-core.log 2>&1 & cd ../..
+              # Build the MyGovId mock service
+              echo "Building MyGovId mock service..."
+              cd mygovid-mock-service
+              npm run build
+              cd ..
               
-              # Wait for services
-              timeout 60 bash -c 'until curl -s -f http://localhost:4005/health > /dev/null; do sleep 2; done'
-              timeout 180 bash -c 'until curl -s -f http://localhost:3301/api/status > /dev/null; do sleep 3; done'
-            displayName: 'Setup Environment'
+              # Start the MyGovId mock service
+              echo "Starting MyGovId mock service..."
+              cd mygovid-mock-service
+              npm start > ../mygovid-mock.log 2>&1 &
+              MYGOVID_PID=$!
+              cd ..
+              
+              # Start only the core API in development mode
+              echo "Starting core API..."
+              cd packages/core
+              pnpm dev > ../../logto-core.log 2>&1 &
+              LOGTO_PID=$!
+              cd ../..
+              
+              # Wait for MyGovId mock service to be ready
+              echo "Waiting for MyGovId mock service to start..."
+              RETRY_COUNT=0
+              MAX_RETRIES=30
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:4005/health > /dev/null; then
+                  echo "✅ MyGovId mock service is ready!"
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "Waiting for MyGovId mock service... (attempt $RETRY_COUNT of $MAX_RETRIES)"
+                
+                # Check if process is still running
+                if ! ps -p $MYGOVID_PID > /dev/null; then
+                  echo "❌ MyGovId mock service process died! Last 20 lines of log:"
+                  tail -20 mygovid-mock.log
+                  exit 1
+                fi
+                
+                sleep 2
+              done
+              
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "❌ MyGovId mock service failed to start. Last 20 lines of log:"
+                tail -20 mygovid-mock.log
+                exit 1
+              fi
+              
+              # Wait for Logto core API to be ready
+              echo "Waiting for Logto core API to start..."
+              RETRY_COUNT=0
+              MAX_RETRIES=60
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:3301/api/status > /dev/null; then
+                  echo "✅ Logto core API is ready!"
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "Waiting for Logto core API... (attempt $RETRY_COUNT of $MAX_RETRIES)"
+                
+                # Check if process is still running
+                if ! ps -p $LOGTO_PID > /dev/null; then
+                  echo "❌ Logto core API process died! Last 50 lines of log:"
+                  tail -50 logto-core.log
+                  exit 1
+                fi
+                
+                sleep 3
+              done
+              
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "❌ Logto core API failed to start. Last 50 lines of log:"
+                tail -50 logto-core.log
+                exit 1
+              fi
+              
+              echo "✅ Setup complete - both Logto core API and MyGovId mock service running!"
+            displayName: 'Setup Environment (Identical to Local)'
 
           - script: |
-              # Run OGCIO E2E tests
+              echo "🧪 Final verification..."
+              
+              # Health checks for both services required for E2E tests
+              echo "Verifying Logto core API is ready..."
+              curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto core API healthy" || { echo "❌ Logto core API unhealthy"; exit 1; }
+              
+              echo "Verifying MyGovId mock service is ready..."
+              curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
+              
+              echo "Verifying database connectivity..."
+              docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
+              
+              echo "✅ All services ready for complete E2E testing!"
+            displayName: 'Final Verification'
+
+          - script: |
+              echo "🚀 Running OGCIO E2E tests..."
+              echo "All services are running - executing comprehensive OGCIO validation tests"
+              
+              # Run only the OGCIO-specific E2E tests (focused validation)
               pnpm exec playwright test ogcio-e2e-tests/ --reporter=line
-            displayName: 'Run OGCIO E2E Tests'
+              TEST_RESULT=$?
+              
+              if [ $TEST_RESULT -ne 0 ]; then
+                echo "⚠️ OGCIO E2E tests failed. Check the test report for details."
+                echo "Both Logto core API and MyGovId mock service were running correctly"
+              else
+                echo "✅ All OGCIO E2E tests passed!"
+              fi
+              
+              exit $TEST_RESULT
+            displayName: 'Run Playwright Tests'
             env:
+              LOGTO_ADMIN_URL: $(LOGTO_ADMIN_URL)
+              TEST_USERNAME: $(TEST_USERNAME)
+              TEST_PASSWORD: $(TEST_PASSWORD)
               CI: true
+              # Increase browser timeout
+              PLAYWRIGHT_BROWSER_TIMEOUT: 180000
 
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
@@ -173,8 +317,41 @@ stages:
             inputs:
               testResultsFormat: 'JUnit'
               testResultsFiles: 'test-results/results.xml'
-              testRunTitle: 'OGCIO E2E Tests'
+              testRunTitle: 'OGCIO E2E Tests - $(environment)'
               mergeTestResults: true
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Upload Playwright Report'
+            condition: always()
+            inputs:
+              targetPath: 'playwright-report'
+              artifact: 'playwright-report-$(environment)-$(System.JobId)'
+              publishLocation: 'pipeline'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Upload Test Results'
+            condition: always()
+            inputs:
+              targetPath: 'test-results'
+              artifact: 'test-results-$(environment)-$(System.JobId)'
+              publishLocation: 'pipeline'
+              
+          # Collect minimal logs
+          - script: |
+              echo "📦 Collecting logs..."
+              mkdir -p debug-artifacts
+              cp logto-core.log debug-artifacts/ || echo "No logto core log found"
+              cp mygovid-mock.log debug-artifacts/ || echo "No MyGovId mock log found"
+            displayName: 'Collect Logs'
+            condition: always()
+            
+          - task: PublishPipelineArtifact@1
+            displayName: 'Upload Logs'
+            condition: always()
+            inputs:
+              targetPath: 'debug-artifacts'
+              artifact: 'logs-$(environment)-$(System.JobId)'
+              publishLocation: 'pipeline'
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
