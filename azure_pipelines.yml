@@ -178,7 +178,7 @@ stages:
               
               # Step 4.5: Build connectors (required for OGCIO connectors to be available)
               echo "Building connectors..."
-              pnpm connectors
+              pnpm connectors build && pnpm cli connector link
               echo "✅ Connectors built"
               
               # Step 5: Start both Logto core API and MyGovId mock service
