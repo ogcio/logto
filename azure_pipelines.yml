@@ -162,16 +162,33 @@ stages:
               
               # Test the exact connection string Logto will use from the host
               echo "Testing exact database connection that Logto will use..."
-              timeout 60 bash -c 'until PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d postgres -c "SELECT version();" > /dev/null 2>&1; do echo "Testing Logto connection string..."; sleep 3; done'
+              timeout 120 bash -c 'until PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d postgres -c "SELECT version();" > /dev/null 2>&1; do echo "Testing Logto connection string..."; sleep 5; done'
               echo "✅ Database connection from host verified!"
+              
+              # Additional stabilization time specifically for CI environment
+              echo "Additional stabilization for CI environment (60 seconds)..."
+              sleep 60
               
               # Give database a moment to stabilize
               echo "Allowing database to stabilize..."
               sleep 10
               
+              # Check for port conflicts
+              echo "Checking port usage:"
+              netstat -tlnp | grep :5433 || echo "Port 5433 not found in netstat"
+              
               # Ensure the logto database exists using the same connection method Logto will use
               echo "Ensuring logto database exists..."
               PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
+              
+              # Verify the logto database was created and is accessible
+              echo "Verifying logto database is accessible..."
+              PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d logto -c "SELECT 'Database logto is accessible';" || echo "Warning: Could not access logto database"
+              
+              # Test the exact connection string format that Logto uses
+              echo "Testing connection string format that Logto will use..."
+              timeout 30 bash -c 'until PGPASSWORD=p0stgr3s psql "postgresql://postgres:p0stgr3s@localhost:5433/logto" -c "SELECT 1;" > /dev/null 2>&1; do echo "Testing connection string format..."; sleep 3; done' || echo "Warning: Connection string format test failed"
+              
               echo "✅ Logto database ready!"
               
               # Step 3: Install dependencies (exactly like makefile) - MOVED BEFORE seeding
@@ -211,21 +228,58 @@ stages:
               echo "Contents of .env file:"
               cat .env
               
-              # Add PostgreSQL client timeout environment variables for better connectivity
-              export PGCONNECT_TIMEOUT=60
-              export PGCOMMAND_TIMEOUT=60
-              echo "Added PostgreSQL timeout environment variables"
+              # Test the actual connection from the same context Logto will use
+              echo "Testing database connectivity from the application context..."
+              echo "Current PostgreSQL processes:"
+              docker compose -f docker-compose-db.yml ps
+              echo "Docker networks:"
+              docker network ls
+              echo "Testing direct connection to database:"
+              timeout 10 bash -c 'telnet localhost 5433' || echo "Telnet failed"
+              
+              # Add comprehensive PostgreSQL client timeout environment variables
+              export PGCONNECT_TIMEOUT=120  # Increased from 60
+              export PGCOMMAND_TIMEOUT=120  # Increased from 60
+              # Additional PostgreSQL connection settings
+              export PGOPTIONS='-c statement_timeout=120000'  # 2 minutes
+              export PGCLIENTENCODING=UTF8
+              
+              # Try alternative database URL for CI environment with more generous timeouts
+              echo "Original DB_URL: $(grep DB_URL .env)"
+              # Update .env to use a more explicit connection string with timeouts and connection parameters
+              sed -i 's|DB_URL=postgresql://postgres:p0stgr3s@localhost:5433/logto|DB_URL=postgresql://postgres:p0stgr3s@localhost:5433/logto?connect_timeout=180\&command_timeout=180\&statement_timeout=180000\&idle_in_transaction_session_timeout=300000\&application_name=logto-ci|' .env
+              echo "Updated DB_URL: $(grep DB_URL .env)"
+              
+              echo "Added PostgreSQL timeout environment variables and connection parameters"
               
               pnpm dev > logto-startup.log 2>&1 &
               LOGTO_PID=$!
               
               # Give Logto a moment to start and check for immediate errors
               echo "Checking for immediate startup errors..."
-              sleep 20  # Increased from 10 to give more time for database connection
+              sleep 45  # Increased significantly to give CI environment more time
               if ! ps -p $LOGTO_PID > /dev/null; then
-                echo "❌ Logto died immediately! Startup log:"
-                cat logto-startup.log
-                exit 1
+                echo "❌ Logto died immediately! Checking for database connection issues..."
+                echo "Last 50 lines of startup log:"
+                tail -50 logto-startup.log
+                
+                # Check if it's a database connection timeout - if so, try one more time
+                if grep -q "timeout expired" logto-startup.log; then
+                  echo "🔄 Database timeout detected. Retrying Logto startup (attempt 2)..."
+                  sleep 30  # Additional wait time
+                  pnpm dev > logto-startup-retry.log 2>&1 &
+                  LOGTO_PID=$!
+                  sleep 45
+                  if ! ps -p $LOGTO_PID > /dev/null; then
+                    echo "❌ Logto failed on retry. Retry startup log:"
+                    tail -50 logto-startup-retry.log
+                    exit 1
+                  fi
+                  echo "✅ Logto started successfully on retry!"
+                  mv logto-startup-retry.log logto-startup.log
+                else
+                  exit 1
+                fi
               fi
               echo "✅ Logto process is running, checking for database connection..."
               
