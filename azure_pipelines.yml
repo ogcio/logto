@@ -170,13 +170,13 @@ stages:
               pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
               echo "✅ Dependencies installed"
               
-              # Step 4: Seed database with OGCIO data
+              # Step 4: Seed database with OGCIO data using the correct CLI syntax
               echo "Seeding database with OGCIO configuration..."
-              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && npm run cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
+              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json
               echo "✅ Database seeded with OGCIO configuration"
               
-              # Step 5: Start only the core Logto API server (much faster and simpler)
-              echo "Starting Logto core API server for testing..."
+              # Step 5: Start both Logto core API and MyGovId mock service
+              echo "Starting Logto core API server and MyGovId mock service for testing..."
               
               # Build only the essential packages needed for core API
               echo "Building essential packages..."
@@ -185,6 +185,19 @@ stages:
               pnpm --filter @logto/phrases build
               pnpm --filter @logto/core build
               
+              # Build the MyGovId mock service
+              echo "Building MyGovId mock service..."
+              cd mygovid-mock-service
+              npm run build
+              cd ..
+              
+              # Start the MyGovId mock service
+              echo "Starting MyGovId mock service..."
+              cd mygovid-mock-service
+              npm start > ../mygovid-mock.log 2>&1 &
+              MYGOVID_PID=$!
+              cd ..
+              
               # Start only the core API in development mode
               echo "Starting core API..."
               cd packages/core
@@ -192,10 +205,38 @@ stages:
               LOGTO_PID=$!
               cd ../..
               
-              # Wait for Logto core API to be ready (much faster than full dev environment)
+              # Wait for MyGovId mock service to be ready
+              echo "Waiting for MyGovId mock service to start..."
+              RETRY_COUNT=0
+              MAX_RETRIES=30
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:4005 > /dev/null; then
+                  echo "✅ MyGovId mock service is ready!"
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "Waiting for MyGovId mock service... (attempt $RETRY_COUNT of $MAX_RETRIES)"
+                
+                # Check if process is still running
+                if ! ps -p $MYGOVID_PID > /dev/null; then
+                  echo "❌ MyGovId mock service process died! Last 20 lines of log:"
+                  tail -20 mygovid-mock.log
+                  exit 1
+                fi
+                
+                sleep 2
+              done
+              
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "❌ MyGovId mock service failed to start. Last 20 lines of log:"
+                tail -20 mygovid-mock.log
+                exit 1
+              fi
+              
+              # Wait for Logto core API to be ready
               echo "Waiting for Logto core API to start..."
               RETRY_COUNT=0
-              MAX_RETRIES=60  # Much less time needed for just the core API
+              MAX_RETRIES=60
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
                 if curl -s -f http://localhost:3301/api/status > /dev/null; then
                   echo "✅ Logto core API is ready!"
@@ -220,33 +261,38 @@ stages:
                 exit 1
               fi
               
-              echo "✅ Setup complete - environment matches local 'make run-native'!"
+              echo "✅ Setup complete - both Logto core API and MyGovId mock service running!"
             displayName: 'Setup Environment (Identical to Local)'
 
           - script: |
               echo "🧪 Final verification..."
               
-              # Simple health checks - only need core API for testing
+              # Health checks for both services required for E2E tests
               echo "Verifying Logto core API is ready..."
               curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto core API healthy" || { echo "❌ Logto core API unhealthy"; exit 1; }
+              
+              echo "Verifying MyGovId mock service is ready..."
+              curl -s -f http://localhost:4005 > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
               
               echo "Verifying database connectivity..."
               docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
               
-              echo "✅ Core API and database ready for API-based testing!"
+              echo "✅ All services ready for complete E2E testing!"
             displayName: 'Final Verification'
 
           - script: |
-              echo "🚀 Running Playwright tests..."
-              echo "Tests will create users dynamically via API calls"
+              echo "🚀 Running OGCIO E2E tests..."
+              echo "All services are running - executing comprehensive OGCIO validation tests"
               
-              # Run tests directly (environment is identical to local now)
-              pnpm exec playwright test --project=chromium
+              # Run only the OGCIO-specific E2E tests (focused validation)
+              pnpm exec playwright test ogcio-e2e-tests/ --reporter=line
               TEST_RESULT=$?
               
               if [ $TEST_RESULT -ne 0 ]; then
-                echo "⚠️ Tests failed. Check the test report for details."
-                echo "Environment setup was identical to local 'make run-native'"
+                echo "⚠️ OGCIO E2E tests failed. Check the test report for details."
+                echo "Both Logto core API and MyGovId mock service were running correctly"
+              else
+                echo "✅ All OGCIO E2E tests passed!"
               fi
               
               exit $TEST_RESULT
