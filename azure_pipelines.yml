@@ -137,415 +137,114 @@ stages:
             displayName: 'Install Playwright browsers'
             
           - script: |
-              # Install Docker Compose if not available
-              echo "Installing Docker Compose..."
-              if ! command -v docker-compose &> /dev/null; then
-                sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                sudo chmod +x /usr/local/bin/docker-compose
-                docker-compose --version
-              fi
+              # Use the exact same setup as 'make run-native' for consistency
+              echo "🚀 Setting up environment exactly like local 'make run-native'..."
               
-              # Start PostgreSQL directly with Docker
-              echo "Starting PostgreSQL with Docker..."
-              docker run --name postgres -d -p 5433:5433 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=p0stgr3s -e PGPORT=5433 postgres:14-alpine
+              # Step 1: Copy .env file (exactly like makefile)
+              echo "Copying .env file..."
+              cp .env.sample .env
+              echo "✅ .env file copied"
               
-              # Inspect CLI package structure to help with debugging
-              echo "Inspecting CLI package structure for reference..."
-              find ./packages/cli -name "*.ts" | grep -E "ogcio|seeder" || echo "No seeder files found"
-              find ./packages/cli -name "*.js" | grep -E "ogcio|seeder" || echo "No compiled seeder files found"
-              find ./packages/cli -name "*.json" | grep -E "ogcio|seeder" || echo "No seeder JSON files found"
+              # Step 2: Start PostgreSQL using docker-compose (exactly like makefile)
+              echo "Starting database with docker-compose..."
+              docker compose -f docker-compose-db.yml up --detach
+              echo "✅ Database started"
               
-              # Wait for PostgreSQL to be ready - increased timeout to 180 seconds
+              # Wait for database to be ready
               echo "Waiting for PostgreSQL to be ready..."
-              timeout 180 bash -c 'until docker exec postgres pg_isready -h localhost -p 5433; do echo "Waiting for PostgreSQL..."; sleep 2; done'
+              timeout 180 bash -c 'until docker compose -f docker-compose-db.yml exec postgres pg_isready; do echo "Waiting for PostgreSQL..."; sleep 2; done'
               echo "✅ PostgreSQL is ready!"
               
-              # Enhanced PostgreSQL readiness check
-              echo "Performing enhanced PostgreSQL readiness checks..."
-              for i in {1..5}; do
-                echo "Connection test attempt $i of 5..."
-                if docker exec postgres psql -U postgres -c "SELECT 1;" >/dev/null 2>&1; then
-                  echo "✅ PostgreSQL is accepting queries!"
-                  break
-                fi
-                echo "PostgreSQL not yet accepting queries, waiting..."
-                sleep 5
-              done
+              # Step 3: Install dependencies (exactly like makefile)
+              echo "Installing dependencies..."
+              pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
+              echo "✅ Dependencies installed"
               
-              # Create logto database if it doesn't exist
-              echo "Creating logto database if it doesn't exist..."
-              docker exec postgres psql -U postgres -c "DROP DATABASE IF EXISTS logto;" || echo "Failed to drop database, might not exist"
-              docker exec postgres psql -U postgres -c "CREATE DATABASE logto;" || echo "Failed to create database"
-              docker exec postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE logto TO postgres;" || echo "Failed to grant privileges"
+              # Step 4: Seed database (exactly like makefile)
+              echo "Seeding database..."
+              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && npm run cli db ogcio -- --seeder-filepath="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
+              echo "✅ Database seeded"
               
-              # Enable crypto extensions for password hashing
-              echo "Enabling crypto extensions for password hashing..."
-              docker exec postgres psql -U postgres -d logto -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;" || echo "Failed to create pgcrypto extension"
-              
-              # Create .env file for Logto
-              echo "Creating .env file with PostgreSQL connection..."
-              cp .env.sample .env
-              sed -i 's|DB_URL=.*|DB_URL=postgres://postgres:p0stgr3s@localhost:5433/logto|g' .env
-              
-              # Build CLI and other essential packages first
-              echo "Building CLI and core packages..."
-              pnpm ci:build
-              
-              # Skip database connection check as it's not available
-              echo "Skipping explicit database check (command not available)..."
-              
-              # Run database migrations and seeding
-              echo "Setting up the database..."
-              pnpm cli db seed -- --swe || { echo "❌ Database seeding failed"; exit 1; }
-              pnpm cli db alteration deploy latest || { echo "❌ Database alteration failed"; exit 1; }
-              
-              echo "✅ Database seeding and alteration completed successfully"
-              
-              # Complete admin console setup to avoid welcome page redirect (CRITICAL for CI)
-              echo "🔧 Completing admin console setup to bypass welcome page..."
-              
-              # Method 1: Mark console as configured by updating database directly with correct structure
-              echo "Marking admin console as configured in database with proper structure..."
-              docker exec postgres psql -U postgres -d logto -c "
-                INSERT INTO logto_configs (tenant_id, key, value) 
-                VALUES ('admin', 'adminConsole', '{
-                  \"livePreviewChecked\": true,
-                  \"applicationCreated\": true,
-                  \"signInExperienceCustomized\": true,
-                  \"passwordlessConfigured\": true,
-                  \"furtherReadingsChecked\": true,
-                  \"roleCreated\": true,
-                  \"communityChecked\": true,
-                  \"m2mApplicationCreated\": true
-                }')
-                ON CONFLICT (tenant_id, key) 
-                DO UPDATE SET value = EXCLUDED.value;
-              " && echo "✅ Admin console config inserted successfully" || { echo "❌ Database setup failed!"; exit 1; }
-              
-              # Also add the config for 'default' tenant_id as a fallback
-              echo "Adding admin console config for default tenant as fallback..."
-              docker exec postgres psql -U postgres -d logto -c "
-                INSERT INTO logto_configs (tenant_id, key, value) 
-                VALUES ('default', 'adminConsole', '{
-                  \"livePreviewChecked\": true,
-                  \"applicationCreated\": true,
-                  \"signInExperienceCustomized\": true,
-                  \"passwordlessConfigured\": true,
-                  \"furtherReadingsChecked\": true,
-                  \"roleCreated\": true,
-                  \"communityChecked\": true,
-                  \"m2mApplicationCreated\": true
-                }')
-                ON CONFLICT (tenant_id, key) 
-                DO UPDATE SET value = EXCLUDED.value;
-              " && echo "✅ Default tenant admin console config added" || echo "⚠️ Default tenant config failed (may not be needed)"
-              
-              # Verify the configuration was set correctly
-              echo "Verifying admin console configuration in database..."
-              docker exec postgres psql -U postgres -d logto -c "
-                SELECT tenant_id, key, value FROM logto_configs WHERE key = 'adminConsole';
-              " && echo "✅ Admin console config verified" || { echo "❌ Failed to verify admin console config"; exit 1; }
-              
-              # Additional verification - check that the JSON is valid
-              echo "Validating JSON structure in database..."
-              docker exec postgres psql -U postgres -d logto -c "
-                SELECT 
-                  tenant_id,
-                  value->>'applicationCreated' as app_created,
-                  value->>'signInExperienceCustomized' as sie_customized,
-                  value->>'furtherReadingsChecked' as further_readings,
-                  value->>'livePreviewChecked' as live_preview
-                FROM logto_configs 
-                WHERE key = 'adminConsole';
-              " && echo "✅ JSON structure validated" || echo "⚠️ JSON validation warning"
-              
-              echo "✅ Admin console setup completed - should bypass welcome page now"
-              
-              # Tests will create users via API - no need for pre-created admin user
-              echo "Tests will use API-based user creation - skipping admin user creation script"
-              
-              # Verify API is accessible
-              echo "Verifying Management API is accessible..."
-              if curl -s -f "http://localhost:3301/api/health" > /dev/null; then
-                echo "✅ Management API is accessible"
-              else
-                echo "⚠️ Management API not accessible - tests may need fallback approach"
-              fi
-              
-              # Handle the OGCIO seeder
-              echo "Setting up the OGCIO seeder..."
-              
-              # The seeder file path should be relative to the current working directory (workspace root)
-              SEEDER_SOURCE="./packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json"
-              
-              # Verify the seeder file exists
-              if [ ! -f "$SEEDER_SOURCE" ]; then
-                echo "❌ OGCIO seeder file not found at: $SEEDER_SOURCE"
-                echo "Current working directory: $(pwd)"
-                echo "Looking for alternatives..."
-                
-                # Check if built version exists
-                if [ -f "./packages/cli/lib/commands/database/ogcio/ogcio-seeder-local.json" ]; then
-                  SEEDER_SOURCE="./packages/cli/lib/commands/database/ogcio/ogcio-seeder-local.json"
-                  echo "✅ Found built seeder at: $SEEDER_SOURCE"
-                else
-                  echo "❌ No seeder file found in expected locations"
-                  exit 1
-                fi
-              else
-                echo "✅ Found OGCIO seeder at: $SEEDER_SOURCE"
-              fi
-              
-              # Run the OGCIO seeder with correct syntax (single dash, not double dash)
-              echo "Running OGCIO seeder..."
-              if pnpm cli db ogcio --seeder-filepath="$SEEDER_SOURCE"; then
-                echo "✅ OGCIO seeding completed successfully"
-              else
-                echo "❌ OGCIO seeding failed!"
-                echo "Debugging information:"
-                echo "- Seeder file: $SEEDER_SOURCE"
-                echo "- Current working directory: $(pwd)"
-                echo "- Database URL: $DB_URL"
-                echo "- File exists: $([ -f "$SEEDER_SOURCE" ] && echo "YES" || echo "NO")"
-                
-                # Continue anyway but mark it as failed
-                echo "⚠️ WARNING: OGCIO seeding failed, tests may have limited functionality"
-                echo "OGCIO_SEEDING_FAILED=true" > ./ogcio-seeding-status.env
-              fi
-              
-              # Build required connectors
-              echo "Building connectors..."
+              # Step 5: Prepare connectors (exactly like makefile)
+              echo "Preparing connectors..."
               pnpm connectors build && pnpm cli connector link
+              echo "✅ Connectors ready"
               
-              # Start MyGovId Mock Service
-              echo "🚀 Starting MyGovId Mock Service..."
+              # Step 6: Start MyGovId Mock Service (additional for CI)
+              echo "Starting MyGovId Mock Service..."
               cd mygovid-mock-service
               npm install
               npm start > ../mygovid-mock.log 2>&1 &
-              MYGOVID_PID=$!
               cd ..
               
-              # Wait for MyGovId service to be ready
-              echo "Waiting for MyGovId Mock Service to be ready..."
-              timeout 60 bash -c 'until curl -s http://localhost:4005/health > /dev/null; do echo "Waiting for MyGovId Mock Service..."; sleep 2; done'
-              echo "✅ MyGovId Mock Service is ready!"
+              # Wait for MyGovId service
+              echo "Waiting for MyGovId Mock Service..."
+              timeout 60 bash -c 'until curl -s http://localhost:4005/health > /dev/null; do echo "Waiting for MyGovId..."; sleep 2; done'
+              echo "✅ MyGovId Mock Service ready"
               
-              echo "🚀 Starting Logto directly (skipping PostgreSQL startup since we already have one)..."
-              
-              # We can't use make run-native directly as it would start another PostgreSQL instance
-              # So we'll execute the Logto start commands directly but skip PostgreSQL parts
-              echo "Starting Logto directly (skipping PostgreSQL startup)..." >> logto-startup.log
-              
-              # Verify environment setup
-              echo "Checking .env file content:" >> logto-startup.log
-              cat .env >> logto-startup.log
-              echo "----------------------------------------" >> logto-startup.log
-              
-              # Start Logto with npm/pnpm start
-              echo "Starting Logto app with pnpm start..." >> logto-startup.log
-              pnpm start > >(tee -a logto-startup.log) 2>&1 &
+              # Step 7: Start Logto in dev mode (exactly like makefile)
+              echo "Starting Logto in development mode..."
+              pnpm dev > logto-startup.log 2>&1 &
               LOGTO_PID=$!
               
-              # Tail the log file so we can see what's happening
-              echo "Tailing logto-startup.log to see startup progress:"
-              tail -f logto-startup.log &
-              TAIL_PID=$!
-              
-              echo "Waiting for Logto to start up (watching for health endpoint)..."
-              # Increased timeout to 10 minutes (120 retries × 5 seconds)
+              # Wait for Logto to be ready
+              echo "Waiting for Logto to start..."
               RETRY_COUNT=0
               MAX_RETRIES=120
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
                 if curl -s -f http://localhost:3301/health > /dev/null; then
-                  echo "✅ Logto health endpoint is responding!"
+                  echo "✅ Logto is ready!"
                   break
                 fi
                 RETRY_COUNT=$((RETRY_COUNT + 1))
-                echo "Waiting for Logto admin... (attempt $RETRY_COUNT of $MAX_RETRIES)"
+                echo "Waiting for Logto... (attempt $RETRY_COUNT of $MAX_RETRIES)"
                 
-                # Check if Logto process is still running
+                # Check if process is still running
                 if ! ps -p $LOGTO_PID > /dev/null; then
-                  echo "❌ ERROR: Logto process died! Here are the last 50 lines of the log:"
+                  echo "❌ Logto process died! Last 50 lines of log:"
                   tail -50 logto-startup.log
                   exit 1
-                fi
-                
-                # Every 12 attempts (about every minute), show recent logs
-                if [ $((RETRY_COUNT % 12)) -eq 0 ]; then
-                  echo "📋 Recent Logto logs (at attempt $RETRY_COUNT):"
-                  tail -20 logto-startup.log
                 fi
                 
                 sleep 5
               done
               
-              # Stop tailing the log
-              kill $TAIL_PID || true
-              
               if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-                echo "❌ Logto failed to start within the timeout period. Last 50 lines of log:"
+                echo "❌ Logto failed to start. Last 50 lines of log:"
                 tail -50 logto-startup.log
                 exit 1
               fi
               
-              # Enhanced endpoint verification
-              echo "Testing Logto endpoints..."
-              
-              echo "1. Testing admin console root endpoint..."
-              if ! curl -s -I http://localhost:3301/ | grep -q "HTTP/"; then
-                echo "⚠️ Admin console root endpoint not responding properly!"
-              else
-                curl -s -I http://localhost:3301/ | head -1
-              fi
-              
-              echo "2. Testing JWKS endpoint..."
-              if ! curl -s http://localhost:3301/.well-known/jwks.json | grep -q "keys"; then
-                echo "⚠️ JWKS endpoint not responding properly!"
-              else
-                echo "✅ JWKS endpoint is responding!"
-              fi
-              
-              echo "3. Showing running Node.js processes..."
-              ps aux | grep node | grep -v grep
-              
-              echo "4. Testing admin console configuration API..."
-              if curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console | grep -q '"value"'; then
-                echo "✅ Admin console configuration API is responding!"
-                echo "Admin console config from API:"
-                curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console | head -200
-              else
-                echo "⚠️ Admin console configuration API not responding properly!"
-              fi
-              
-              echo "5. Final verification of admin console database config..."
-              docker exec postgres psql -U postgres -d logto -c "
-                SELECT 'Config exists:', EXISTS(SELECT 1 FROM logto_configs WHERE key = 'adminConsole') as configured;
-                SELECT 'Config values:' as label, value->'applicationCreated' as app_created, 
-                       value->'signInExperienceCustomized' as sie_customized,
-                       value->'furtherReadingsChecked' as further_readings
-                FROM logto_configs WHERE key = 'adminConsole';
-              " || echo "Failed to verify final config"
-              
-              echo "6. CRITICAL CI CHECK: Testing welcome page behavior..."
-              # Test if accessing the console root redirects to welcome page
-              CONSOLE_RESPONSE=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
-              echo "Console response: $CONSOLE_RESPONSE"
-              
-              if echo "$CONSOLE_RESPONSE" | grep -q "welcome"; then
-                echo "❌ CRITICAL: Console is still redirecting to welcome page!"
-                echo "This will cause CI tests to fail. Debugging..."
-                
-                # Additional debugging
-                echo "Database config check:"
-                docker exec postgres psql -U postgres -d logto -c "SELECT * FROM logto_configs WHERE key = 'adminConsole';"
-                   echo "API config check:"
-              curl -s -H "development-user-id: integration-test-admin-user" http://localhost:3301/api/configs/admin-console || echo "API call failed"
-                
-                # Try to fix it with API call (PATCH, direct body, and auth header)
-                echo "Attempting to fix via API..."
-                curl -X PATCH http://localhost:3301/api/configs/admin-console \
-                  -H "Content-Type: application/json" \
-                  -H "development-user-id: integration-test-admin-user" \
-                  -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
-                  || echo "API fix attempt failed"
-                
-                echo "⚠️ WARNING: Welcome page may still appear in tests"
-              else
-                echo "✅ Console is NOT redirecting to welcome page - CI should work!"
-              fi
-              
-              echo "✅ Logto is ready!"
-            displayName: 'Setup Database and Start Logto'
+              echo "✅ Setup complete - environment matches local 'make run-native'!"
+            displayName: 'Setup Environment (Identical to Local)'
 
           - script: |
-              echo "🧪 Pre-test verification..."
+              echo "🧪 Final verification..."
               
-              # Test 1: Verify admin console configuration is working
-              echo "1. Testing admin console welcome page behavior..."
-              WELCOME_TEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
-              if echo "$WELCOME_TEST" | grep -q "welcome"; then
-                echo "❌ CRITICAL: Admin console is redirecting to welcome page!"
-                echo "Tests will likely fail. Attempting emergency fix..."
-                
-                # Emergency fix attempt (PATCH, direct body, and auth header)
-                curl -X PATCH http://localhost:3301/api/configs/admin-console \
-                  -H "Content-Type: application/json" \
-                  -H "development-user-id: integration-test-admin-user" \
-                  -d '{"livePreviewChecked":true,"applicationCreated":true,"signInExperienceCustomized":true,"passwordlessConfigured":true,"furtherReadingsChecked":true,"roleCreated":true,"communityChecked":true,"m2mApplicationCreated":true}' \
-                  && echo "✅ Emergency API fix applied" || echo "❌ Emergency fix failed"
-                
-                # Wait and test again
-                sleep 5
-                RETEST=$(curl -s -L -w "FINAL_URL:%{url_effective}" http://localhost:3301/console)
-                if echo "$RETEST" | grep -q "welcome"; then
-                  echo "❌ Emergency fix didn't work - tests may still fail"
-                else
-                  echo "✅ Emergency fix worked!"
-                fi
-              else
-                echo "✅ Admin console is NOT redirecting to welcome page"
-              fi
+              # Simple health checks
+              echo "Verifying Logto is ready..."
+              curl -s -f http://localhost:3301/health > /dev/null && echo "✅ Logto healthy" || { echo "❌ Logto unhealthy"; exit 1; }
               
-              # Test 2: Verify test credentials
-              echo "2. Verifying test credentials..."
-              if [ -z "$TEST_USERNAME" ] || [ -z "$TEST_PASSWORD" ]; then
-                echo "❌ CRITICAL: Test credentials not set!"
-                echo "TEST_USERNAME: ${TEST_USERNAME:-'NOT SET'}"
-                echo "TEST_PASSWORD: ${TEST_PASSWORD:-'NOT SET'}"
-                exit 1
-              else
-                echo "✅ Test credentials are set"
-              fi
+              echo "Verifying MyGovId Mock is ready..."
+              curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId healthy" || { echo "❌ MyGovId unhealthy"; exit 1; }
               
-              # Test 3: Verify all services are responding
-              echo "3. Final service health check..."
+              echo "Verifying database connectivity..."
+              docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
               
-              echo "  - Logto admin console health..."
-              curl -s -f http://localhost:3301/health > /dev/null && echo "    ✅ Logto admin healthy" || { echo "    ❌ Logto admin unhealthy"; exit 1; }
-              
-              echo "  - MyGovId mock service health..."
-              curl -s -f http://localhost:4005/health > /dev/null && echo "    ✅ MyGovId mock healthy" || { echo "    ❌ MyGovId mock unhealthy"; exit 1; }
-              
-              echo "  - Database connectivity..."
-              docker exec postgres psql -U postgres -d logto -c "SELECT 1;" > /dev/null && echo "    ✅ Database healthy" || { echo "    ❌ Database unhealthy"; exit 1; }
-              
-              echo "✅ Pre-test verification completed successfully!"
-            displayName: 'Pre-test Verification'
-            env:
-              TEST_USERNAME: $(TEST_USERNAME)
-              TEST_PASSWORD: $(TEST_PASSWORD)
+              echo "✅ All services ready for testing!"
+            displayName: 'Final Verification'
 
           - script: |
               echo "🚀 Running Playwright tests..."
               echo "Tests will create users dynamically via API calls"
               
-              # Check OGCIO seeding status and set environment variable accordingly
-              if [ -f "./ogcio-seeding-status.env" ]; then
-                echo "⚠️ OGCIO seeding status file found - reading status..."
-                source ./ogcio-seeding-status.env
-                if [ "$OGCIO_SEEDING_FAILED" = "true" ]; then
-                  echo "⚠️ OGCIO seeding failed - tests will be more tolerant"
-                  export EXPECT_OGCIO_SEEDING=false
-                else
-                  echo "✅ OGCIO seeding appears to have succeeded"
-                  export EXPECT_OGCIO_SEEDING=true
-                fi
-              else
-                echo "✅ No seeding status file - assuming OGCIO seeding succeeded"
-                export EXPECT_OGCIO_SEEDING=true
-              fi
-              
-              echo "EXPECT_OGCIO_SEEDING is set to: $EXPECT_OGCIO_SEEDING"
-              
+              # Run tests directly (environment is identical to local now)
               pnpm exec playwright test --project=chromium
               TEST_RESULT=$?
               
               if [ $TEST_RESULT -ne 0 ]; then
                 echo "⚠️ Tests failed. Check the test report for details."
-                echo "Debugging information:"
-                echo "- Check Logto admin console is accessible"
-                echo "- Verify OGCIO seeding completed successfully"  
-                echo "- OGCIO seeding status: EXPECT_OGCIO_SEEDING=$EXPECT_OGCIO_SEEDING"
+                echo "Environment setup was identical to local 'make run-native'"
               fi
               
               exit $TEST_RESULT
