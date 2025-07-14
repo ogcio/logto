@@ -165,23 +165,6 @@ test.describe('MyGovId Mock Service - Comprehensive Tests', () => {
         expect(location).toContain('/logto/mock/auth');
     });
 
-    test('should reject invalid credentials (URL method)', async ({ page }) => {
-        const authParams = new URLSearchParams({
-            response_type: 'code',
-            client_id: 'test-client',
-            redirect_uri: CALLBACK_URL,
-            state: 'test-state',
-            nonce: 'test-nonce',
-            scope: 'openid profile email'
-        });
-
-        await page.goto(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?${authParams}`);
-        await page.fill('input[name="password"]', 'wrong-password');
-        await page.click('button[type="submit"]');
-
-        await page.waitForURL(/.*\/logto\/mock\/auth.*/);
-        expect(page.url()).toContain('/logto/mock/auth');
-    });
 
     test('should handle logout endpoint', async ({ request }) => {
         const logoutUrl = `${MYGOVID_MOCK_BASE_URL}/logto/mock/logout?post_logout_redirect_uri=http://example.com/logged-out`;

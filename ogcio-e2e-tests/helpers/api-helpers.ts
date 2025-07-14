@@ -18,11 +18,7 @@ export async function callManagementApi(endpoint: string, options: RequestInit =
         ...baseHeaders,
         ...extraHeaders,
     };
-    if (process.env.LOGTO_ADMIN_BEARER_TOKEN) {
-        headers['Authorization'] = `Bearer ${process.env.LOGTO_ADMIN_BEARER_TOKEN}`;
-    } else {
-        headers['development-user-id'] = 'integration-test-admin-user';
-    }
+    headers['development-user-id'] = 'integration-test-admin-user';
     const response = await fetch(`${logtoConsoleUrl}/api${endpoint}`, {
         ...options,
         headers,

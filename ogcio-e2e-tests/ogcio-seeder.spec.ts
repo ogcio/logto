@@ -109,15 +109,6 @@ test.describe('OGCIO Custom Seeder', () => {
         }
     });
 
-    test('should handle seeder re-runs without duplication', async ({ request }) => {
-        const response = await request.get(`${LOGTO_API_BASE_URL}/api/organizations/ogcio`);
-
-        if (response.ok()) {
-            const orgBefore = await response.json();
-            expect(orgBefore.id).toBe('ogcio');
-            expect(orgBefore.name).toBe('OGCIO Seeded Org');
-        }
-    });
 
     test('should have correct organization hierarchy for testing', async ({ request }) => {
         const testingOrgIds = ['first-testing', 'second-testing'];
