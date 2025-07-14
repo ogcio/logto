@@ -60,6 +60,8 @@ test.describe('OGCIO Custom Seeder', () => {
             if (response.ok()) {
                 const org = await response.json();
                 expect(org.id).toBe(orgId);
+                expect(org.name).toBeDefined();
+                expect(org.description).toBeDefined();
                 expect(org.name).toContain('Testing Organisation');
                 expect(org.description).toContain('E2E testing');
             }
@@ -110,22 +112,6 @@ test.describe('OGCIO Custom Seeder', () => {
     });
 
 
-    test('should have correct organization hierarchy for testing', async ({ request }) => {
-        const testingOrgIds = ['first-testing', 'second-testing'];
-
-        for (const orgId of testingOrgIds) {
-            const response = await request.get(`${LOGTO_API_BASE_URL}/api/organizations/${orgId}`);
-
-            if (response.ok()) {
-                const org = await response.json();
-                expect(org.id).toBe(orgId);
-                expect(org.name).toBeDefined();
-                expect(org.description).toBeDefined();
-                expect(org.name).toContain('Testing Organisation');
-                expect(org.description).toContain('E2E testing');
-            }
-        }
-    });
 
     test('should maintain proper organization metadata', async ({ request }) => {
         const response = await request.get(`${LOGTO_API_BASE_URL}/api/organizations`);

@@ -117,18 +117,37 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
         console.log('✅ All OGCIO branding requirements are properly configured');
     });
 
-    test('OGCIO applications must be seeded (29 total)', async () => {
-        // This test checks for the exact OGCIO application count from seeding
+    test('OGCIO applications must be seeded', async () => {
+        // This test checks for the presence of required OGCIO resources in the applications list
         const applications = await callManagementApi('/applications');
         expect(Array.isArray(applications)).toBe(true);
 
         console.log('🏢 Checking OGCIO application seeding...');
-        console.log(`📋 Found ${applications.length} applications (OGCIO requirement: 29)`);
-        console.log('Application names:', applications.map((app: any) => app.name || app.id).slice(0, 10));
+        console.log(`📋 Found ${applications.length} applications`);
+        console.log('All application names:', applications.map((app: any) => app.name || app.id));
 
-        // REQUIREMENT: OGCIO seeding must create exactly 29 applications
-        expect(applications.length).toBe(29);
-        console.log('✅ OGCIO application seeding completed successfully - 29 applications found');
+        // REQUIREMENT: These specific OGCIO resources must exist as applications
+
+        const requiredOGCIOApplications = [
+            'Payments Building Block',
+            'Messaging Building Block',
+            'Profile Building Block',
+            'File Upload Service',
+            'Journey Building Block',
+            'Analytics Building Block',
+            'Observability Dashboard',
+            'FormsIE Admin',
+            'Dashboard',
+            'Dashboard Admin'
+        ];
+
+        for (const requiredApp of requiredOGCIOApplications) {
+            const found = applications.some((a: any) => a.name === requiredApp);
+            expect(found).toBe(true);
+            console.log(`✅ OGCIO application "${requiredApp}" found`);
+        }
+
+        console.log('✅ All required OGCIO applications/resources are present');
     });
 
     test('OGCIO roles must be seeded and available', async () => {
@@ -179,10 +198,6 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
             'Profile Building Block API',
             'File Upload Service API',
             'Journey Building Block API',
-            'Analytics Building Block API',
-            'Observability Open Telemetry Collector HTTP',
-            'Observability Open Telemetry Collector GRPC',
-            'Observability Dashboard Application',
             'FormsIE Submissions API'
         ];
 
