@@ -110,11 +110,6 @@ stages:
         displayName: Run Playwright E2E Tests
         pool:
           vmImage: 'ubuntu-latest'
-        
-        variables:
-          # Environment variables for the tests
-          LOGTO_ADMIN_URL: 'http://localhost:3301'
-
         steps:
           - checkout: self
             displayName: 'Checkout source code'
