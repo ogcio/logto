@@ -7,3 +7,4 @@ variables:
   buildArguments: ""
   environment: LifeEvents-dev
   clusterName: non-prod-02
+  

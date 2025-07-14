@@ -148,8 +148,28 @@ stages:
               # Install Playwright browsers after dependencies are available
               pnpm exec playwright install --with-deps chromium
               
-              # Seed database with OGCIO data using the correct CLI syntax
-              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json
+              # Determine the correct seeder file based on environment
+              BRANCH_NAME="${BUILD_SOURCEBRANCH##refs/heads/}"
+              case "$BRANCH_NAME" in
+                "dev")
+                  SEEDER_FILE="ogcio-seeder-testing.json"
+                  ;;
+                "uat")
+                  SEEDER_FILE="ogcio-seeder-uat.json"
+                  ;;
+                "prod")
+                  SEEDER_FILE="ogcio-seeder-prod.json"
+                  ;;
+                *)
+                  # Default to testing for PR builds and other branches
+                  SEEDER_FILE="ogcio-seeder-testing.json"
+                  ;;
+              esac
+              
+              echo "Using seeder file: $SEEDER_FILE for branch: $BRANCH_NAME"
+              
+              # Seed database with OGCIO data using the environment-specific seeder file
+              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/$SEEDER_FILE
               
               # Build connectors
               pnpm connectors build && pnpm cli connector link
