@@ -165,10 +165,8 @@ test.describe('OGCIO E2E Tests - Custom OGCIO Functionality Only', () => {
             'Onboarded citizen',
             'M2M Citizen Profile Reader role',
             'M2M Public Servant Profile role',
-            'M2M E2E Messaging Citizen',
             'M2M Messaging Public Servant',
             'M2M Onboarding',
-            'M2M E2E Profile Citizen',
             'M2M Citizen Journey Reader role',
             'M2M Public Servant Journey Reader role'
         ];
