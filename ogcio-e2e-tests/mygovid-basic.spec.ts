@@ -120,7 +120,7 @@ test.describe('MyGovId Mock Service - Comprehensive Tests', () => {
 
         await page.goto(`${MYGOVID_MOCK_BASE_URL}/logto/mock/auth?${authParams}`);
         await page.fill('input[name="password"]', '123');
-        
+
         // Use response-based approach instead of URL waiting
         const [response] = await Promise.all([
             page.waitForResponse(response => response.url().includes('/logto/mock/login')),
