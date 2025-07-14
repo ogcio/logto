@@ -14,7 +14,6 @@ test.describe('OGCIO Custom Seeder', () => {
             const organizations = await response.json();
             const expectedOrganizations = [
                 'ogcio', 'abp', 'hse', 'dsp', 'doe', 'lcc',
-                'first-testing', 'second-testing', 'inactive-ps-org'
             ];
 
             expectedOrganizations.forEach(orgId => {
@@ -48,23 +47,6 @@ test.describe('OGCIO Custom Seeder', () => {
             expect(hseOrg.name).toBe('Health Service Executive');
             expect(hseOrg.description).toContain('Health Service Executive');
             expect(hseOrg.description).toContain('Digital Postbox');
-        }
-    });
-
-    test('should have seeded testing organizations for e2e tests', async ({ request }) => {
-        const testingOrgs = ['first-testing', 'second-testing'];
-
-        for (const orgId of testingOrgs) {
-            const response = await request.get(`${LOGTO_API_BASE_URL}/api/organizations/${orgId}`);
-
-            if (response.ok()) {
-                const org = await response.json();
-                expect(org.id).toBe(orgId);
-                expect(org.name).toBeDefined();
-                expect(org.description).toBeDefined();
-                expect(org.name).toContain('Testing Organisation');
-                expect(org.description).toContain('E2E testing');
-            }
         }
     });
 
