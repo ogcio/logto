@@ -6,9 +6,9 @@ const logtoConsoleUrl = 'http://localhost:3301'; // Use core port 3301 to access
  * This uses the development-user-id header which bypasses OAuth in dev mode
  */
 export async function callManagementApi(endpoint: string, options: RequestInit = {}): Promise<any> {
-    // Use Bearer token if available, otherwise use development-user-id header
     const baseHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
+        'development-user-id': 'integration-test-admin-user',
     };
     // Merge any additional headers from options, ensuring only string key-value pairs
     const extraHeaders = (options.headers && typeof options.headers === 'object' && !Array.isArray(options.headers))
@@ -18,7 +18,6 @@ export async function callManagementApi(endpoint: string, options: RequestInit =
         ...baseHeaders,
         ...extraHeaders,
     };
-    headers['development-user-id'] = 'integration-test-admin-user';
     const response = await fetch(`${logtoConsoleUrl}/api${endpoint}`, {
         ...options,
         headers,
