@@ -181,7 +181,7 @@ stages:
               pnpm --filter @logto/core build
               
               # Build and start MyGovId mock service (DEV only)
-              if [ "$BRANCH_NAME" = "dev" ]; then
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
                 echo "Building and starting MyGovId mock service for DEV environment..."
                 cd mygovid-mock-service
                 npm run build
@@ -200,7 +200,7 @@ stages:
               cd ../..
               
               # Wait for MyGovId mock service to be ready (DEV only)
-              if [ "$BRANCH_NAME" = "dev" ]; then
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
                 echo "Waiting for MyGovId mock service to be ready..."
                 RETRY_COUNT=0
                 MAX_RETRIES=30
@@ -259,7 +259,7 @@ stages:
               
               # Check MyGovId mock service health (DEV only)
               BRANCH_NAME="${BUILD_SOURCEBRANCH##refs/heads/}"
-              if [ "$BRANCH_NAME" = "dev" ]; then
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
                 curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
               else
                 echo "ℹ️ Skipping MyGovId mock service health check for $BRANCH_NAME environment"
