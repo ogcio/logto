@@ -87,3 +87,35 @@ export async function getRolesViaApi(): Promise<any[]> {
     });
     return Array.isArray(roles) ? roles : [];
 }
+
+/**
+ * Create a user via API instead of UI
+ */
+function safeRandomString(length = 8) {
+    return Math.random().toString(36).replace(/[^a-z0-9]/gi, '').slice(0, length);
+}
+
+export async function createUserViaApi(email: string, phone: string | null, username: string, displayName: string) {
+    // Ensure unique and valid username and email for each test run
+    const uniqueSuffix = safeRandomString(8);
+    // Create a valid username (alphanumeric only, no special characters)
+    const cleanUsername = username.replace(/[^a-zA-Z0-9]/g, '');
+    const uniqueUsername = `${cleanUsername}${uniqueSuffix}`;
+    const emailParts = email.split('@');
+    const uniqueEmail = `${emailParts[0]}${uniqueSuffix}@${emailParts[1]}`;
+
+    console.log('Creating user via API:', uniqueUsername, uniqueEmail);
+    const userData: any = {
+        username: uniqueUsername,
+        primaryEmail: uniqueEmail,
+        name: displayName,
+    };
+    // Do NOT include primaryPhone, even if phone is provided
+    const user = await callManagementApi('/users', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+    });
+    console.log('User created via API:', user.id);
+    // Return both user object and the unique username/email for login
+    return { ...user, username: uniqueUsername, email: uniqueEmail, phone: null };
+}
