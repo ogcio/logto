@@ -7,10 +7,11 @@ const subscription = {
   free_plan_description: 'للمشاريع الجانبية وتجارب Logto الأولية. بدون بطاقة ائتمان.',
   pro_plan: 'خطة Pro',
   pro_plan_description: 'للاستفادة من الأعمال بدون قلق مع Logto.',
-  enterprise: 'الشركات',
+  enterprise: 'خطة المؤسسة',
   /** UNTRANSLATED */
-  enterprise_description:
-    'For large-scale organizations requiring advanced features, full customization, and dedicated support to power mission-critical applications. Tailored to your needs for ultimate security, compliance, and performance.',
+  enterprise_description: 'For large teams and businesses with enterprise-grade requirements.',
+  admin_plan: 'خطة المسؤول',
+  dev_plan: 'خطة التطوير',
   current_plan: 'الخطة الحالية',
   current_plan_description:
     'هذه هي الخطة الحالية الخاصة بك. يمكنك بسهولة رؤية استخدام الخطة الخاصة بك ، والتحقق من فاتورتك القادمة ، وإجراء التغييرات على الخطة حسب الحاجة.',

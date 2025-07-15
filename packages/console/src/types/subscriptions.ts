@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type InvoicesResponse, type SubscriptionPlanResponse } from '@/cloud/types/router';
+import { type InvoicesResponse } from '@/cloud/types/router';
 
 export enum ReservedPlanName {
   Free = 'Free',
@@ -10,7 +10,6 @@ export enum ReservedPlanName {
   Enterprise = 'Enterprise',
 }
 
-// TODO: use `ReservedPlanId` in the future.
 export enum ReservedSkuId {
   Free = 'free',
   Pro = 'pro',
@@ -18,18 +17,6 @@ export enum ReservedSkuId {
   Admin = 'admin',
   Enterprise = 'enterprise',
 }
-
-type SubscriptionPlanQuota = Omit<
-  SubscriptionPlanResponse['quota'],
-  'builtInEmailConnectorEnabled'
-> & {
-  // Add ticket support quota item to the plan since it will be compared in the downgrade plan notification modal.
-  ticketSupportResponseTime: number;
-};
-
-export type SubscriptionPlan = Omit<SubscriptionPlanResponse, 'quota'> & {
-  quota: SubscriptionPlanQuota;
-};
 
 export const localCheckoutSessionGuard = z.object({
   state: z.string(),

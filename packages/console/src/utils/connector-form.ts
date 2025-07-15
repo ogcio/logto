@@ -6,9 +6,19 @@ import { conditional } from '@silverhand/essentials';
 import { SyncProfileMode, type ConnectorFormType } from '@/types/connector';
 import { safeParseJson } from '@/utils/json';
 
+/**
+ * @remarks
+ * - When creating a new connector, this function will be called in the `convertFactoryResponseToForm()` method. At this time, there is no `config` data, so the default values in `formItems` are used.
+ * - When editing an existing connector, this function will be called in the `convertResponseToForm()` method. `config` data will always exist, and the `config` data is used, never using the default values.
+ */
 const initFormData = (formItems: ConnectorConfigFormItem[], config?: Record<string, unknown>) => {
   const data: Array<[string, unknown]> = formItems.map((item) => {
-    const value = config?.[item.key] ?? item.defaultValue;
+    const configValue =
+      config?.[item.key] ??
+      conditional(item.type === ConnectorConfigFormItemType.Json && {}) ??
+      conditional(item.type === ConnectorConfigFormItemType.MultiSelect && []);
+    const { defaultValue } = item;
+    const value = config ? configValue : defaultValue;
 
     if (item.type === ConnectorConfigFormItemType.Json) {
       return [item.key, JSON.stringify(value, null, 2)];
@@ -72,7 +82,7 @@ export const convertResponseToForm = (connector: ConnectorResponse): ConnectorFo
     logo: logo ?? '',
     logoDark: logoDark ?? '',
     target: conditional(
-      type === ConnectorType.Social && (isStandard ? target : metadata.target ?? target)
+      type === ConnectorType.Social && (isStandard ? target : (metadata.target ?? target))
     ),
     syncProfile: syncProfile ? SyncProfileMode.EachSignIn : SyncProfileMode.OnlyAtRegister,
     jsonConfig: JSON.stringify(config, null, 2),

@@ -9,7 +9,6 @@ import { type LogEntry } from '#src/middleware/koa-audit-log.js';
 import type TenantContext from '#src/tenants/TenantContext.js';
 import assertThat from '#src/utils/assert-that.js';
 
-import { manageDefaultUserRole } from '../../../libraries/ogcio-user.js';
 import {
   interactionProfileGuard,
   type Interaction,
@@ -471,20 +470,6 @@ export default class ExperienceInteraction {
     this.ctx.body = { redirectTo };
 
     this.ctx.assignInteractionHookResult({ userId: user.id });
-
-    // OGCIO
-    const registrationStep = false;
-    const { organizations, roles, usersRoles } = this.tenant.queries;
-    await manageDefaultUserRole(
-      user,
-      roles.findRoleById,
-      usersRoles.insertUsersRoles,
-      usersRoles.findUsersRolesByUserId,
-      organizations,
-      this.ctx,
-      registrationStep
-    );
-    // END OGCIO
 
     if (Object.keys(this.profile.data).length > 0 || mfaVerifications.length > 0) {
       this.ctx.appendDataHookContext('User.Data.Updated', { user: updatedUser });

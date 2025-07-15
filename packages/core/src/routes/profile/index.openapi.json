@@ -1,0 +1,223 @@
+{
+  "tags": [
+    {
+      "name": "Profile",
+      "description": "Profile routes provide functionality for managing user profiles for the end user to interact directly with access tokens."
+    },
+    {
+      "name": "Dev feature"
+    }
+  ],
+  "paths": {
+    "/api/profile": {
+      "get": {
+        "operationId": "GetProfile",
+        "summary": "Get profile",
+        "description": "Get profile for the user.",
+        "responses": {
+          "200": {
+            "description": "The profile was retrieved successfully."
+          }
+        }
+      },
+      "patch": {
+        "operationId": "UpdateProfile",
+        "summary": "Update profile",
+        "description": "Update profile for the user, only the fields that are passed in will be updated.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "description": "The new name for the user."
+                  },
+                  "avatar": {
+                    "description": "The new avatar for the user, must be a URL."
+                  },
+                  "username": {
+                    "description": "The new username for the user, must be a valid username and unique."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The profile was updated successfully."
+          },
+          "400": {
+            "description": "The request body is invalid."
+          },
+          "422": {
+            "description": "The username is already in use."
+          }
+        }
+      }
+    },
+    "/api/profile/profile": {
+      "patch": {
+        "operationId": "UpdateOtherProfile",
+        "summary": "Update other profile",
+        "description": "Update other profile for the user, only the fields that are passed in will be updated, to update the address, the user must have the address scope.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "familyName": {
+                    "description": "The new family name for the user."
+                  },
+                  "givenName": {
+                    "description": "The new given name for the user."
+                  },
+                  "middleName": {
+                    "description": "The new middle name for the user."
+                  },
+                  "nickname": {
+                    "description": "The new nickname for the user."
+                  },
+                  "preferredUsername": {
+                    "description": "The new preferred username for the user."
+                  },
+                  "profile": {
+                    "description": "The new profile for the user."
+                  },
+                  "website": {
+                    "description": "The new website for the user."
+                  },
+                  "gender": {
+                    "description": "The new gender for the user."
+                  },
+                  "birthdate": {
+                    "description": "The new birthdate for the user."
+                  },
+                  "zoneinfo": {
+                    "description": "The new zoneinfo for the user."
+                  },
+                  "locale": {
+                    "description": "The new locale for the user."
+                  },
+                  "address": {
+                    "description": "The new address for the user."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The profile was updated successfully."
+          }
+        }
+      }
+    },
+    "/api/profile/password": {
+      "post": {
+        "operationId": "UpdatePassword",
+        "summary": "Update password",
+        "description": "Update password for the user, a verification record is required for checking sensitive permissions.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "password": {
+                    "description": "The new password for the user."
+                  },
+                  "verificationRecordId": {
+                    "description": "The verification record ID for checking sensitive permissions."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The password was updated successfully."
+          },
+          "403": {
+            "description": "Permission denied, the verification record is invalid."
+          }
+        }
+      }
+    },
+    "/api/profile/primary-email": {
+      "post": {
+        "operationId": "UpdatePrimaryEmail",
+        "summary": "Update primary email",
+        "description": "Update primary email for the user, a verification record is required for checking sensitive permissions, and a new identifier verification record is required for the new email ownership verification.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "description": "The new email for the user."
+                  },
+                  "verificationRecordId": {
+                    "description": "The verification record ID for checking sensitive permissions."
+                  },
+                  "newIdentifierVerificationRecordId": {
+                    "description": "The identifier verification record ID for the new email ownership verification."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The primary email was updated successfully."
+          },
+          "400": {
+            "description": "The new verification record is invalid."
+          },
+          "403": {
+            "description": "Permission denied, the verification record is invalid."
+          }
+        }
+      }
+    },
+    "/api/profile/primary-phone": {
+      "post": {
+        "operationId": "UpdatePrimaryPhone",
+        "summary": "Update primary phone",
+        "description": "Update primary phone for the user, a verification record is required for checking sensitive permissions, and a new identifier verification record is required for the new phone ownership verification.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "phone": {
+                    "description": "The new phone for the user."
+                  },
+                  "verificationRecordId": {
+                    "description": "The verification record ID for checking sensitive permissions."
+                  },
+                  "newIdentifierVerificationRecordId": {
+                    "description": "The identifier verification record ID for the new phone ownership verification."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The primary phone was updated successfully."
+          },
+          "400": {
+            "description": "The new verification record is invalid."
+          },
+          "403": {
+            "description": "Permission denied, the verification record is invalid."
+          }
+        }
+      }
+    }
+  }
+}

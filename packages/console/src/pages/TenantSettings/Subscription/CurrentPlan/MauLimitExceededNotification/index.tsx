@@ -23,16 +23,10 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
   const { currentTenantId } = useContext(TenantsContext);
   const { subscribe } = useSubscribe();
   const { show } = useConfirmModal();
-  const { subscriptionPlans, logtoSkus, currentSubscriptionQuota } =
-    useContext(SubscriptionDataContext);
+  const { logtoSkus, currentSubscriptionQuota } = useContext(SubscriptionDataContext);
   const { currentTenant } = useContext(TenantsContext);
 
   const [isLoading, setIsLoading] = useState(false);
-  const proPlan = useMemo(
-    () => subscriptionPlans.find(({ id }) => id === ReservedPlanId.Pro),
-    [subscriptionPlans]
-  );
-  const proSku = useMemo(() => logtoSkus.find(({ id }) => id === ReservedPlanId.Pro), [logtoSkus]);
 
   const periodicUsage = useMemo(
     () =>
@@ -45,6 +39,7 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
       ),
     [currentTenant, rawPeriodicUsage]
   );
+  const proSku = useMemo(() => logtoSkus.find(({ id }) => id === ReservedPlanId.Pro), [logtoSkus]);
 
   if (!periodicUsage) {
     return null;
@@ -55,7 +50,6 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
   if (
     mauLimit === null || // Unlimited
     periodicUsage.mauLimit < mauLimit ||
-    !proPlan ||
     !proSku
   ) {
     return null;
@@ -72,7 +66,7 @@ function MauLimitExceededNotification({ periodicUsage: rawPeriodicUsage, classNa
           setIsLoading(true);
           await subscribe({
             skuId: proSku.id,
-            planId: proPlan.id,
+            planId: proSku.id,
             tenantId: currentTenantId,
             callbackPage: subscriptionPage,
           });
