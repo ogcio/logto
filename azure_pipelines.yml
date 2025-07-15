@@ -27,6 +27,7 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
+  - group: ogcio-e2e-test-creds
 
 resources:
   repositories:
@@ -61,10 +62,211 @@ stages:
         serviceName: logto
         pushArtefacts: ${{ variables.pushArtefacts }}
         buildArguments: $(buildArguments)
+  - stage: Build_MyGovId_Mock
+    displayName: Build MyGovId Mock
+    dependsOn: 
+      - securityScan
+    condition: or(eq(variables['Build.SourceBranchName'], 'dev'),eq(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+    - template: pipeline-templates/build_service.yml
+      parameters:
+        serviceName: mygovid-mock-service
+        pushArtefacts: true
+        buildArguments: $(buildArguments)
+        dockerfile: ./mygovid-mock-service/Dockerfile
+  - stage: Build_Logto_Audit_Cleaner
+    displayName: Build Logto Audit Cleaner
+    dependsOn: 
+      - securityScan
+    jobs:
+    - template: pipeline-templates/build_service.yml
+      parameters:
+        serviceName: logto-audit-cleaner
+        pushArtefacts: true
+        buildArguments: $(buildArguments)
+        dockerfile: ./audit-cleaner/Dockerfile
+  - stage: Push_Logto_Audit_Cleaner
+    displayName: Push Logto Audit Cleaner to ECR
+    dependsOn: 
+      - EnvApproval
+      - Build_Logto_Audit_Cleaner
+    condition: succeeded()
+    jobs:
+    - template: build/push_image_ecr.yml@pipeline-templates
+      parameters:
+        awsServiceConnection: ${{ variables.awsServiceConnection }}
+        awsRegion: ${{ variables.awsRegion }}
+        serviceName: logto-audit-cleaner
+        repositoryName: bb-logto-audit-cleaner
+        pushTag: $(Build.BuildId)
+  - stage: OGCIO_E2E_Tests
+    displayName: OGCIO E2E Tests
+    dependsOn: 
+      - Build_Logto
+      - Build_Logto_Audit_Cleaner
+    condition: succeeded()
+    jobs:
+      - job: PlaywrightTests
+        displayName: Run Playwright E2E Tests
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            displayName: 'Checkout source code'
+
+          - task: NodeTool@0
+            displayName: 'Setup Node.js'
+            inputs:
+              versionSpec: '20.x'
+
+          - script: |
+              npm install -g pnpm@9
+            displayName: 'Install pnpm v9'
+
+          - script: |
+              # Use the exact same setup as 'make run-native' for consistency
+              cp .env.sample .env
+              
+              # Start PostgreSQL using docker-compose
+              docker compose -f docker-compose-db.yml up --detach
+              
+              # Wait for database to be ready
+              timeout 60 bash -c 'until docker compose -f docker-compose-db.yml exec postgres pg_isready; do sleep 2; done'
+              
+              # Install postgresql-client to test the connection
+              sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+              
+              # Simple connection test
+              timeout 30 bash -c 'until PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -d postgres -c "SELECT 1;" > /dev/null 2>&1; do sleep 2; done'
+              
+              # Ensure the logto database exists
+              PGPASSWORD=p0stgr3s psql -h localhost -p 5433 -U postgres -c "CREATE DATABASE logto;" 2>/dev/null || echo "Database already exists (this is fine)"
+              
+              # Install dependencies
+              pnpm pnpm:devPreinstall && pnpm i && pnpm prepack
+              
+              # Install Playwright browsers after dependencies are available
+              pnpm exec playwright install --with-deps chromium
+              
+
+              # Seed database with OGCIO data using the correct CLI syntax
+              npm run cli db seed -- --swe && npm run cli db alteration deploy latest && pnpm cli database ogcio --seeder-filepath packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json
+              
+              # Build connectors
+              pnpm connectors build && pnpm cli connector link
+              
+              # Build only the essential packages needed for core API
+              pnpm --filter @logto/shared build
+              pnpm --filter @logto/schemas build  
+              pnpm --filter @logto/phrases build
+              pnpm --filter @logto/core build
+              
+              # Build and start MyGovId mock service (DEV only)
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
+                echo "Building and starting MyGovId mock service for DEV environment..."
+                cd mygovid-mock-service
+                npm run build
+                npm start > ../mygovid-mock.log 2>&1 &
+                MYGOVID_PID=$!
+                cd ..
+              else
+                echo "Skipping MyGovId mock service for $BRANCH_NAME environment"
+                MYGOVID_PID=""
+              fi
+              
+              # Start only the core API in development mode
+              cd packages/core
+              pnpm dev > ../../logto-core.log 2>&1 &
+              LOGTO_PID=$!
+              cd ../..
+              
+              # Wait for MyGovId mock service to be ready (DEV only)
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
+                echo "Waiting for MyGovId mock service to be ready..."
+                RETRY_COUNT=0
+                MAX_RETRIES=30
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  if curl -s -f http://localhost:4005/health > /dev/null; then
+                    break
+                  fi
+                  RETRY_COUNT=$((RETRY_COUNT + 1))
+                  
+                  # Check if process is still running
+                  if ! ps -p $MYGOVID_PID > /dev/null; then
+                    tail -20 mygovid-mock.log
+                    exit 1
+                  fi
+                  
+                  sleep 2
+                done
+                
+                if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                  tail -20 mygovid-mock.log
+                  exit 1
+                fi
+                echo "MyGovId mock service is ready"
+              else
+                echo "Skipping MyGovId mock service health check for $BRANCH_NAME environment"
+              fi
+              
+              # Wait for Logto core API to be ready
+              RETRY_COUNT=0
+              MAX_RETRIES=60
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:3301/api/status > /dev/null; then
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                
+                # Check if process is still running
+                if ! ps -p $LOGTO_PID > /dev/null; then
+                  tail -50 logto-core.log
+                  exit 1
+                fi
+                
+                sleep 3
+              done
+              
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                tail -50 logto-core.log
+                exit 1
+              fi
+            displayName: 'Setup Environment'
+
+          - script: |
+              # Health checks for services required for E2E tests
+              curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto core API healthy" || { echo "❌ Logto core API unhealthy"; exit 1; }
+              docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
+              
+              # Check MyGovId mock service health (DEV only)
+              BRANCH_NAME="${BUILD_SOURCEBRANCH##refs/heads/}"
+              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
+                curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
+              else
+                echo "ℹ️ Skipping MyGovId mock service health check for $BRANCH_NAME environment"
+              fi
+            displayName: 'Health Check'
+
+          - script: |
+              # Run only the OGCIO-specific E2E tests (focused validation)
+              pnpm exec playwright test ogcio-e2e-tests/ --reporter=line
+            displayName: 'Run OGCIO E2E Tests'
+            env:
+              CI: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'test-results/results.xml'
+              testRunTitle: 'OGCIO E2E Tests'
+              mergeTestResults: true
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
       - Build_Logto
+      - OGCIO_E2E_Tests
     condition: ${{ variables.pushArtefacts }}
     jobs:
     - deployment: VerifyDeployment
@@ -89,18 +291,6 @@ stages:
         serviceName: logto
         repositoryName: bb-logto
         pushTag: $(Build.BuildId)
-  - stage: Build_MyGovId_Mock
-    displayName: Build MyGovId Mock
-    dependsOn: 
-      - securityScan
-    condition: or(eq(variables['Build.SourceBranchName'], 'dev'),eq(variables['Build.Reason'], 'PullRequest'))
-    jobs:
-    - template: pipeline-templates/build_service.yml
-      parameters:
-        serviceName: mygovid-mock-service
-        pushArtefacts: true
-        buildArguments: $(buildArguments)
-        dockerfile: ./mygovid-mock-service/Dockerfile
   - stage: Push_MyGovId_Mock
     displayName: Push MyGovId Mock to ECR
     dependsOn: 
@@ -128,31 +318,6 @@ stages:
         newName: ${{ variables.ecrEndpoint }}/bb-mygovid-mock
         newTag: $(Build.BuildId)
         environment: dev
-  - stage: Build_Logto_Audit_Cleaner
-    displayName: Build Logto Audit Cleaner
-    dependsOn: 
-      - securityScan
-    jobs:
-    - template: pipeline-templates/build_service.yml
-      parameters:
-        serviceName: logto-audit-cleaner
-        pushArtefacts: true
-        buildArguments: $(buildArguments)
-        dockerfile: ./audit-cleaner/Dockerfile
-  - stage: Push_Logto_Audit_Cleaner
-    displayName: Push Logto Audit Cleaner to ECR
-    dependsOn: 
-      - EnvApproval
-      - Build_Logto_Audit_Cleaner
-    condition: succeeded()
-    jobs:
-    - template: build/push_image_ecr.yml@pipeline-templates
-      parameters:
-        awsServiceConnection: ${{ variables.awsServiceConnection }}
-        awsRegion: ${{ variables.awsRegion }}
-        serviceName: logto-audit-cleaner
-        repositoryName: bb-logto-audit-cleaner
-        pushTag: $(Build.BuildId)
   - stage: Deploy_Openshift_Logto
     displayName: GitOps deploy Logto
     dependsOn:
