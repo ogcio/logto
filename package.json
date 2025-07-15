@@ -23,14 +23,19 @@
     "ci:build": "pnpm -r build",
     "ci:lint": "pnpm -r --parallel --workspace-concurrency=0 lint",
     "ci:stylelint": "pnpm -r --parallel --workspace-concurrency=0 stylelint",
-    "ci:test": "pnpm -r --parallel --workspace-concurrency=0 test:ci"
+    "ci:test": "pnpm -r --parallel --workspace-concurrency=0 test:ci",
+    "ogcio:e2e:install": "pnpm playwright install",
+    "ogcio:e2e:test": "pnpm playwright test",
+    "ogcio:e2e:test:ui": "pnpm playwright test --ui"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "@commitlint/types": "^19.0.0",
+    "@playwright/test": "^1.40.0",
     "@types/pg": "^8.6.6",
+    "dotenv": "^16.4.5",
     "husky": "^9.0.0",
     "pg": "^8.8.0",
     "tsup": "^8.1.0",
