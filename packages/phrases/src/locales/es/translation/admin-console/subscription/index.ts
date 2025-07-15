@@ -20,7 +20,6 @@ const subscription = {
   plan_cycle: 'Ciclo del plan: {{period}}. La renovación del uso se realiza en {{renewDate}}.',
   next_bill: 'Tu próxima factura',
   next_bill_hint: 'Para obtener más información sobre el cálculo, consulte este <a>artículo</a>.',
-  /** UNTRANSLATED */
   next_bill_tip:
     'Los precios mostrados aquí son sin impuestos y pueden estar sujetos a un ligero retraso en las actualizaciones. El monto del impuesto se calculará en función de la información que proporciones y los requisitos regulatorios locales y se mostrará en tus facturas.',
   manage_payment: 'Gestionar el pago',

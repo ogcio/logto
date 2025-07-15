@@ -19,7 +19,6 @@ const subscription = {
   plan_cycle: 'Plan-Zyklus: {{period}}. Die Nutzung wird am {{renewDate}} erneuert.',
   next_bill: 'Ihre bevorstehende Rechnung',
   next_bill_hint: 'Weitere Informationen zur Berechnung finden Sie in diesem <a>Artikel</a>.',
-  /** UNTRANSLATED */
   next_bill_tip:
     'Die hier angezeigten Preise sind ohne Steuern und können geringfügigen Verzögerungen bei der Aktualisierung unterliegen. Der Steuerbetrag wird basierend auf den von Ihnen bereitgestellten Informationen und den lokalen regulatorischen Anforderungen berechnet und in Ihren Rechnungen angezeigt.',
   manage_payment: 'Zahlung verwalten',

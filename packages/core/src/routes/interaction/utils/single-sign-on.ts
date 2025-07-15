@@ -63,7 +63,11 @@ export const getSsoAuthorizationUrl = async (
 
     const { jti } = await provider.interactionDetails(ctx.req, ctx.res);
 
-    if (EnvSet.values.isDevFeaturesEnabled && connectorInstance instanceof SamlConnector) {
+    if (
+      // TODO: Remove this check when IdP-initiated SSO is fully supported
+      EnvSet.values.isDevFeaturesEnabled &&
+      connectorInstance instanceof SamlConnector
+    ) {
       // Check if a IdP-initiated SSO session exists
       const sessionId = ctx.cookies.get(idpInitiatedSamlSsoSessionCookieName);
 

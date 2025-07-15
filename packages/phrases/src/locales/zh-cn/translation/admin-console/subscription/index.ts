@@ -19,7 +19,6 @@ const subscription = {
   plan_cycle: '计划周期：{{period}}，使用情况将于{{renewDate}}续订。',
   next_bill: '你即将到来的账单',
   next_bill_hint: '要了解有关计算的更多信息，请参阅此<a>文章</a>。',
-  /** UNTRANSLATED */
   next_bill_tip:
     '此处显示的价格不含税，更新可能会有轻微延迟。税额将基于您提供的信息和当地法规要求计算，并将在您的发票中显示。',
   manage_payment: '管理付款',

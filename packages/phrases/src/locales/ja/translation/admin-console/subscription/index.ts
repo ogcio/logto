@@ -20,7 +20,6 @@ const subscription = {
   plan_cycle: 'プランサイクル: {{period}}。更新日: {{renewDate}}。',
   next_bill: '次回の請求書',
   next_bill_hint: '計算方法については、次の<a>記事</a>を参照してください。',
-  /** UNTRANSLATED */
   next_bill_tip:
     'ここに表示される価格は税抜きであり、更新に若干の遅れが生じる場合があります。税額は、お客様が提供する情報および地元の規制要件に基づいて計算され、請求書に表示されます。',
   manage_payment: '支払い方法の管理',

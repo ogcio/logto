@@ -19,7 +19,6 @@ const subscription = {
   plan_cycle: 'Plan cycle: {{period}}. 사용량은 {{renewDate}}에 갱신됩니다.',
   next_bill: '다가오는 청구서',
   next_bill_hint: '계산에 대해 자세히 알아보려면 이 <a>게시물</a>을 참조하세요.',
-  /** UNTRANSLATED */
   next_bill_tip:
     '여기에 표시된 가격은 세금 제외이며 업데이트에 약간의 지연이 있을 수 있습니다. 세금 금액은 제공한 정보와 지역 규제 요건에 따라 계산되며 청구서에 표시됩니다.',
   manage_payment: '결제 관리',

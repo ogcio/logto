@@ -10,6 +10,7 @@ export enum ReservedPlanName {
   Enterprise = 'Enterprise',
 }
 
+// TODO: use `ReservedPlanId` in the future.
 export enum ReservedSkuId {
   Free = 'free',
   Pro = 'pro',

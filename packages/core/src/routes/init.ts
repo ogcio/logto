@@ -107,12 +107,6 @@ const createRouters = (tenant: TenantContext) => {
   verificationRoutes(userRouter, tenant);
 
   wellKnownRoutes(anonymousRouter, tenant);
-  wellKnownOpenApiRoutes(anonymousRouter, {
-    experienceRouters: [experienceRouter, interactionRouter],
-    managementRouters: [managementRouter, anonymousRouter],
-    userRouters: [userRouter],
-  });
-
   statusRoutes(anonymousRouter, tenant);
   authnRoutes(anonymousRouter, tenant);
 
