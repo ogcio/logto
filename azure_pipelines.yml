@@ -161,18 +161,13 @@ stages:
               pnpm --filter @logto/phrases build
               pnpm --filter @logto/core build
               
-              # Build and start MyGovId mock service (DEV only)
-              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
-                echo "Building and starting MyGovId mock service for DEV environment..."
-                cd mygovid-mock-service
-                npm run build
-                npm start > ../mygovid-mock.log 2>&1 &
-                MYGOVID_PID=$!
-                cd ..
-              else
-                echo "Skipping MyGovId mock service for $BRANCH_NAME environment"
-                MYGOVID_PID=""
-              fi
+              # Build and start MyGovId mock service
+              echo "Building and starting MyGovId mock service..."
+              cd mygovid-mock-service
+              npm run build
+              npm start > ../mygovid-mock.log 2>&1 &
+              MYGOVID_PID=$!
+              cd ..
               
               # Start only the core API in development mode
               cd packages/core
@@ -180,34 +175,27 @@ stages:
               LOGTO_PID=$!
               cd ../..
               
-              # Wait for MyGovId mock service to be ready (DEV only)
-              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
-                echo "Waiting for MyGovId mock service to be ready..."
-                RETRY_COUNT=0
-                MAX_RETRIES=30
-                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                  if curl -s -f http://localhost:4005/health > /dev/null; then
-                    break
-                  fi
-                  RETRY_COUNT=$((RETRY_COUNT + 1))
-                  
-                  # Check if process is still running
-                  if ! ps -p $MYGOVID_PID > /dev/null; then
-                    tail -20 mygovid-mock.log
-                    exit 1
-                  fi
-                  
-                  sleep 2
-                done
-                
-                if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              # Wait for MyGovId mock service to be ready
+              echo "Waiting for MyGovId mock service to be ready..."
+              RETRY_COUNT=0
+              MAX_RETRIES=30
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if curl -s -f http://localhost:4005/health > /dev/null; then
+                  break
+                fi
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                # Check if process is still running
+                if ! ps -p $MYGOVID_PID > /dev/null; then
                   tail -20 mygovid-mock.log
                   exit 1
                 fi
-                echo "MyGovId mock service is ready"
-              else
-                echo "Skipping MyGovId mock service health check for $BRANCH_NAME environment"
+                sleep 2
+              done
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                tail -20 mygovid-mock.log
+                exit 1
               fi
+              echo "MyGovId mock service is ready"
               
               # Wait for Logto core API to be ready
               RETRY_COUNT=0
@@ -237,14 +225,8 @@ stages:
               # Health checks for services required for E2E tests
               curl -s -f http://localhost:3301/api/status > /dev/null && echo "✅ Logto core API healthy" || { echo "❌ Logto core API unhealthy"; exit 1; }
               docker compose -f docker-compose-db.yml exec postgres pg_isready > /dev/null && echo "✅ Database healthy" || { echo "❌ Database unhealthy"; exit 1; }
-              
-              # Check MyGovId mock service health (DEV only)
-              BRANCH_NAME="${BUILD_SOURCEBRANCH##refs/heads/}"
-              if [ "$BRANCH_NAME" = "dev" ] || [ "$BUILD_REASON" = "PullRequest" ]; then
-                curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
-              else
-                echo "ℹ️ Skipping MyGovId mock service health check for $BRANCH_NAME environment"
-              fi
+              # Check MyGovId mock service health
+              curl -s -f http://localhost:4005/health > /dev/null && echo "✅ MyGovId mock service healthy" || { echo "❌ MyGovId mock service unhealthy"; exit 1; }
             displayName: 'Health Check'
 
           - script: |
