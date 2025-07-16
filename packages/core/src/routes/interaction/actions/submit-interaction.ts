@@ -29,7 +29,6 @@ import { getConsoleLogFromContext } from '#src/utils/console.js';
 import { buildAppInsightsTelemetry } from '#src/utils/request.js';
 import { getTenantId } from '#src/utils/tenant.js';
 
-import { manageDefaultUserRole } from '../../../libraries/ogcio-user.js';
 import { type WithInteractionHooksContext } from '../middleware/koa-interaction-hooks.js';
 import type {
   VerifiedInteractionResult,
@@ -99,10 +98,6 @@ async function handleSubmitRegister(
     users: { hasActiveUsers },
     signInExperiences: { updateDefaultSignInExperience },
     organizations,
-    // OGCIO
-    roles,
-    // OGCIO
-    usersRoles,
   } = queries;
 
   const {
@@ -276,20 +271,6 @@ async function handleSubmitSignIn(
   appInsights.client?.trackEvent({
     name: getEventName(Component.Core, CoreEvent.SignIn),
   });
-
-  // OGCIO
-  const registrationStep = false;
-  const { organizations, roles, usersRoles } = queries;
-  await manageDefaultUserRole(
-    user,
-    roles.findRoleById,
-    usersRoles.insertUsersRoles,
-    usersRoles.findUsersRolesByUserId,
-    organizations,
-    ctx,
-    registrationStep
-  );
-  // END OGCIO
 }
 
 export default async function submitInteraction(

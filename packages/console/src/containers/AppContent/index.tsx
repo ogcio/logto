@@ -29,6 +29,7 @@ export default function AppContent() {
   const { isLoading: isLoadingPreference } = useUserPreferences();
   const { currentTenant } = useContext(TenantsContext);
   const isTenantSuspended = isCloud && currentTenant?.isSuspended;
+  // TODO: @darcyYe remove this
   const { isLoading: isLoadingSubscriptionData, ...subscriptionDta } = useSubscriptionData();
 
   const { isLoading: isLoadingNewSubscriptionData, ...newSubscriptionData } =

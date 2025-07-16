@@ -3,6 +3,8 @@ import {
   AdditionalIdentifier,
   SentinelActivityAction,
   SignInIdentifier,
+  socialAuthorizationUrlPayloadGuard,
+  socialVerificationCallbackPayloadGuard,
   verificationCodeIdentifierGuard,
   VerificationType,
 } from '@logto/schemas';
@@ -10,7 +12,6 @@ import { z } from 'zod';
 
 import koaGuard from '#src/middleware/koa-guard.js';
 
-import { EnvSet } from '../../env-set/index.js';
 import {
   buildVerificationRecordByIdAndType,
   insertVerificationRecord,
@@ -19,17 +20,18 @@ import {
 import { withSentinel } from '../experience/classes/libraries/sentinel-guard.js';
 import { createNewCodeVerificationRecord } from '../experience/classes/verifications/code-verification.js';
 import { PasswordVerification } from '../experience/classes/verifications/password-verification.js';
+import { SocialVerification } from '../experience/classes/verifications/social-verification.js';
 import type { UserRouter, RouterInitArgs } from '../types.js';
 
+export const verificationApiPrefix = '/verifications';
+
 export default function verificationRoutes<T extends UserRouter>(
-  ...[router, { queries, libraries, sentinel }]: RouterInitArgs<T>
+  ...[router, tenantContext]: RouterInitArgs<T>
 ) {
-  if (!EnvSet.values.isDevFeaturesEnabled) {
-    return;
-  }
+  const { queries, libraries, sentinel } = tenantContext;
 
   router.post(
-    '/verifications/password',
+    `${verificationApiPrefix}/password`,
     koaGuard({
       body: z.object({ password: z.string().min(1) }),
       response: z.object({ verificationRecordId: z.string(), expiresAt: z.string() }),
@@ -71,7 +73,7 @@ export default function verificationRoutes<T extends UserRouter>(
   );
 
   router.post(
-    '/verifications/verification-code',
+    `${verificationApiPrefix}/verification-code`,
     koaGuard({
       body: z.object({
         identifier: verificationCodeIdentifierGuard,
@@ -114,7 +116,7 @@ export default function verificationRoutes<T extends UserRouter>(
   );
 
   router.post(
-    '/verifications/verification-code/verify',
+    `${verificationApiPrefix}/verification-code/verify`,
     koaGuard({
       body: z.object({
         identifier: verificationCodeIdentifierGuard,
@@ -153,6 +155,81 @@ export default function verificationRoutes<T extends UserRouter>(
       await updateVerificationRecord(codeVerification, queries);
 
       ctx.body = { verificationRecordId: codeVerification.id };
+
+      return next();
+    }
+  );
+
+  router.post(
+    `${verificationApiPrefix}/social`,
+    koaGuard({
+      body: socialAuthorizationUrlPayloadGuard.extend({
+        connectorId: z.string(),
+      }),
+      response: z.object({
+        verificationRecordId: z.string(),
+        authorizationUri: z.string(),
+        expiresAt: z.string(),
+      }),
+      status: [201, 400, 404, 422],
+    }),
+    async (ctx, next) => {
+      const { connectorId, ...rest } = ctx.guard.body;
+
+      const socialVerification = SocialVerification.create(libraries, queries, connectorId);
+
+      const authorizationUri = await socialVerification.createAuthorizationUrl(
+        ctx,
+        tenantContext,
+        rest,
+        'verificationRecord'
+      );
+
+      const { expiresAt } = await insertVerificationRecord(socialVerification, queries);
+
+      ctx.body = {
+        verificationRecordId: socialVerification.id,
+        authorizationUri,
+        expiresAt: new Date(expiresAt).toISOString(),
+      };
+      ctx.status = 201;
+
+      return next();
+    }
+  );
+
+  router.post(
+    `${verificationApiPrefix}/social/verify`,
+    koaGuard({
+      body: socialVerificationCallbackPayloadGuard
+        .pick({
+          connectorData: true,
+        })
+        .extend({
+          verificationRecordId: z.string(),
+        }),
+      response: z.object({
+        verificationRecordId: z.string(),
+      }),
+      status: [200, 400, 404, 422],
+    }),
+    async (ctx, next) => {
+      const { connectorData, verificationRecordId } = ctx.guard.body;
+
+      const socialVerification = await buildVerificationRecordByIdAndType({
+        type: VerificationType.Social,
+        id: verificationRecordId,
+        queries,
+        libraries,
+      });
+
+      await socialVerification.verify(ctx, tenantContext, connectorData, 'verificationRecord');
+
+      await updateVerificationRecord(socialVerification, queries);
+
+      ctx.body = {
+        verificationRecordId,
+      };
 
       return next();
     }
