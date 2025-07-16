@@ -9,7 +9,6 @@ import {
 } from '@/cloud/types/router';
 import { RegionName } from '@/components/Region';
 import { LogtoSkuType } from '@/types/skus';
-import { type SubscriptionPlan } from '@/types/subscriptions';
 
 import { adminEndpoint, isCloud } from './env';
 
@@ -52,44 +51,6 @@ export const defaultTenantResponse: TenantResponse = {
  * - For cloud, the initial tenant's subscription plan will be fetched from the cloud API.
  * - OSS has a fixed subscription plan with `development` id and no cloud API to dynamically fetch the subscription plan.
  */
-export const defaultSubscriptionPlan: SubscriptionPlan = {
-  id: defaultSubscriptionPlanId,
-  name: 'Development',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  stripeProducts: [],
-  quota: {
-    mauLimit: null,
-    tokenLimit: null,
-    applicationsLimit: null,
-    machineToMachineLimit: null,
-    resourcesLimit: null,
-    scopesPerResourceLimit: null,
-    customDomainEnabled: true,
-    mfaEnabled: true,
-    omniSignInEnabled: true,
-    socialConnectorsLimit: null,
-    standardConnectorsLimit: null,
-    rolesLimit: null,
-    machineToMachineRolesLimit: null,
-    scopesPerRoleLimit: null,
-    auditLogsRetentionDays: null,
-    hooksLimit: null,
-    organizationsEnabled: true,
-    ssoEnabled: true,
-    ticketSupportResponseTime: 48,
-    thirdPartyApplicationsLimit: null,
-    tenantMembersLimit: null,
-    customJwtEnabled: true,
-    subjectTokenEnabled: true,
-    bringYourUiEnabled: true,
-  },
-};
-
-/**
- * - For cloud, the initial tenant's subscription plan will be fetched from the cloud API.
- * - OSS has a fixed subscription plan with `development` id and no cloud API to dynamically fetch the subscription plan.
- */
 export const defaultLogtoSku: LogtoSkuResponse = {
   id: ReservedPlanId.Development,
   name: 'Logto Development plan',
@@ -97,6 +58,8 @@ export const defaultLogtoSku: LogtoSkuResponse = {
   updatedAt: new Date(),
   type: LogtoSkuType.Basic,
   unitPrice: 0,
+  productId: null,
+  defaultPriceId: null,
   quota: {
     // A soft limit for abuse monitoring
     mauLimit: 100,
@@ -119,6 +82,7 @@ export const defaultLogtoSku: LogtoSkuResponse = {
     customJwtEnabled: true,
     subjectTokenEnabled: true,
     bringYourUiEnabled: true,
+    idpInitiatedSsoEnabled: false,
   },
 };
 
@@ -144,6 +108,7 @@ export const defaultSubscriptionQuota: NewSubscriptionQuota = {
   customJwtEnabled: false,
   subjectTokenEnabled: false,
   bringYourUiEnabled: false,
+  idpInitiatedSsoEnabled: false,
 };
 
 export const defaultSubscriptionUsage: NewSubscriptionCountBasedUsage = {
@@ -164,6 +129,7 @@ export const defaultSubscriptionUsage: NewSubscriptionCountBasedUsage = {
   customJwtEnabled: false,
   subjectTokenEnabled: false,
   bringYourUiEnabled: false,
+  idpInitiatedSsoEnabled: false,
 };
 
 const getAdminTenantEndpoint = () => {

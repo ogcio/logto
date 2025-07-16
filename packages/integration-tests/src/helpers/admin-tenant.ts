@@ -29,7 +29,7 @@ import {
 export const resourceDefault = getManagementApiResourceIndicator(defaultTenantId);
 export const resourceMe = getManagementApiResourceIndicator(adminTenantId, 'me');
 
-const createUserWithRoles = async (roleNames: string[]) => {
+export const createUserWithPassword = async () => {
   const username = generateUsername();
   const password = generatePassword();
   const user = await api
@@ -37,6 +37,12 @@ const createUserWithRoles = async (roleNames: string[]) => {
       json: { username, password },
     })
     .json<User>();
+
+  return { user, username, password };
+};
+
+const createUserWithRoles = async (roleNames: string[]) => {
+  const { user, username, password } = await createUserWithPassword();
 
   // Should have roles for default tenant Management API and admin tenant Me API
   const roles = await api.get('roles').json<Role[]>();
