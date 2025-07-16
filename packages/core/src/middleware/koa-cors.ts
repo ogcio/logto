@@ -24,10 +24,6 @@ export default function koaCors<StateT, ContextT, ResponseBodyT>(
         return origin ?? '';
       }
 
-      if (!EnvSet.values.isProduction) {
-        return origin ?? '';
-      }
-
       if (
         origin &&
         urlSets.some((set) => {
