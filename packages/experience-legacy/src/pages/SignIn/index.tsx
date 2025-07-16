@@ -1,4 +1,4 @@
-import { AgreeToTermsPolicy, SignInMode } from '@logto/schemas';
+import { AgreeToTermsPolicy, type SignInIdentifier, SignInMode } from '@logto/schemas';
 import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -19,6 +19,61 @@ import ErrorPage from '../ErrorPage';
 
 import Main from './Main';
 import styles from './index.module.scss';
+
+// OGIO
+const getAndConsumeCookie = (cookieName: string) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split('=');
+    if (!value) {
+      continue;
+    }
+    if (name === cookieName) {
+      // Delete the cookie by setting its expiration date to the past
+      // eslint-disable-next-line @silverhand/fp/no-mutation
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const getCookie = (cookieName: string) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split('=');
+    if (!value) {
+      continue;
+    }
+    if (name === cookieName) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const getIsAuthorizationAdminSignin = () => {
+  const logtoCookie = getCookie('_logto');
+  if (!logtoCookie) {
+    return false;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsed = JSON.parse(logtoCookie);
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'appId' in parsed &&
+      typeof parsed.appId === 'string'
+    ) {
+      return parsed.appId === 'admin-console';
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
 
 const SignInFooters = () => {
   const { t } = useTranslation();
@@ -95,6 +150,49 @@ const SignIn = () => {
   const { signInMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
 
+  // OGCIO - used to filter the social connectors to show in the UI
+  // The main idea around this code is that we want to show by default both the MyGovId connector and the EntraID one
+  // If we want to show only the EntraID connector - or the MyGovId connector, we will leverage the connectorsToShow cookie
+  // E.g. connectorsToShow = "mygovid" shows only the MyGovId connector
+  // connectorsToShow = "ogcio-entraid" shows only the EntraID connector
+
+  // IMPORTANT: In dev mode, the package "experience" is used, while in prod mode, the package "experience-legacy" is used
+  // Therefore, we have to copy the content of this file in both packages
+
+  const connectorsToShowCookie = getAndConsumeCookie('connectorsToShow');
+
+  // By default we show both providers
+  // eslint-disable-next-line @silverhand/fp/no-let
+  let filteredSocialConnectors = socialConnectors;
+
+  if (connectorsToShowCookie) {
+    const connectorsToShow = connectorsToShowCookie.split(',');
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    filteredSocialConnectors = socialConnectors.filter((connector) =>
+      connectorsToShow.includes(connector.id)
+    );
+  }
+
+  const isE2EUsernameSignin = getAndConsumeCookie('e2eUsernameSignin') === 'true';
+  // Used to determine if the user is signing in as an admin in the authorization console
+  // If so, we will show only the username sign-in method
+  const isAuthorizationAdminSignin = getIsAuthorizationAdminSignin();
+  // eslint-disable-next-line unicorn/prevent-abbreviations -- E2E is a common term
+  const e2eUsernameSigninIdentifier = [
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      identifier: 'username' as SignInIdentifier,
+      password: true,
+      verificationCode: false,
+      isPasswordPrimary: true,
+    },
+  ];
+
+  const customSignInMethods = [
+    ...(isE2EUsernameSignin || isAuthorizationAdminSignin ? e2eUsernameSigninIdentifier : []),
+  ];
+
+
   if (!signInMode) {
     return <ErrorPage />;
   }
@@ -107,8 +205,9 @@ const SignIn = () => {
     <LandingPageLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <SingleSignOnFormModeContextProvider>
-        <Main signInMethods={signInMethods} socialConnectors={socialConnectors} />
-        <SignInFooters />
+        <Main signInMethods={customSignInMethods} socialConnectors={filteredSocialConnectors} />
+        {/* OGIO - SignInFooters is not used in the OGCIO experience */}
+        {/* <SignInFooters /> */}
       </SingleSignOnFormModeContextProvider>
       {
         // Only show terms and privacy links for sign in page if the agree to terms policy is `Automatic` or `ManualRegistrationOnly`
