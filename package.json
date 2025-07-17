@@ -33,6 +33,7 @@
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "@commitlint/types": "^19.0.0",
+    "@playwright/test": "^1.40.0",
     "@types/pg": "^8.6.6",
     "dotenv": "^16.4.5",
     "husky": "^9.0.0",
