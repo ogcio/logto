@@ -1,9 +1,0 @@
-# OGCIO
-
-variables:
-  awsServiceConnection: aws-sharedservices-building-blocks-azure-devops
-  awsRegion: eu-west-1
-  ecrEndpoint: 428528001781.dkr.ecr.eu-west-1.amazonaws.com
-  buildArguments: ""
-  environment: LifeEvents-prd
-  clusterName: prod-02
