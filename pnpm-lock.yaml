@@ -33,6 +33,9 @@ importers:
       '@commitlint/types':
         specifier: ^19.0.0
         version: 19.0.3
+      '@playwright/test':
+        specifier: ^1.40.0
+        version: 1.48.1
       '@types/pg':
         specifier: ^8.6.6
         version: 8.6.6
