@@ -8,6 +8,7 @@ import type { CommonQueryMethods, DatabaseTransactionConnection } from '@silverh
 
 import { seedApplications } from './applications.js';
 import { seedConnectors } from './connectors.js';
+import { seedCustomJWT } from './custom-jwt.js';
 import { getTenantSeederData, type OgcioSeeder } from './ogcio-seeder.js';
 import { seedOrganizationRbacData } from './organizations-rbac.js';
 import { createOrganizations } from './organizations.js';
@@ -93,6 +94,14 @@ const createDataForTenant = async (
       tenantId,
       usersToSeed: tenantData.users,
       webhook: webhookToUse,
+    });
+  }
+
+  if (tenantData.customJWT) {
+    await seedCustomJWT({
+      transaction,
+      tenantId,
+      customJWT: tenantData.customJWT,
     });
   }
 
