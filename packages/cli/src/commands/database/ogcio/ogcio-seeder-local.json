@@ -1413,6 +1413,45 @@
         "password_encrypted": "$argon2i$v=19$m=4096,t=256,p=1$Nf9j0Ok9DAQWHV5QyXi4bQ$OW+SdOeUEQoQM/VrlNwd+KsfgudVGv7lB8gysCSkThg"
       }
     ],
+    "customJWT": {
+      "script": "/**\n * This function is called during the access token generation process to get custom claims for the access token.\n * Limit custom claims to under 50KB.\n *\n * @param {Payload} payload - The input argument of the function.\n * \n * @returns The custom claims.\n */\nconst getCustomJwtClaims = async ({ token, context, environmentVariables, api }) => {\n  return {\n    signInMethod: \"testValue\"\n  };\n}",
+      "tokenSample": {
+        "aud": "http://localhost:3000/api/test",
+        "gty": "authorization_code",
+        "jti": "f1d3d2d1-1f2d-3d4e-5d6f-7d8a9d0e1d2",
+        "kind": "AccessToken",
+        "scope": "read write",
+        "grantId": "grant_123",
+        "clientId": "my_app",
+        "accountId": "uid_123"
+      },
+      "contextSample": {
+        "user": {
+          "id": "123",
+          "name": "Foo Bar",
+          "roles": [],
+          "avatar": "https://example.com/avatar.png",
+          "profile": {},
+          "username": "foo",
+          "customData": {},
+          "identities": {},
+          "hasPassword": false,
+          "primaryEmail": "foo@logto.io",
+          "primaryPhone": "+1234567890",
+          "applicationId": "my-app",
+          "organizations": [],
+          "ssoIdentities": [],
+          "organizationRoles": [],
+          "mfaVerificationFactors": []
+        },
+        "grant": {
+          "type": "urn:ietf:params:oauth:grant-type:token-exchange",
+          "subjectTokenContext": {
+            "foo": "bar"
+          }
+        }
+      }
+    },
     "raw_queries": [
       {
         "name": "Re-insert all",

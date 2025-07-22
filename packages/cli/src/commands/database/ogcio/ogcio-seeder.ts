@@ -17,6 +17,7 @@ export type OgcioSeeder = {
   resource_permissions?: ResourcePermissionSeeder[];
   resource_roles?: ResourceRoleSeeder[];
   users?: UserSeeder[];
+  customJWT?: CustomJWTSeeder;
   raw_queries?: RawQuerySeeder[];
 };
 
@@ -156,6 +157,13 @@ export type UserSeeder = {
   resource_role_ids: string[];
   ppsn: string;
   related_organizations: Array<{ roles: string[]; organization_id: string }>;
+};
+
+export type CustomJWTSeeder = {
+  script: string;
+  tokenSample: Record<string, unknown>;
+  contextSample: Record<string, unknown>;
+  grant: Record<string, unknown>;
 };
 
 export type RawQuerySeeder = {
