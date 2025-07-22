@@ -1232,6 +1232,52 @@
         "metadata": {
           "target": "OGCIO EntraID"
         }
+      },
+      {
+        "id": "email-otp",
+        "sync_profile": false,
+        "connector_id": "simple-mail-transfer-protocol",
+        "config": {
+          "auth": {
+            "pass": "password",
+            "type": "login",
+            "user": "username"
+          },
+          "host": "localhost",
+          "port": 1025,
+          "debug": false,
+          "logger": false,
+          "secure": false,
+          "fromEmail": "logto@mail.com",
+          "templates": [
+            {
+              "content": "Your Logto sign-in verification code is {{code}}. The code will remain active for 10 minutes.",
+              "subject": "Logto Sign In with SMTP",
+              "usageType": "SignIn",
+              "contentType": "text/plain"},
+              {
+                "content": "Your Logto sign-up verification code is {{code}}. The code will remain active for 10 minutes.",
+                "subject": "Logto register with SMTP",
+                "usageType": "Register",
+                "contentType": "text/plain"
+              },
+              {
+                "content": "Your Logto password change verification code is {{code}}. The code will remain active for 10 minutes.",
+                "subject": "Logto Forgot Password with SMTP",
+                "usageType": "ForgotPassword",
+                "contentType": "text/plain"
+              },
+              {
+                "content": "Your Logto verification code is {{code}}. The code will remain active for 10 minutes.",
+                "subject": "Logto Generic with SMTP",
+                "usageType": "Generic",
+                "contentType": "text/plain"
+              }
+            ],
+            "disableUrlAccess": false,
+            "disableFileAccess": false
+        },
+        "metadata": {}
       }
     ],
     "sign_in_experiences": [
@@ -1257,13 +1303,21 @@
               "identifier": "username",
               "verificationCode": false,
               "isPasswordPrimary": true
+            },
+            {
+              "password": false,
+              "identifier": "email",
+              "verificationCode": true,
+              "isPasswordPrimary": false
             }
           ]
         },
         "sign_up": {
-          "verify": false,
+          "verify": true,
           "password": false,
-          "identifiers": []
+          "identifiers": [
+            "email"
+          ]
         },
         "social_sign_in_connector_targets": ["MyGovId (MyGovId connector)", "OGCIO EntraID"],
         "sign_in_mode": "SignInAndRegister",
