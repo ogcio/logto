@@ -1,15 +1,12 @@
 {
   "tags": [
     {
-      "name": "Profile",
-      "description": "Profile routes provide functionality for managing user profiles for the end user to interact directly with access tokens."
-    },
-    {
-      "name": "Dev feature"
+      "name": "My account",
+      "description": "Account routes provide functionality for managing user profile for the end user to interact directly with access tokens."
     }
   ],
   "paths": {
-    "/api/profile": {
+    "/api/my-account": {
       "get": {
         "operationId": "GetProfile",
         "summary": "Get profile",
@@ -56,7 +53,7 @@
         }
       }
     },
-    "/api/profile/profile": {
+    "/api/my-account/profile": {
       "patch": {
         "operationId": "UpdateOtherProfile",
         "summary": "Update other profile",
@@ -114,11 +111,11 @@
         }
       }
     },
-    "/api/profile/password": {
+    "/api/my-account/password": {
       "post": {
         "operationId": "UpdatePassword",
         "summary": "Update password",
-        "description": "Update password for the user, a verification record is required for checking sensitive permissions.",
+        "description": "Update password for the user, a logto-verification-id in header is required for checking sensitive permissions.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -126,9 +123,6 @@
                 "properties": {
                   "password": {
                     "description": "The new password for the user."
-                  },
-                  "verificationRecordId": {
-                    "description": "The verification record ID for checking sensitive permissions."
                   }
                 }
               }
@@ -145,11 +139,11 @@
         }
       }
     },
-    "/api/profile/primary-email": {
+    "/api/my-account/primary-email": {
       "post": {
         "operationId": "UpdatePrimaryEmail",
         "summary": "Update primary email",
-        "description": "Update primary email for the user, a verification record is required for checking sensitive permissions, and a new identifier verification record is required for the new email ownership verification.",
+        "description": "Update primary email for the user, a logto-verification-id in header is required for checking sensitive permissions, and a new identifier verification record is required for the new email ownership verification.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -157,9 +151,6 @@
                 "properties": {
                   "email": {
                     "description": "The new email for the user."
-                  },
-                  "verificationRecordId": {
-                    "description": "The verification record ID for checking sensitive permissions."
                   },
                   "newIdentifierVerificationRecordId": {
                     "description": "The identifier verification record ID for the new email ownership verification."
@@ -180,13 +171,23 @@
             "description": "Permission denied, the verification record is invalid."
           }
         }
+      },
+      "delete": {
+        "operationId": "DeletePrimaryEmail",
+        "summary": "Delete primary email",
+        "description": "Delete primary email for the user, a verification-record-id in header is required for checking sensitive permissions.",
+        "responses": {
+          "204": {
+            "description": "The primary email was deleted successfully."
+          }
+        }
       }
     },
-    "/api/profile/primary-phone": {
+    "/api/my-account/primary-phone": {
       "post": {
         "operationId": "UpdatePrimaryPhone",
         "summary": "Update primary phone",
-        "description": "Update primary phone for the user, a verification record is required for checking sensitive permissions, and a new identifier verification record is required for the new phone ownership verification.",
+        "description": "Update primary phone for the user, a logto-verification-id in header is required for checking sensitive permissions, and a new identifier verification record is required for the new phone ownership verification.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -194,9 +195,6 @@
                 "properties": {
                   "phone": {
                     "description": "The new phone for the user."
-                  },
-                  "verificationRecordId": {
-                    "description": "The verification record ID for checking sensitive permissions."
                   },
                   "newIdentifierVerificationRecordId": {
                     "description": "The identifier verification record ID for the new phone ownership verification."
@@ -215,6 +213,59 @@
           },
           "403": {
             "description": "Permission denied, the verification record is invalid."
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeletePrimaryPhone",
+        "summary": "Delete primary phone",
+        "description": "Delete primary phone for the user, a verification-record-id in header is required for checking sensitive permissions.",
+        "responses": {
+          "204": {
+            "description": "The primary phone was deleted successfully."
+          }
+        }
+      }
+    },
+    "/api/my-account/identities": {
+      "post": {
+        "operationId": "AddUserIdentities",
+        "summary": "Add a user identity",
+        "description": "Add an identity (social identity) to the user, a logto-verification-id in header is required for checking sensitive permissions, and a verification record for the social identity is required.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "newIdentifierVerificationRecordId": {
+                    "description": "The identifier verification record ID for the new social identity ownership verification."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The identity was added successfully."
+          }
+        }
+      }
+    },
+    "/api/my-account/identities/{target}": {
+      "delete": {
+        "operationId": "DeleteIdentity",
+        "summary": "Delete a user identity",
+        "description": "Delete an identity (social identity) from the user, a logto-verification-id in header is required for checking sensitive permissions.",
+        "responses": {
+          "204": {
+            "description": "The identity was deleted successfully."
+          },
+          "400": {
+            "description": "The verification record is invalid."
+          },
+          "404": {
+            "description": "The identity does not exist."
           }
         }
       }

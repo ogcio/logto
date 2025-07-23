@@ -38,7 +38,7 @@
     "dotenv": "^16.4.5",
     "husky": "^9.0.0",
     "pg": "^8.8.0",
-    "tsup": "^8.1.0",
+    "tsup": "^8.3.0",
     "typescript": "^5.0.0",
     "vite": "^5.3.4"
   },
@@ -48,7 +48,10 @@
   },
   "pnpm": {
     "overrides": {
-      "formidable@<3.2.4": "^3.2.4"
+      "formidable@<3.2.4": "^3.2.4",
+      "d3-color@2.0.0": "^3.1.0",
+      "braces@<3.0.3": "^3.0.3",
+      "@75lb/deep-merge@<1.1.2": "^1.1.2"
     },
     "peerDependencyRules": {
       "allowedVersions": {

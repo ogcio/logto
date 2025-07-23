@@ -192,7 +192,6 @@ const SignIn = () => {
     ...(isE2EUsernameSignin || isAuthorizationAdminSignin ? e2eUsernameSigninIdentifier : []),
   ];
 
-
   if (!signInMode) {
     return <ErrorPage />;
   }
