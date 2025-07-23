@@ -23,8 +23,9 @@ import {
   OGCIO_ROLES,
 } from './ogcio-constants.js';
 
-const assignCitizenRole = async (
-  user: User,
+export const assignCitizenRole = async (
+  userId: string,
+  tenantId: string,
   getRoles: (id: string) => Promise<Role>,
   insertUsersRoles: (
     usersRoles: CreateUsersRole[]
@@ -36,9 +37,9 @@ const assignCitizenRole = async (
 
     return await insertUsersRoles([
       {
-        tenantId: user.tenantId,
+        tenantId,
         id: generateStandardId(),
-        userId: user.id,
+        userId,
         roleId: userRole.id,
       },
     ]);
@@ -200,5 +201,5 @@ const manageDefaultCitizenRole = async (
     `OGCIO: User registration - MyGovID identity found, assigning citizen role to the user.`
   );
 
-  return assignCitizenRole(user, getRoles, insertUsersRoles, ctx);
+  return assignCitizenRole(user.id, user.tenantId, getRoles, insertUsersRoles, ctx);
 };

@@ -1,4 +1,9 @@
-import { AgreeToTermsPolicy, type SignInIdentifier, SignInMode } from '@logto/schemas';
+import {
+  AgreeToTermsPolicy,
+  type SignIn as SignInMethod,
+  type SignInIdentifier,
+  SignInMode,
+} from '@logto/schemas';
 import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -174,6 +179,8 @@ const SignIn = () => {
   }
 
   const isE2EUsernameSignin = getAndConsumeCookie('e2eUsernameSignin') === 'true';
+  const isEmailSignin = getAndConsumeCookie('emailSignin') === 'true';
+
   // Used to determine if the user is signing in as an admin in the authorization console
   // If so, we will show only the username sign-in method
   const isAuthorizationAdminSignin = getIsAuthorizationAdminSignin();
@@ -188,9 +195,28 @@ const SignIn = () => {
     },
   ];
 
-  const customSignInMethods = [
-    ...(isE2EUsernameSignin || isAuthorizationAdminSignin ? e2eUsernameSigninIdentifier : []),
+  const mailSigninIdentifier = [
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      identifier: 'email' as SignInIdentifier,
+      password: false,
+      verificationCode: true,
+      isPasswordPrimary: false,
+    },
   ];
+
+  // eslint-disable-next-line @silverhand/fp/no-let
+  let customSignInMethods: SignInMethod['methods'] = [];
+
+  if (isE2EUsernameSignin || isAuthorizationAdminSignin) {
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    customSignInMethods = [...e2eUsernameSigninIdentifier];
+  }
+
+  if (isEmailSignin) {
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    customSignInMethods = [...mailSigninIdentifier];
+  }
 
   if (!signInMode) {
     return <ErrorPage />;
