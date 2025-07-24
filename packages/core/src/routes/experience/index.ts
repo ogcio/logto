@@ -10,7 +10,7 @@
  * The experience APIs can be used by developers to build custom user interaction experiences.
  */
 
-import { identificationApiPayloadGuard, InteractionEvent } from '@logto/schemas';
+import { identificationApiPayloadGuard, InteractionEvent, VerificationType } from '@logto/schemas';
 import type Router from 'koa-router';
 import { z } from 'zod';
 
@@ -19,6 +19,7 @@ import koaGuard from '#src/middleware/koa-guard.js';
 import koaInteractionDetails from '#src/middleware/koa-interaction-details.js';
 import assertThat from '#src/utils/assert-that.js';
 
+import { assignCitizenRole } from '../../libraries/ogcio-user.js';
 import { type AnonymousRouter, type RouterInitArgs } from '../types.js';
 
 import experienceAnonymousRoutes from './anonymous-routes/index.js';
@@ -116,7 +117,12 @@ export default function experienceApiRoutes<T extends AnonymousRouter>(
     }),
     async (ctx, next) => {
       const { verificationId, linkSocialIdentity } = ctx.guard.body;
-      const { experienceInteraction, createLog } = ctx;
+      const {
+        experienceInteraction,
+        // OGCIO
+        interactionDetails,
+        createLog,
+      } = ctx;
 
       const log = createLog(
         `Interaction.${experienceInteraction.interactionEvent}.Identifier.Submit`
@@ -131,6 +137,31 @@ export default function experienceApiRoutes<T extends AnonymousRouter>(
 
       if (experienceInteraction.interactionEvent === InteractionEvent.Register) {
         await experienceInteraction.createUser(verificationId, log);
+
+        // OGCIO
+        /**
+         * Checking the type of the login interaction to be EmailVerificationCode
+         * and assign Citizen user role to the newly created user.
+         */
+        if (Array.isArray(interactionDetails.result?.verificationRecords)) {
+          const verificationRecord = interactionDetails.result.verificationRecords;
+
+          if (verificationRecord[0]?.type === VerificationType.EmailVerificationCode) {
+            const userId = experienceInteraction.identifiedUserId;
+
+            if (userId) {
+              const { roles, usersRoles } = tenant.queries;
+
+              await assignCitizenRole(
+                userId,
+                tenant.id,
+                roles.findRoleById,
+                usersRoles.insertUsersRoles,
+                ctx
+              );
+            }
+          }
+        }
       } else {
         assertThat(
           verificationId,
