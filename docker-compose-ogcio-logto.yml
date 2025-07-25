@@ -6,7 +6,15 @@ services:
         condition: service_healthy
       mygovid-mock-service:
         condition: service_started
-    image: 730335224023.dkr.ecr.eu-west-1.amazonaws.com/life-events-logto:dev
+    #image: 730335224023.dkr.ecr.eu-west-1.amazonaws.com/life-events-logto:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ADDITIONAL_CONNECTOR_ARGS=${ADDITIONAL_CONNECTOR_ARGS}
+    networks:
+      - logto_network
+    container_name: app
     entrypoint:
       [
         "sh",
@@ -23,8 +31,8 @@ services:
       # Or, you can leverage it for local testing.
       - ENDPOINT
       - ADMIN_ENDPOINT
-      - PORT=3301
-      - ADMIN_PORT=3302
+      #- PORT=3301
+      #- ADMIN_PORT=3302
       - MOCK_TOKEN_ENDPOINT=http://mygovid-mock-service:4005/logto/mock/token
       - MOCK_KEYS_ENDPOINT=http://mygovid-mock-service:4005/logto/mock/keys
       - ALLOWED_ENTRAID_TIDS=ogcio-tid
@@ -34,6 +42,8 @@ services:
     user: postgres
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - logto_network
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: p0stgr3s
@@ -47,7 +57,13 @@ services:
       - 5433:5433
 
   mygovid-mock-service:
-    image: 730335224023.dkr.ecr.eu-west-1.amazonaws.com/life-events-logto@sha256:e970daf7bba41fd23f8b2fda0ab12f1f13449883fc0b0ce625fa1b1c2233d698
+    #image: 730335224023.dkr.ecr.eu-west-1.amazonaws.com/life-events-logto@sha256:e970daf7bba41fd23f8b2fda0ab12f1f13449883fc0b0ce625fa1b1c2233d698
+    build:
+      context: .
+      dockerfile: mygovid-mock-service/Dockerfile
+    networks:
+      - logto_network
+    container_name: mygovid-mock-service
     ports:
       - 4005:4005
 

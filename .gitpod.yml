@@ -5,8 +5,8 @@ tasks:
 
   - name: Logto dev
     init: |
-      nvm i 18
-      nvm use 18
+      nvm i 20
+      nvm use 20
       pnpm i
       pnpm prepack
       cd packages/core
