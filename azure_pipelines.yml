@@ -237,6 +237,10 @@ stages:
             displayName: 'Run OGCIO E2E Tests'
             env:
               CI: true
+          - script: |
+              # Fix permissions so Azure Pipelines can always access the test results
+              chmod -R 777 ogcio-e2e-tests/test-results
+            displayName: 'Fix test results permissions'
 
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
