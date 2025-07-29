@@ -231,7 +231,7 @@ stages:
 
           - script: |
               # Run only the OGCIO-specific E2E tests and always generate JUnit XML
-              pnpm exec playwright test ogcio-e2e-tests/ --reporter=junit
+              pnpm exec playwright test ogcio-e2e-tests/ --reporter=junit,ogcio-e2e-tests/test-results/results.xml
             displayName: 'Run OGCIO E2E Tests'
             env:
               CI: true

@@ -19,7 +19,7 @@ export default defineConfig({
 	workers: 3, // Use single worker in CI to avoid overloading
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: process.env.CI ? [
-		['junit', { outputFile: 'test-results/results.xml' }],
+		["junit", { outputFile: "./ogcio-e2e-tests/test-results/results.xml" }],
 		['html', { outputFolder: 'playwright-report', open: 'never' }],
 		['list']
 	] : 'html',
