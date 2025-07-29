@@ -241,7 +241,7 @@ stages:
             condition: always()
             inputs:
               testResultsFormat: 'JUnit'
-              testResultsFiles: 'ogcio-e2e-tests/test-results/results.xml'
+              testResultsFiles: 'test-results/results.xml'
               testRunTitle: 'OGCIO E2E Tests'
               mergeTestResults: true
   - stage: EnvApproval
