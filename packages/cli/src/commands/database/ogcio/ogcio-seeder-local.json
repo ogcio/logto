@@ -807,8 +807,14 @@
         "name": "FormsIE Admin",
         "description": "The form manager admin App",
         "type": "SPA",
-        "redirect_uri": "http://localhost:4000/admin/auth/callback",
-        "logout_redirect_uri": "http://localhost:4000",
+        "redirect_uri": [
+            "http://localhost:4000/admin/v2/auth/callback",
+            "http://localhost:4000/admin/auth/callback"
+        ],
+        "logout_redirect_uri": [
+            "http://localhost:4000/admin/v2/overview/",
+            "http://localhost:4000"
+         ],
         "secret": "formsie_app_local_secret",
         "id": "66q9ecmkup9najnzajium",
         "is_third_party": false
