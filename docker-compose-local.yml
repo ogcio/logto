@@ -4,6 +4,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     image: local-logto:latest
     entrypoint:
       [
@@ -17,6 +19,7 @@ services:
     environment:
       - TRUST_PROXY_HEADER=1
       - DB_URL=postgres://postgres:p0stgr3s@postgres:5433/logto
+      - REDIS_URL=redis://redis:6379
       # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
       # Or, you can leverage it for local testing.
       - ENDPOINT
@@ -39,8 +42,22 @@ services:
       file: docker-compose-db.yml
       service: postgres
 
+  redis:
+    image: redis:7.2.3-bookworm
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - 6379:6379
+
 volumes:
   db:
+    driver: local
+  redis:
     driver: local
 
 networks:
