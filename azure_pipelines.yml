@@ -230,8 +230,8 @@ stages:
             displayName: 'Health Check'
 
           - script: |
-              # Run only the OGCIO-specific E2E tests (focused validation)
-              pnpm exec playwright test ogcio-e2e-tests/ --reporter=line
+              # Run only the OGCIO-specific E2E tests and always generate JUnit XML
+              pnpm exec playwright test ogcio-e2e-tests/ --reporter=junit,ogcio-e2e-tests/test-results/results.xml
             displayName: 'Run OGCIO E2E Tests'
             env:
               CI: true
