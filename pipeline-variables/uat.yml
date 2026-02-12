@@ -5,5 +5,5 @@ variables:
   awsRegion: eu-west-1
   ecrEndpoint: 428528001781.dkr.ecr.eu-west-1.amazonaws.com
   buildArguments: ""
-  environment: LifeEvents-uat
+  environment: logto-uat
   clusterName: non-prod-02
